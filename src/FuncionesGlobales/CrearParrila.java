@@ -1,4 +1,4 @@
-package FuncionesGlobales;
+package funcionesGlobales;
 
 public class CrearParrila {
 
