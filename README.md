@@ -1,6 +1,6 @@
 # PROYECTO CREACIÓN JUEGOS
 
-_Hemos desarrolla un software que tiene como función principal...(EDU TE TOCA)
+_Hemos desarrolla un software que tiene como función principal...(EDU TE TOCA)_
 
 ## Comenzando 🚀
 
