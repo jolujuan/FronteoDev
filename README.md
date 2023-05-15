@@ -32,7 +32,7 @@ git init
 _Seleccionar repositorio_
 
 ```
-git remote add origin https://github.com/jolujuan/ProyectoJava.git
+git remote add origin https://github.com/jolujuan/FronteoDev.git
 ```
 _Seleccionar rama_
 
@@ -57,7 +57,7 @@ _Menciona a todos aquellos que ayudaron a levantar el proyecto desde sus inicios
 * **Javier** - *Trabajo Final* - [JavierAlmC](https://github.com/JavierAlmC)
 * **Maikol** - *Trabajo Final* - [giornotheBanana01](https://github.com/giornotheBanana01)
 
-También puedes mirar la lista de todos los [contribuyentes](https://github.com/jolujuan/ProyectoJava/graphs/contributors) quíenes han participado en este proyecto. 
+También puedes mirar la lista de todos los [contribuyentes](https://github.com/jolujuan/FronteoDev/graphs/contributors) quíenes han participado en este proyecto. 
 
 ## Licencia 📄
 
