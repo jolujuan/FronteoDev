@@ -11,6 +11,7 @@ public class MainPrincipal {
 			Panel_inicio p = new Panel_inicio();
 		} else {
 			System.out.println("No hay conexion");
+			System.out.println("No hay conexion");
 		}
 	}
 
