@@ -3,6 +3,8 @@ package juegos;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -121,58 +123,96 @@ public class PixelArt extends JFrame {
 
 	}
 
-	public class Casilla extends JPanel {
-		private static final Color COLOR_CASILLA = Color.WHITE;
-		private static final Color COLOR_BORDE = new Color(128, 128, 128, 50);
-		// COLOR DE GRIS UN POCO TRANSPARENTE
-		private static final int GROSOR_BORDE = 1;
-
-		public Casilla() {
-			setBackground(COLOR_CASILLA);
-			setBorder(BorderFactory.createLineBorder(COLOR_BORDE, GROSOR_BORDE));
-		}
-	}
+	
 
 	public class PaletaColores extends JPanel {
-		// Pasarle el ancho del tablero
-		private static Color colorSeleccionado = null; // Hacemos una copia final de color
 
-		public PaletaColores(int anchoVentana) {
-			// Seleccionar el alto del panel (100)
-			this.setPreferredSize(new Dimension(anchoVentana, 50));
-			// Crear un margen
-			this.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-			// Representamos los colores a mostrar en la linea (6)
-			this.setLayout(new GridLayout(0, 6));
+        public PaletaColores(int anchoVentana) {
+            this.setPreferredSize(new Dimension(anchoVentana, 50));
+            this.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+            this.setLayout(new GridLayout(0, 6));
 
-			// Configurar los colores en un array
-			Color[] colores = { Color.WHITE, Color.BLUE, Color.GREEN, Color.GRAY, Color.ORANGE, Color.RED };
+            Color[] colores = { Color.WHITE, Color.BLUE, Color.GREEN, Color.GRAY, Color.ORANGE, Color.RED };
+            // Crear el array con los colores que deseamos
+            for (Color color : colores) {
+                // Declarla como final para que se gaurde la ultima
+                final Color colorSeleccionado = color;
+                //Pintar los botones con sus colores
+                JButton buttonColor = new JButton();
+                buttonColor.setBackground(color);
 
-			for (Color color : colores) {
-				final Color colorSeleccionado = color; // Hacemos una copia final de color
-				JButton buttonColor = new JButton();
-				 buttonColor.setOpaque(true);
-				buttonColor.setBackground(color);
-				buttonColor.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						// java.awt.Color[r=255,g=0,b=0] -65536
-						System.out.println(colorSeleccionado);
-						if (colorSeleccionado.equals(Color.WHITE)) {
-							Color nuevoColor = JColorChooser.showDialog(null, "Selecciona un color", colorSeleccionado);
-							if (nuevoColor != null) {
-								buttonColor.setText("dsd");
-								buttonColor.setBackground(nuevoColor);
-							}
-						}
-					}
-				});
-				this.add(buttonColor);
-			}
-		}
+                //Para el color blanco mostrar un mensaje de seleccion color
+                if (color.equals(Color.WHITE)) {
+                    buttonColor.setText("Selecciona");
+                }
+                
+                buttonColor.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (colorSeleccionado.equals(Color.WHITE)) {
+                            Color nuevoColor = JColorChooser.showDialog(null, "Selecciona", colorSeleccionado);
+                            if (nuevoColor != null) {
+                                buttonColor.setBackground(nuevoColor);
+                                buttonColor.setForeground(Color.WHITE);
+                                // Obtiene la casilla asociada al botón
+                                Casilla casilla = (Casilla) buttonColor.getParent();
+                                casilla.actualizarColorActual(nuevoColor);
+                            }
+                        }
+                    }
+                });
+
+                
+                this.add(buttonColor);
+            }
+        }
+    
 
 	}
+	
 
+	public class Casilla extends JPanel {
+	    private static final Color COLOR_CASILLA = Color.WHITE;
+	    private static final Color COLOR_BORDE = new Color(128, 128, 128, 50);
+	    private static final int GROSOR_BORDE = 1;
+
+	    private Color colorActual;
+	    //Getters para poder cambiar el color desde la paleta
+	    public Color getColorActual() {
+			return colorActual;
+		}
+
+		public void setColorActual(Color colorActual) {
+			this.colorActual = colorActual;
+		}
+
+		public Casilla() {
+	        setBackground(COLOR_CASILLA);
+	        setBorder(BorderFactory.createLineBorder(COLOR_BORDE, GROSOR_BORDE));
+
+	        // USA EL COLOR BLANCO COMO ACTUAL
+	        colorActual = COLOR_CASILLA;
+
+	        // Añade un MouseListener para cambiar el color al hacer clic
+	        addMouseListener(new MouseAdapter() {
+	            @Override
+	            public void mouseClicked(MouseEvent e) {
+	                cambiarColor();
+	            }
+	        });
+	    }
+
+		public void actualizarColorActual(Color nuevoColor) {
+		    colorActual = nuevoColor;
+		    setBackground(colorActual);
+		}
+	    public void cambiarColor() {
+	        // Cambia el color de la casilla al hacer clic
+	        
+	        setBackground(colorActual);
+	    }
+	}
+	
 	private void crearTablero(int f) {
 		JPanel tablero = new JPanel(new GridLayout(f, f));
 		int anchoVentana = getWidth();
@@ -182,6 +222,7 @@ public class PixelArt extends JFrame {
 		for (int fila = 0; fila < f; fila++) {
 			for (int columna = 0; columna < f; columna++) {
 				Casilla casilla = new Casilla();
+				
 				casilla.setSize(size, size);
 				casilla.setPreferredSize(new Dimension(size, size));
 				// MAS TARDE PONER EL GRISEN BLANCO , AHORA
@@ -195,8 +236,10 @@ public class PixelArt extends JFrame {
 		PaletaColores paleta = new PaletaColores(anchoVentana);
 
 		contentPane.removeAll();
+		BotonesDescartaryGuardar();
 		contentPane.add(tablero, BorderLayout.CENTER);
 		contentPane.add(paleta, BorderLayout.SOUTH);
+		
 		repaint();
 		revalidate();
 
