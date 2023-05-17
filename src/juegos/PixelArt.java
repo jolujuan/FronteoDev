@@ -267,6 +267,17 @@ public class PixelArt extends JFrame {
 		gbcBorrar.gridx = 0;
 		gbcBorrar.gridy = 0;
 		BotonesJuego.add(Borrar, gbcBorrar);
+		
+		Borrar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				contentPane.removeAll();
+				IniciodeJuego();
+				
+			}
+		});
 
 		JButton Guardar = new JButton("Guardar");
 		Guardar.setPreferredSize(new Dimension(120, 40));
