@@ -5,11 +5,15 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import registro.Registro;
 
 public class Panel_inicio extends JFrame {
 
@@ -45,7 +49,6 @@ public class Panel_inicio extends JFrame {
 		panel_principal.add(boton_registro);
 		panel_principal.add(boton_login);
 
-		// Configurar el panel principal para que se expanda y se coloque en el centro
 		contenedor.setLayout(new GridBagLayout());
 
 		gbc.gridx = 0;
@@ -59,7 +62,26 @@ public class Panel_inicio extends JFrame {
 		gbc.weighty = 1.0;
 		contenedor.add(panel_principal, gbc);
 
+		boton_registro.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mostrarRegistro();
+				
+			}
+		});
+
 		this.setSize(500, 500);
 		this.setVisible(true);
 	}
+	
+	private void mostrarRegistro() {
+        // Crear y mostrar el contenido de la ventana de registro
+        Registro ventanaRegistro = new Registro();
+        ventanaRegistro.setVisible(true);
+        ventanaRegistro.setSize(500, 500);
+        // Ocultar la ventana actual
+        setVisible(false);
+    }
+	
 }
