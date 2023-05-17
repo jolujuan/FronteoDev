@@ -3,6 +3,8 @@ package juegos;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -121,19 +123,108 @@ public class PixelArt extends JFrame {
 
 	}
 
+	
+
+	public class PaletaColores extends JPanel {
+		private Casilla casilla;
+		
+        public PaletaColores(int anchoVentana, Casilla casilla) {
+        	this.casilla = casilla;
+        	
+        	this.setPreferredSize(new Dimension(anchoVentana, 50));
+            this.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+            this.setLayout(new GridLayout(0, 6));
+
+            Color[] colores = { Color.WHITE, Color.BLUE, Color.GREEN, Color.GRAY, Color.ORANGE, Color.RED };
+            // Crear el array con los colores que deseamos
+            for (Color color : colores) {
+                // Declarla como final para que se gaurde la ultima
+                final Color colorSeleccionado = color;
+                //Pintar los botones con sus colores
+                JButton buttonColor = new JButton();
+                buttonColor.setBackground(color);
+
+                //Para el color blanco mostrar un mensaje de seleccion color
+                if (color.equals(Color.WHITE)) {
+                    buttonColor.setText("Selecciona");
+                }
+                
+                buttonColor.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                    	//Si el color es igual a blanco podremos obtener para cambiar las propiedades
+                        if (colorSeleccionado.equals(Color.WHITE)) {
+                            Color nuevoColor = JColorChooser.showDialog(null, "Select", colorSeleccionado);
+                            if (nuevoColor != null) {
+                                buttonColor.setBackground(nuevoColor);
+                                buttonColor.setForeground(Color.WHITE);
+
+                                casilla.actualizarColorActual(nuevoColor);
+                                // cambiar color aqui 
+                            }
+								
+							}else {
+	                               // cambiar color aqui 
+								casilla.actualizarColorActual(colorSeleccionado);
+							}
+                        }
+                    
+                });           
+                this.add(buttonColor);
+            }
+        }
+	}
+	
+
 	public class Casilla extends JPanel {
-		private static final Color COLOR_CASILLA = Color.WHITE;
-		private static final Color COLOR_BORDE = new Color(128, 128, 128, 50);
-		// COLOR DE GRIS UN POCO TRANSPARENTE
-		private static final int GROSOR_BORDE = 1;
+	    private static final Color COLOR_CASILLA = Color.WHITE;
+	    private static final Color COLOR_BORDE = new Color(128, 128, 128, 50);
+	    private static final int GROSOR_BORDE = 1;
+
+	    private Color colorActual;
+	    //Getters para poder cambiar el color desde la paleta
+	    public Color getColorActual() {
+			return colorActual;
+		}
+
+		public void setColorActual(Color colorActual) {
+			this.colorActual = colorActual;
+		}
 
 		public Casilla() {
-			setBackground(COLOR_CASILLA);
-			setBorder(BorderFactory.createLineBorder(COLOR_BORDE, GROSOR_BORDE));
-		}
-	}
+	        setBackground(COLOR_CASILLA);
+	        setBorder(BorderFactory.createLineBorder(COLOR_BORDE, GROSOR_BORDE));
 
+	        // USA EL COLOR BLANCO COMO ACTUAL
+	        colorActual = COLOR_CASILLA;
+
+	        // Añade un MouseListener para cambiar el color al hacer clic
+	        addMouseListener(new MouseAdapter() {
+	            @Override
+	            public void mouseClicked(MouseEvent e) {
+	            	 if (SwingUtilities.isLeftMouseButton(e)) {
+	                     cambiarColor();
+	                 }
+	            }
+	        });
+	    }
+
+		public void actualizarColorActual(Color nuevoColor) {
+		    setColorActual(nuevoColor);
+		    setBackground(colorActual);
+		    repaint();
+		    revalidate();
+		}
+	    public void cambiarColor() {
+	        // Cambia el color de la casilla al hacer clic
+	        colorActual=Color.black;
+	        setBackground(colorActual);
+	    }
+	}
+	
 	private void crearTablero(int f) {
+		Casilla casilla = null;
+
 		JPanel tablero = new JPanel(new GridLayout(f, f));
 		int anchoVentana = getWidth();
 		int altoVentana = getHeight();
@@ -141,52 +232,64 @@ public class PixelArt extends JFrame {
 
 		for (int fila = 0; fila < f; fila++) {
 			for (int columna = 0; columna < f; columna++) {
-				Casilla casilla = new Casilla();
+				 casilla = new Casilla();
 				casilla.setSize(size, size);
 				casilla.setPreferredSize(new Dimension(size, size));
 				// MAS TARDE PONER EL GRISEN BLANCO , AHORA
 				// DEJARLO ASI PARA
 				// DISTINGUIR MEJOR EL
 				tablero.add(casilla);
-				casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : Color.WHITE);// SI LA POSICION DE LA
-																								// CASILLA ES PARA COGE
-																								// UN COLOR SI NO OTRO
+				casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : Color.WHITE);
 
 			}
 		}
-		contentPane.removeAll();// BORRAR INICIO
-		contentPane.add(tablero, BorderLayout.CENTER);// AÑADIR EL TABLERO A LA PANTALLA
+		PaletaColores paleta = new PaletaColores(anchoVentana, casilla); // Pasa la instancia de Casilla
+
+		contentPane.removeAll();
 		BotonesDescartaryGuardar();
+		contentPane.add(tablero, BorderLayout.CENTER);
+		contentPane.add(paleta, BorderLayout.SOUTH);
+		
 		repaint();
 		revalidate();
 
 	}
 
 	private void BotonesDescartaryGuardar() {
-	    JPanel BotonesJuego = new JPanel(new GridBagLayout());
+		JPanel BotonesJuego = new JPanel(new GridBagLayout());
 
-	    JButton Borrar = new JButton("Borrar");
-	    Borrar.setPreferredSize(new Dimension(120, 40));
-	    Borrar.setFont(new Font("Unispace", Font.BOLD, 12));
-	    GridBagConstraints gbcBorrar = new GridBagConstraints();
-	    gbcBorrar.anchor = GridBagConstraints.CENTER;
-	    gbcBorrar.insets = new Insets(5, 10, 10, 10); // Añade espacio inferior
-	    gbcBorrar.gridx = 0;
-	    gbcBorrar.gridy = 0;
-	    BotonesJuego.add(Borrar, gbcBorrar);
+		JButton Borrar = new JButton("Borrar");
+		Borrar.setPreferredSize(new Dimension(120, 40));
+		Borrar.setFont(new Font("Unispace", Font.BOLD, 12));
+		GridBagConstraints gbcBorrar = new GridBagConstraints();
+		gbcBorrar.anchor = GridBagConstraints.CENTER;
+		gbcBorrar.insets = new Insets(5, 10, 10, 10); // Añade espacio inferior
+		gbcBorrar.gridx = 0;
+		gbcBorrar.gridy = 0;
+		BotonesJuego.add(Borrar, gbcBorrar);
+		
+		Borrar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				contentPane.removeAll();
+				IniciodeJuego();
+				
+			}
+		});
 
-	    JButton Guardar = new JButton("Guardar");
-	    Guardar.setPreferredSize(new Dimension(120, 40));
-	    Guardar.setFont(new Font("Unispace", Font.BOLD, 12));
-	    GridBagConstraints gbcGuardar = new GridBagConstraints();
-	    gbcGuardar.anchor = GridBagConstraints.CENTER;
-	    gbcGuardar.insets = new Insets(5, 10, 10, 10); // No añade espacio inferior
-	    gbcGuardar.gridx = 1;
-	    gbcGuardar.gridy = 0;
-	    BotonesJuego.add(Guardar, gbcGuardar);
+		JButton Guardar = new JButton("Guardar");
+		Guardar.setPreferredSize(new Dimension(120, 40));
+		Guardar.setFont(new Font("Unispace", Font.BOLD, 12));
+		GridBagConstraints gbcGuardar = new GridBagConstraints();
+		gbcGuardar.anchor = GridBagConstraints.CENTER;
+		gbcGuardar.insets = new Insets(5, 10, 10, 10); // No añade espacio inferior
+		gbcGuardar.gridx = 1;
+		gbcGuardar.gridy = 0;
+		BotonesJuego.add(Guardar, gbcGuardar);
 
-	    contentPane.add(BotonesJuego, BorderLayout.NORTH);
+		contentPane.add(BotonesJuego, BorderLayout.NORTH);
 	}
-
 
 }
