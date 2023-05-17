@@ -126,9 +126,12 @@ public class PixelArt extends JFrame {
 	
 
 	public class PaletaColores extends JPanel {
-
-        public PaletaColores(int anchoVentana) {
-            this.setPreferredSize(new Dimension(anchoVentana, 50));
+		private Casilla casilla;
+		
+        public PaletaColores(int anchoVentana, Casilla casilla) {
+        	this.casilla = casilla;
+        	
+        	this.setPreferredSize(new Dimension(anchoVentana, 50));
             this.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
             this.setLayout(new GridLayout(0, 6));
 
@@ -155,27 +158,21 @@ public class PixelArt extends JFrame {
                             if (nuevoColor != null) {
                                 buttonColor.setBackground(nuevoColor);
                                 buttonColor.setForeground(Color.WHITE);
-                                // Obtiene la casilla asociada al botón
-                                Casilla casilla = (Casilla) buttonColor.getParent();
+
                                 casilla.actualizarColorActual(nuevoColor);
+                                // cambiar color aqui 
                             }
 								
 							}else {
-								// Obtiene la casilla asociada al botón
-                                Casilla casilla = (Casilla) buttonColor.getParent();
-                                casilla.actualizarColorActual(color);
-                                //AL SELECCIONAR UN COLOR PREDETERMINADO ENTRA A EL ES
+	                               // cambiar color aqui 
+								casilla.actualizarColorActual(colorSeleccionado);
 							}
                         }
                     
-                });
-
-                
+                });           
                 this.add(buttonColor);
             }
         }
-    
-
 	}
 	
 
@@ -226,6 +223,8 @@ public class PixelArt extends JFrame {
 	}
 	
 	private void crearTablero(int f) {
+		Casilla casilla = null;
+
 		JPanel tablero = new JPanel(new GridLayout(f, f));
 		int anchoVentana = getWidth();
 		int altoVentana = getHeight();
@@ -233,8 +232,7 @@ public class PixelArt extends JFrame {
 
 		for (int fila = 0; fila < f; fila++) {
 			for (int columna = 0; columna < f; columna++) {
-				Casilla casilla = new Casilla();
-				
+				 casilla = new Casilla();
 				casilla.setSize(size, size);
 				casilla.setPreferredSize(new Dimension(size, size));
 				// MAS TARDE PONER EL GRISEN BLANCO , AHORA
@@ -245,7 +243,7 @@ public class PixelArt extends JFrame {
 
 			}
 		}
-		PaletaColores paleta = new PaletaColores(anchoVentana);
+		PaletaColores paleta = new PaletaColores(anchoVentana, casilla); // Pasa la instancia de Casilla
 
 		contentPane.removeAll();
 		BotonesDescartaryGuardar();
