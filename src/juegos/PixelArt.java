@@ -133,6 +133,46 @@ public class PixelArt extends JFrame {
 		}
 	}
 
+	public class PaletaColores extends JPanel {
+		// Pasarle el ancho del tablero
+		private static Color colorSeleccionado = null; // Hacemos una copia final de color
+
+		public PaletaColores(int anchoVentana) {
+			// Seleccionar el alto del panel (100)
+			this.setPreferredSize(new Dimension(anchoVentana, 50));
+			// Crear un margen
+			this.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+			// Representamos los colores a mostrar en la linea (6)
+			this.setLayout(new GridLayout(0, 6));
+
+			// Configurar los colores en un array
+			Color[] colores = { Color.WHITE, Color.BLUE, Color.GREEN, Color.GRAY, Color.ORANGE, Color.RED };
+
+			for (Color color : colores) {
+				final Color colorSeleccionado = color; // Hacemos una copia final de color
+				JButton buttonColor = new JButton();
+				 buttonColor.setOpaque(true);
+				buttonColor.setBackground(color);
+				buttonColor.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// java.awt.Color[r=255,g=0,b=0] -65536
+						System.out.println(colorSeleccionado);
+						if (colorSeleccionado.equals(Color.WHITE)) {
+							Color nuevoColor = JColorChooser.showDialog(null, "Selecciona un color", colorSeleccionado);
+							if (nuevoColor != null) {
+								buttonColor.setText("dsd");
+								buttonColor.setBackground(nuevoColor);
+							}
+						}
+					}
+				});
+				this.add(buttonColor);
+			}
+		}
+
+	}
+
 	private void crearTablero(int f) {
 		JPanel tablero = new JPanel(new GridLayout(f, f));
 		int anchoVentana = getWidth();
@@ -148,45 +188,44 @@ public class PixelArt extends JFrame {
 				// DEJARLO ASI PARA
 				// DISTINGUIR MEJOR EL
 				tablero.add(casilla);
-				casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : Color.WHITE);// SI LA POSICION DE LA
-																								// CASILLA ES PARA COGE
-																								// UN COLOR SI NO OTRO
+				casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : Color.WHITE);
 
 			}
 		}
-		contentPane.removeAll();// BORRAR INICIO
-		contentPane.add(tablero, BorderLayout.CENTER);// AÑADIR EL TABLERO A LA PANTALLA
-		BotonesDescartaryGuardar();
+		PaletaColores paleta = new PaletaColores(anchoVentana);
+
+		contentPane.removeAll();
+		contentPane.add(tablero, BorderLayout.CENTER);
+		contentPane.add(paleta, BorderLayout.SOUTH);
 		repaint();
 		revalidate();
 
 	}
 
 	private void BotonesDescartaryGuardar() {
-	    JPanel BotonesJuego = new JPanel(new GridBagLayout());
+		JPanel BotonesJuego = new JPanel(new GridBagLayout());
 
-	    JButton Borrar = new JButton("Borrar");
-	    Borrar.setPreferredSize(new Dimension(120, 40));
-	    Borrar.setFont(new Font("Unispace", Font.BOLD, 12));
-	    GridBagConstraints gbcBorrar = new GridBagConstraints();
-	    gbcBorrar.anchor = GridBagConstraints.CENTER;
-	    gbcBorrar.insets = new Insets(5, 10, 10, 10); // Añade espacio inferior
-	    gbcBorrar.gridx = 0;
-	    gbcBorrar.gridy = 0;
-	    BotonesJuego.add(Borrar, gbcBorrar);
+		JButton Borrar = new JButton("Borrar");
+		Borrar.setPreferredSize(new Dimension(120, 40));
+		Borrar.setFont(new Font("Unispace", Font.BOLD, 12));
+		GridBagConstraints gbcBorrar = new GridBagConstraints();
+		gbcBorrar.anchor = GridBagConstraints.CENTER;
+		gbcBorrar.insets = new Insets(5, 10, 10, 10); // Añade espacio inferior
+		gbcBorrar.gridx = 0;
+		gbcBorrar.gridy = 0;
+		BotonesJuego.add(Borrar, gbcBorrar);
 
-	    JButton Guardar = new JButton("Guardar");
-	    Guardar.setPreferredSize(new Dimension(120, 40));
-	    Guardar.setFont(new Font("Unispace", Font.BOLD, 12));
-	    GridBagConstraints gbcGuardar = new GridBagConstraints();
-	    gbcGuardar.anchor = GridBagConstraints.CENTER;
-	    gbcGuardar.insets = new Insets(5, 10, 10, 10); // No añade espacio inferior
-	    gbcGuardar.gridx = 1;
-	    gbcGuardar.gridy = 0;
-	    BotonesJuego.add(Guardar, gbcGuardar);
+		JButton Guardar = new JButton("Guardar");
+		Guardar.setPreferredSize(new Dimension(120, 40));
+		Guardar.setFont(new Font("Unispace", Font.BOLD, 12));
+		GridBagConstraints gbcGuardar = new GridBagConstraints();
+		gbcGuardar.anchor = GridBagConstraints.CENTER;
+		gbcGuardar.insets = new Insets(5, 10, 10, 10); // No añade espacio inferior
+		gbcGuardar.gridx = 1;
+		gbcGuardar.gridy = 0;
+		BotonesJuego.add(Guardar, gbcGuardar);
 
-	    contentPane.add(BotonesJuego, BorderLayout.NORTH);
+		contentPane.add(BotonesJuego, BorderLayout.NORTH);
 	}
-
 
 }

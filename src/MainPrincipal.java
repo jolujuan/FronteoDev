@@ -4,15 +4,15 @@ import panel_inicio.Panel_inicio;
 public class MainPrincipal {
 
 	public static void main(String[] args) {
-		Conexion c = new Conexion();
-		boolean conexion = c.conectar();
+		Conexion conexion = new Conexion();
+		boolean comprobaConexion = conexion.conectar();
 		
-		if (conexion) {
+		if (comprobaConexion) {
 			System.out.println("Conectado.");
-			Panel_inicio p = new Panel_inicio();
+			Panel_inicio panelInicio = new Panel_inicio();
 		} else {
 			System.out.println("No hay conexion");
 		}
+		
 	}
-
 }
