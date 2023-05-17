@@ -93,9 +93,9 @@ public class PixelArt extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				setSize(600,600);
+				setSize(600, 600);
 				crearTablero(20);
-				
+
 			}
 		});
 		tamañoMediano.addActionListener(new ActionListener() {
@@ -103,9 +103,9 @@ public class PixelArt extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				setSize(800,800);
+				setSize(800, 800);
 				crearTablero(50);
-				
+
 			}
 		});
 		tamañoGrande.addActionListener(new ActionListener() {
@@ -113,51 +113,80 @@ public class PixelArt extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				setSize(1000,1000);
+				setSize(1000, 1000);
 				crearTablero(100);
-				
+
 			}
 		});
 
 	}
-	
-	public class Casilla extends JPanel {
-	    private static final Color COLOR_CASILLA = Color.WHITE;
-	    private static final Color COLOR_BORDE = new Color(128,128,128,50);
-	    //COLOR DE GRIS UN POCO TRANSPARENTE
-	    private static final int GROSOR_BORDE = 1;
 
-	    public Casilla() {
-	        setBackground(COLOR_CASILLA);
-	        setBorder(BorderFactory.createLineBorder(COLOR_BORDE, GROSOR_BORDE));
-	    }
+	public class Casilla extends JPanel {
+		private static final Color COLOR_CASILLA = Color.WHITE;
+		private static final Color COLOR_BORDE = new Color(128, 128, 128, 50);
+		// COLOR DE GRIS UN POCO TRANSPARENTE
+		private static final int GROSOR_BORDE = 1;
+
+		public Casilla() {
+			setBackground(COLOR_CASILLA);
+			setBorder(BorderFactory.createLineBorder(COLOR_BORDE, GROSOR_BORDE));
+		}
 	}
 
 	private void crearTablero(int f) {
 		JPanel tablero = new JPanel(new GridLayout(f, f));
 		int anchoVentana = getWidth();
 		int altoVentana = getHeight();
-		int size = Math.min(anchoVentana / f, altoVentana / f);// con esto sacamos el tamaño para q las casillas sean 
-
+		int size = Math.min(anchoVentana / f, altoVentana / f);// con esto sacamos el tamaño para q las casillas sean
 
 		for (int fila = 0; fila < f; fila++) {
 			for (int columna = 0; columna < f; columna++) {
 				Casilla casilla = new Casilla();
-		        casilla.setSize(size, size);
-		        casilla.setPreferredSize(new Dimension(size, size));
+				casilla.setSize(size, size);
+				casilla.setPreferredSize(new Dimension(size, size));
 				// MAS TARDE PONER EL GRISEN BLANCO , AHORA
 				// DEJARLO ASI PARA
 				// DISTINGUIR MEJOR EL
 				tablero.add(casilla);
-				casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : Color.WHITE);
+				casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : Color.WHITE);// SI LA POSICION DE LA
+																								// CASILLA ES PARA COGE
+																								// UN COLOR SI NO OTRO
 
 			}
 		}
-		contentPane.removeAll();
-		contentPane.add(tablero, BorderLayout.CENTER);
+		contentPane.removeAll();// BORRAR INICIO
+		contentPane.add(tablero, BorderLayout.CENTER);// AÑADIR EL TABLERO A LA PANTALLA
+		BotonesDescartaryGuardar();
 		repaint();
 		revalidate();
 
 	}
+
+	private void BotonesDescartaryGuardar() {
+	    JPanel BotonesJuego = new JPanel(new GridBagLayout());
+
+	    JButton Borrar = new JButton("Borrar");
+	    Borrar.setPreferredSize(new Dimension(120, 40));
+	    Borrar.setFont(new Font("Unispace", Font.BOLD, 12));
+	    GridBagConstraints gbcBorrar = new GridBagConstraints();
+	    gbcBorrar.anchor = GridBagConstraints.CENTER;
+	    gbcBorrar.insets = new Insets(5, 10, 10, 10); // Añade espacio inferior
+	    gbcBorrar.gridx = 0;
+	    gbcBorrar.gridy = 0;
+	    BotonesJuego.add(Borrar, gbcBorrar);
+
+	    JButton Guardar = new JButton("Guardar");
+	    Guardar.setPreferredSize(new Dimension(120, 40));
+	    Guardar.setFont(new Font("Unispace", Font.BOLD, 12));
+	    GridBagConstraints gbcGuardar = new GridBagConstraints();
+	    gbcGuardar.anchor = GridBagConstraints.CENTER;
+	    gbcGuardar.insets = new Insets(5, 10, 10, 10); // No añade espacio inferior
+	    gbcGuardar.gridx = 1;
+	    gbcGuardar.gridy = 0;
+	    BotonesJuego.add(Guardar, gbcGuardar);
+
+	    contentPane.add(BotonesJuego, BorderLayout.NORTH);
+	}
+
 
 }
