@@ -149,8 +149,9 @@ public class PixelArt extends JFrame {
                 buttonColor.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                    	//Si el color es igual a blanco podremos obtener para cambiar las propiedades
                         if (colorSeleccionado.equals(Color.WHITE)) {
-                            Color nuevoColor = JColorChooser.showDialog(null, "Selecciona", colorSeleccionado);
+                            Color nuevoColor = JColorChooser.showDialog(null, "Select", colorSeleccionado);
                             if (nuevoColor != null) {
                                 buttonColor.setBackground(nuevoColor);
                                 buttonColor.setForeground(Color.WHITE);
@@ -158,8 +159,15 @@ public class PixelArt extends JFrame {
                                 Casilla casilla = (Casilla) buttonColor.getParent();
                                 casilla.actualizarColorActual(nuevoColor);
                             }
+								
+							}else {
+								// Obtiene la casilla asociada al botón
+                                Casilla casilla = (Casilla) buttonColor.getParent();
+                                casilla.actualizarColorActual(color);
+                                //AL SELECCIONAR UN COLOR PREDETERMINADO ENTRA A EL ES
+							}
                         }
-                    }
+                    
                 });
 
                 
@@ -197,18 +205,22 @@ public class PixelArt extends JFrame {
 	        addMouseListener(new MouseAdapter() {
 	            @Override
 	            public void mouseClicked(MouseEvent e) {
-	                cambiarColor();
+	            	 if (SwingUtilities.isLeftMouseButton(e)) {
+	                     cambiarColor();
+	                 }
 	            }
 	        });
 	    }
 
 		public void actualizarColorActual(Color nuevoColor) {
-		    colorActual = nuevoColor;
+		    setColorActual(nuevoColor);
 		    setBackground(colorActual);
+		    repaint();
+		    revalidate();
 		}
 	    public void cambiarColor() {
 	        // Cambia el color de la casilla al hacer clic
-	        
+	        colorActual=Color.black;
 	        setBackground(colorActual);
 	    }
 	}
