@@ -25,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicSplitPaneUI.BasicHorizontalLayoutManager;
 
 public class PixelArt extends JFrame {
 	private Casilla casillaSeleccionada = null;
@@ -52,6 +53,7 @@ public class PixelArt extends JFrame {
 	 * Create the frame.
 	 */
 	public PixelArt() {
+		System.out.println("hola");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -63,6 +65,7 @@ public class PixelArt extends JFrame {
 	}
 
 	private void IniciodeJuego() {
+		
 		// Texto de inicio: SELECCION DE TAMAÑO DE TABLERO
 		JPanel inicio = new JPanel();
 		inicio.setFont(new Font("Verdana", Font.BOLD, 13));
@@ -152,6 +155,8 @@ public class PixelArt extends JFrame {
 				crearTablero(100);
 			}
 		});
+		repaint();
+		revalidate();
 
 	}
 
@@ -307,5 +312,4 @@ public class PixelArt extends JFrame {
 
 		contentPane.add(BotonesJuego, BorderLayout.NORTH);
 	}
-
 }
