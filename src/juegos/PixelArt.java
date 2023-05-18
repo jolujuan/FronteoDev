@@ -11,6 +11,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -25,7 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.basic.BasicSplitPaneUI.BasicHorizontalLayoutManager;
+
 
 public class PixelArt extends JFrame {
 	private Casilla casillaSeleccionada = null;
@@ -53,7 +54,6 @@ public class PixelArt extends JFrame {
 	 * Create the frame.
 	 */
 	public PixelArt() {
-		System.out.println("hola");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -63,39 +63,38 @@ public class PixelArt extends JFrame {
 		IniciodeJuego();
 
 	}
+	
+	private void centrarInterficiePantalla() {
+	    // Calcular la posición de la ventana
+	    Dimension tamañoPantalla = Toolkit.getDefaultToolkit().getScreenSize();
+	    int width = this.getSize().width;
+	    int height = this.getSize().height;
+	    int x = (tamañoPantalla.width - width) / 2; // Centrado horizontalmente
+	    int y =(tamañoPantalla.height - height) / 2;; // En la parte superior de la pantalla
+
+	    // Establecer la posición de la ventana
+	    this.setLocation(x, y);
+	}
+
 
 	private void IniciodeJuego() {
-		
+
 		// Texto de inicio: SELECCION DE TAMAÑO DE TABLERO
 		JPanel inicio = new JPanel();
 		inicio.setFont(new Font("Verdana", Font.BOLD, 13));
 		JLabel seleccionaTableroJLabel = new JLabel("Selecciona el tamaño del tablero");
 		seleccionaTableroJLabel.setFont(new Font("Unispace", Font.BOLD, 12));
 		inicio.add(seleccionaTableroJLabel);
-
+		//Siempre tendra el mismo tamaño
+		setSize(600, 600);
+		//Centramos pantalla
+		centrarInterficiePantalla();
+		
 		// Botones de selección de tamaño del tablero
 		JPanel botonesJPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.insets = new Insets(10, 0, 10, 0);
-
-		// Esto es para simplificar el codigo, sustituye todo lo de abajo
-
-		/*
-		 * JButton[] tamanos = new JButton[3]; String[] labels = {"Pequeño", "Mediano",
-		 * "Grande"}; int[] tableroSize = {20, 50, 100}; for (int i = 0; i <
-		 * tamanos.length; i++) { final int index = i; // Necesitamos declararla como
-		 * final para usarla en la clase listener tamanos[i] = new JButton(labels[i]);
-		 * tamanos[i].setFont(new Font("Unispace", Font.BOLD, 12));
-		 * tamanos[i].setPreferredSize(new Dimension(120, 40)); gbc.gridy = i;
-		 * botonesJPanel.add(tamanos[i], gbc); tamanos[i].addActionListener(new
-		 * ActionListener() {
-		 * 
-		 * @Override public void actionPerformed(ActionEvent e) { setSize(600 + 200 *
-		 * index, 600 + 200 * index); crearTablero(tableroSize[index]); } }); }
-		 * contentPane.add(inicio, BorderLayout.NORTH); contentPane.add(botonesJPanel,
-		 * BorderLayout.CENTER);
-		 */
 
 		JButton tamañoPequeño = new JButton("Pequeño");
 		tamañoPequeño.setPreferredSize(new Dimension(120, 40));
@@ -132,8 +131,9 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				setSize(600, 600);
+				//Centramos pantalla
+				centrarInterficiePantalla();
 				crearTablero(20);
 			}
 		});
@@ -141,8 +141,9 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				setSize(800, 800);
+				//Centramos pantalla
+				centrarInterficiePantalla();
 				crearTablero(50);
 			}
 		});
@@ -150,8 +151,9 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				setSize(1000, 1000);
+				//Centramos pantalla
+				centrarInterficiePantalla();
 				crearTablero(100);
 			}
 		});
@@ -185,8 +187,8 @@ public class PixelArt extends JFrame {
 				buttonColor.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						// Si el color es igual a blanco podremos obtener para cambiar las propiedades
-						if (colorSeleccionado.equals(Color.WHITE)) {
+						// Si el colorSeleccionado es blanco, abrimos el diálogo de selección de color
+						if (color.equals(Color.WHITE)) {
 							Color nuevoColor = JColorChooser.showDialog(null, "Select", colorSeleccionado);
 							if (nuevoColor != null) {
 								buttonColor.setBackground(nuevoColor);
@@ -230,6 +232,7 @@ public class PixelArt extends JFrame {
 
 				// Añade un MouseListener para cambiar el color al hacer clic
 				casilla.addMouseListener(new MouseAdapter() {
+					// Pintar las casillas seleccionadas
 					// mousePressed para nada más apretar que cambie
 					@Override
 					public void mousePressed(MouseEvent e) {
@@ -239,7 +242,7 @@ public class PixelArt extends JFrame {
 						}
 					}
 				});
-				//Añadimos el listener a las casillas
+				// Añadimos el listener para pintar las casillas arrastradas
 				casilla.addMouseMotionListener(new MouseMotionAdapter() {
 					@Override
 					public void mouseDragged(MouseEvent e) {
@@ -247,15 +250,24 @@ public class PixelArt extends JFrame {
 							// Convetir las coordenadas donde se ha presionado el raton (e.getComponent) con
 							// (e.getPoint) obtenemos las coordenadas donde ocurrio el evento, para cuando
 							// se arrastre que empieze desde ese punto.
-							Point coordenasPanelPresionado = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(),
+							Point coordenadasPanelPresionado = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(),
 									tablero);
 							// Obtener el componente del panel tablero que se encuentra en la posicion
 							// presionada
-							Component componente = tablero.getComponentAt(coordenasPanelPresionado);
+							Component componente = tablero.getComponentAt(coordenadasPanelPresionado);
 							// Comprobar si el componente obtenido es una instancia de la clase Casilla
 							if (componente instanceof Casilla) {
 								componente.setBackground(colorSeleccionado);
 							}
+						}else{
+							// Borrar las casillas arrastradas
+							//Hacer lo mismo pero a la inversa para borrar desde el click derecho
+							Point coordenadasPanelPresionado=SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), tablero);
+							Component componente = tablero.getComponentAt(coordenadasPanelPresionado);
+							if (componente instanceof Casilla) {
+								componente.setBackground(Color.WHITE);
+							}
+
 						}
 					}
 				});
@@ -263,7 +275,8 @@ public class PixelArt extends JFrame {
 				// MAS TARDE PONER EL GRISEN BLANCO , AHORA
 				// DEJARLO ASI PARA
 				// DISTINGUIR MEJOR EL COLOR
-				// casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : Color.WHITE);
+				//Color colorGris = new Color(217, 217, 217);
+				//casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : colorGris);
 
 			}
 		}
@@ -295,6 +308,8 @@ public class PixelArt extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				contentPane.removeAll();
+				// Reininializar el color
+				colorSeleccionado = Color.BLACK;
 				IniciodeJuego();
 
 			}
