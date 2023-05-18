@@ -295,7 +295,6 @@ public class PixelArt extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				contentPane.removeAll();
-				
 				IniciodeJuego();
 
 			}
@@ -313,5 +312,4 @@ public class PixelArt extends JFrame {
 
 		contentPane.add(BotonesJuego, BorderLayout.NORTH);
 	}
-
 }
