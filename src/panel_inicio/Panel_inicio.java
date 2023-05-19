@@ -78,10 +78,13 @@ public class Panel_inicio extends JFrame {
 	private void mostrarRegistro() {
         // Crear y mostrar el contenido de la ventana de registro
         Registro ventanaRegistro = new Registro();
-        ventanaRegistro.setVisible(true);
-        ventanaRegistro.setSize(500, 500);
+        setContentPane(ventanaRegistro);
+        revalidate();
+        repaint();
+ //       ventanaRegistro.setVisible(true);
+ //       ventanaRegistro.setSize(500, 500);
         // Ocultar la ventana actual
-        setVisible(false);
+ //       setVisible(false);
     }
 	
 }
