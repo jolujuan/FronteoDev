@@ -1,10 +1,17 @@
 package juegos;
 
-public class BuscaMinas {
+import javax.swing.JFrame;
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+public class BuscaMinas extends JFrame{
+	int nCols=8;	//Nombre columnes
+	int nFil=8;		//Nombre Files
+	int nMines=10;	//Nombre mines
+	
+	public BuscaMinas() {
+		
 	}
-
+	public void creaMapa() {
+		
+	}
+	
 }
