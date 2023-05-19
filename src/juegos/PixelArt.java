@@ -18,6 +18,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -317,6 +318,18 @@ public class PixelArt extends JFrame {
 			}
 		} catch (IOException e) {
 			System.out.println("Error al guardar el estado del tablero: " + e.getMessage());
+		}
+		contentPane.removeAll();
+		IniciodeJuego();
+	}
+	private void cargarPartidaDesdeArchivo(String filepath) {
+		File file =new File(filepath);
+		try {
+			FileReader leerCasilla=new FileReader(file)
+			
+			
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
 
