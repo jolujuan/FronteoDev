@@ -325,7 +325,7 @@ public class PixelArt extends JFrame {
 	private void cargarPartidaDesdeArchivo(String filepath) {
 		File file =new File(filepath);
 		try {
-			FileReader leerCasilla=new FileReader(file)
+			FileReader leerCasilla=new FileReader(file);
 			
 			
 		} catch (Exception e) {
