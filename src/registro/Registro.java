@@ -66,10 +66,8 @@ public class Registro extends JPanel {
 	private JLabel errorPoblacion = new JLabel();
 	private JPanel panel_poblacion = new JPanel();
 
-	private JLabel etiqueta_imagen = new JLabel("");
 	private JTextField campoImagen = new JTextField(20);
 	private JButton botonSeleccionarImagen = new JButton("Imagen perfil:");
-	// private JFileChooser chooserImagen = new JFileChooser();
 	private JLabel errorImagen = new JLabel();
 	private JPanel panel_imagen = new JPanel();
 
@@ -216,7 +214,7 @@ public class Registro extends JPanel {
 				int camposCompletados = 0;
 				String nombre = "", apellido = "", email = "", poblacion = "", imagen = "", password = "",
 						passwordRepetida = "";
-				
+
 				if (campoNombre.getText().isEmpty()) {
 					errorNombre.setText("El campo no puede estar vacio.");
 					errorNombre.setForeground(Color.red);
@@ -241,6 +239,7 @@ public class Registro extends JPanel {
 					errorCorreo.setText("");
 					camposCompletados++;
 				}
+
 				if (campoPoblacion.getText().isEmpty()) {
 					errorPoblacion.setText("El campo no puede estar vacio.");
 					errorPoblacion.setForeground(Color.red);
@@ -260,7 +259,7 @@ public class Registro extends JPanel {
 						errorImagen.setForeground(Color.red);
 					} else {
 						imagen = campoImagen.getText();
-						
+
 						errorImagen.setText("");
 						camposCompletados++;
 
@@ -290,11 +289,8 @@ public class Registro extends JPanel {
 					}
 				}
 
-				System.out.println(camposCompletados);
-
 				if (camposCompletados == 7) {
 
-					System.out.println(password + passwordRepetida);
 					Connection c = Conexion.obtenerConexion();
 
 					String sentenciaCrearTablaUsuario = "CREATE TABLE IF NOT EXISTS usuarios (id INT AUTO_INCREMENT PRIMARY KEY, "
@@ -313,6 +309,7 @@ public class Registro extends JPanel {
 						consulta.execute(sentenciaCrearTablaPassword);
 						consulta.close();
 					} catch (SQLException e1) {
+						System.out.println("Error: " + e1);
 						if (password.equals(passwordRepetida)) {
 							camposCompletados++;
 							errorPassword.setText("");
@@ -323,19 +320,9 @@ public class Registro extends JPanel {
 							errorPasswordRepetida.setText("La contraseña debe ser la misma");
 							errorPasswordRepetida.setForeground(Color.red);
 						}
-
-						System.out.println("Error: " + e1);
 					}
 
 					try {
-						System.out.println("Aqui pondremos codigo para subir los datos a la base de datos");
-
-						// System.out.println(nombre + apellido + poblacion + imagen + correo + password
-						// + c);
-						//byte[] imagenBinaria = Base64.getDecoder().decode(imagen);
-//						File rutaImagen = new File(imagen);
-//						System.out.println(convertirImagen(rutaImagen));
-//						System.out.println(rutaImagen);
 						registrarUsuario(nombre, apellido, poblacion, arrayBits, email, password, c);
 						mensajeGeneral.setText("Datos Guardados");
 						mensajeGeneral.setForeground(Color.green);
@@ -350,7 +337,7 @@ public class Registro extends JPanel {
 		});
 	}
 
-	public void registrarUsuario(String nombre, String apellido,  String poblacion, byte[] imagen, String email,
+	public void registrarUsuario(String nombre, String apellido, String poblacion, byte[] imagen, String email,
 			String password, Connection conexion) {
 		String insertUsuarios = "INSERT INTO usuarios (nombre, apellidos, imagen, poblacion, email) VALUES (?,?,?,?,?)";
 		User usuario = new User(nombre, apellido, imagen, password, email, poblacion);
@@ -364,8 +351,6 @@ public class Registro extends JPanel {
 			preparandoInsert.setString(5, usuario.getEmail());
 
 			preparandoInsert.executeUpdate();
-
-			// DEBERIA FALLAR
 
 			String insertPasswords = "INSERT INTO passwords (idUsuario, password) VALUES (?, ?)";
 			preparandoInsert = conexion.prepareStatement(insertPasswords);
