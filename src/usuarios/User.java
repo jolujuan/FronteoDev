@@ -4,25 +4,28 @@ public class User {
 
 	protected String nombre;
 	protected String apellidos;
+	protected String imagen;
 	protected String password;
 	protected String email;
-	protected String poblacio;
+	protected String poblacion;
 	
-	public User(String nombre, String apellidos, String email, String poblacio) {
+	public User(String nombre, String apellidos, String imagen, String email, String poblacion) {
 		super();
 		this.nombre = nombre;
 		this.apellidos = apellidos;
+		this.imagen = imagen;
 		this.email = email;
-		this.poblacio = poblacio;
+		this.poblacion = poblacion;
 	}
-	
-	public User(String nombre, String apellidos, String password, String email, String poblacio) {
+
+	public User(String nombre, String apellidos, String imagen, String password, String email, String poblacion) {
 		super();
 		this.nombre = nombre;
 		this.apellidos = apellidos;
+		this.imagen = imagen;
 		this.password = password;
 		this.email = email;
-		this.poblacio = poblacio;
+		this.poblacion = poblacion;
 	}
 
 	public String getNombre() {
@@ -41,6 +44,14 @@ public class User {
 		this.apellidos = apellidos;
 	}
 
+	public String getImagen() {
+		return imagen;
+	}
+
+	public void setImagen(String imagen) {
+		this.imagen = imagen;
+	}
+
 	public String getPassword() {
 		return password;
 	}
@@ -57,14 +68,14 @@ public class User {
 		this.email = email;
 	}
 
-	public String getPoblacio() {
-		return poblacio;
+	public String getPoblacion() {
+		return poblacion;
 	}
 
-	public void setPoblacio(String poblacio) {
-		this.poblacio = poblacio;
+	public void setPoblacion(String poblacion) {
+		this.poblacion = poblacion;
 	}
 	
 	
-	
+
 }
