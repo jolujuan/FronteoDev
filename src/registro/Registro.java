@@ -26,7 +26,7 @@ import javax.swing.SwingConstants;
 import conexionBaseDatos.Conexion;
 import usuarios.User;
 
-public class Registro extends JFrame {
+public class Registro extends JPanel {
 
 	/// VARIABLES GLOBALES
 	private static final int LONGITUD_SALTO = 16;
@@ -80,72 +80,72 @@ public class Registro extends JFrame {
 	private JPanel panel_botones = new JPanel();
 
 	public Registro() {
-		setTitle("Registro");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		setTitle("Registro");
+//		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(350, 200);
 //
 //		// Crear el panel de registro
-		contentPanel.setLayout(new GridLayout(9, 4));
+		setLayout(new GridLayout(9, 4));
 
 		panel_titulo.setLayout(new GridLayout(0, 3));
 		panel_titulo.add(etiqueta_Vacia);
 		panel_titulo.add(etiquetaTitulo);
 		panel_titulo.add(mensajeGeneral);
-		contentPanel.add(panel_titulo);
+		add(panel_titulo);
 
 		panel_nombre.setLayout(new GridLayout(0, 3));
 		panel_nombre.add(etiqueta_Nombre);
 		panel_nombre.add(campoNombre);
 		panel_nombre.add(errorNombre);
-		contentPanel.add(panel_nombre);
+		add(panel_nombre);
 
 		panel_apellido.setLayout(new GridLayout(0, 3));
 		panel_apellido.add(etiqueta_Apellido);
 		panel_apellido.add(campoApellido);
 		panel_apellido.add(errorApellido);
-		contentPanel.add(panel_apellido);
+		add(panel_apellido);
 
 		panel_correo.setLayout(new GridLayout(0, 3));
 		panel_correo.add(etiqueta_Correo);
 		panel_correo.add(campoCorreo);
 		panel_correo.add(errorCorreo);
-		contentPanel.add(panel_correo);
+		add(panel_correo);
 
 		panel_poblacion.setLayout(new GridLayout(0, 3));
 		panel_poblacion.add(etiqueta_Poblacion);
 		panel_poblacion.add(campoPoblacion);
 		panel_poblacion.add(errorPoblacion);
-		contentPanel.add(panel_poblacion);
+		add(panel_poblacion);
 
 		panel_imagen.setLayout(new GridLayout(0, 3));
 		panel_imagen.add(etiqueta_imagen);
 		panel_imagen.add(campoImagen);
 		panel_imagen.add(errorImagen);
-		contentPanel.add(panel_imagen);
+		add(panel_imagen);
 
 		panel_password.setLayout(new GridLayout(0, 3));
 		panel_password.add(etiqueta_password);
 		panel_password.add(campoPassword);
 		panel_password.add(errorPassword);
-		contentPanel.add(panel_password);
+		add(panel_password);
 
 		panel_password_repetida.setLayout(new GridLayout(0, 3));
 		panel_password_repetida.add(etiqueta_password_repetida);
 		panel_password_repetida.add(campoPasswordRepetida);
 		panel_password_repetida.add(errorPasswordRepetida);
-		contentPanel.add(panel_password_repetida);
+		add(panel_password_repetida);
 
 		panel_botones.setLayout(new GridLayout(0, 3));
 		panel_botones.add(botonCerrar);
 		panel_botones.add(botonResetear);
 		panel_botones.add(botonRetgistrar);
-		contentPanel.add(panel_botones);
+		add(panel_botones);
 
 		botonCerrar.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dispose();
+//				dispose();
 			}
 		});
 
@@ -180,8 +180,7 @@ public class Registro extends JFrame {
 				int camposCompletados = 0;
 				String nombre = "", apellido = "", email = "", poblacion = "", imagen = "", password = "",
 						passwordRepetida = "";
-				char[] passwordA = campoPassword.getPassword();
-				char[] passwordB = campoPasswordRepetida.getPassword();
+
 				if (campoNombre.getText().isEmpty()) {
 					errorNombre.setText("El campo no puede estar vacio.");
 					errorNombre.setForeground(Color.red);
@@ -214,6 +213,7 @@ public class Registro extends JFrame {
 					errorPoblacion.setText("");
 					camposCompletados++;
 				}
+
 				if (campoImagen.getText().isEmpty()) {
 					errorImagen.setText("El campo no puede estar vacio.");
 					errorImagen.setForeground(Color.red);
@@ -222,46 +222,56 @@ public class Registro extends JFrame {
 					errorImagen.setText("");
 					camposCompletados++;
 				}
+
+//				if (campoPassword.getText().isEmpty()) {
+//					errorPassword.setText("El campo no puede estar vacio.");
+//					errorPassword.setForeground(Color.red);
+//				} else {
+//					password = campoPassword.getText();
+//					errorPassword.setText("");
+//					camposCompletados++;
+//				}
+//
+//				if (campoPasswordRepetida.getText().isEmpty()) {
+//					errorPasswordRepetida.setText("El campo no puede estar vacio.");
+//					errorPasswordRepetida.setForeground(Color.red);
+//
+//				} else {
+//					passwordRepetida = campoPasswordRepetida.getText();
+//					errorPasswordRepetida.setText("");
+//					camposCompletados++;
+//				}
 				
-				
-				
-				if (campoPassword.getText().isEmpty()) {
+				if (campoPassword.getText().isEmpty() || campoPasswordRepetida.getText().isEmpty()) {
 					errorPassword.setText("El campo no puede estar vacio.");
 					errorPassword.setForeground(Color.red);
-
-				} else {
-//					if (!(campoCiclo.getText().equals("DAW") || campoCiclo.getText().equals("DAM")
-//							|| campoCiclo.getText().equals("ASIX") || campoCiclo.getText().equals("SMX"))) {
-//						errorCiclo.setText("SOLO VALIDAS: DAW, DAM, ASIX, SMX");
-//						errorCiclo.setForeground(Color.red);
-//					} else {
-					password = campoPassword.getText();
-					errorPassword.setText("");
-					camposCompletados++;
-				}
-
-				if (campoPasswordRepetida.getText().isEmpty()) {
 					errorPasswordRepetida.setText("El campo no puede estar vacio.");
 					errorPasswordRepetida.setForeground(Color.red);
-
 				} else {
+					password = campoPassword.getText();
+					errorPassword.setText("");
 					passwordRepetida = campoPasswordRepetida.getText();
 					errorPasswordRepetida.setText("");
 					camposCompletados++;
+					if (password.equals(passwordRepetida)) {
+						camposCompletados++;
+						errorPassword.setText("");
+						errorPasswordRepetida.setText("");
+					} else {
+						errorPassword.setText("La contraseña debe ser la misma");
+						errorPassword.setForeground(Color.red);
+						errorPasswordRepetida.setText("La contraseña debe ser la misma");
+						errorPasswordRepetida.setForeground(Color.red);
+					}
 				}
 
-				if (password.equals(passwordRepetida)) {
-					camposCompletados++;
-					errorPassword.setText("");
-					errorPasswordRepetida.setText("");
-				} else {
-					errorPassword.setText("La contraseña debe ser la misma");
-					errorPassword.setForeground(Color.red);
-					errorPasswordRepetida.setText("La contraseña debe ser la misma");
-					errorPasswordRepetida.setForeground(Color.red);
-				}
+				
 
-				if (camposCompletados == 8) {
+				System.out.println(camposCompletados);
+
+				
+
+				if (camposCompletados == 7) {
 
 					System.out.println(password + passwordRepetida);
 					Connection c = Conexion.obtenerConexion();
@@ -282,6 +292,17 @@ public class Registro extends JFrame {
 						consulta.execute(sentenciaCrearTablaPassword);
 						consulta.close();
 					} catch (SQLException e1) {
+						if (password.equals(passwordRepetida)) {
+							camposCompletados++;
+							errorPassword.setText("");
+							errorPasswordRepetida.setText("");
+						} else {
+							errorPassword.setText("La contraseña debe ser la misma");
+							errorPassword.setForeground(Color.red);
+							errorPasswordRepetida.setText("La contraseña debe ser la misma");
+							errorPasswordRepetida.setForeground(Color.red);
+						}
+						
 						System.out.println("Error: " + e1);
 					}
 
@@ -297,14 +318,12 @@ public class Registro extends JFrame {
 						System.out.println("Error: " + e2);
 					}
 				} else {
-					mensajeGeneral.setText("Error en los datos");
+					mensajeGeneral.setText("Error Datos/Conexion");
 					mensajeGeneral.setForeground(Color.red);
 				}
 
 			}
 		});
-
-		setContentPane(contentPanel);
 	}
 
 	public void registrarUsuario(String nombre, String apellido, String imagen, String poblacion, String email,
@@ -360,7 +379,7 @@ public class Registro extends JFrame {
 	public String encriptarPassword(String passWord) {
 		byte[] salto = null;
 		String passwordEncriptada = "";
-		
+
 		try {
 			SecureRandom random = new SecureRandom();
 			salto = new byte[LONGITUD_SALTO];
@@ -372,8 +391,8 @@ public class Registro extends JFrame {
 			byte[] hash = factory.generateSecret(spec).getEncoded();
 			passWord = Base64.getEncoder().encodeToString(hash);
 
-			passwordEncriptada = FORTALEZA + conversionSalto(salto) + LONGITUD_HASH  + passWord;
-			
+			passwordEncriptada = FORTALEZA + conversionSalto(salto) + LONGITUD_HASH + passWord;
+
 		} catch (Exception e) {
 			System.out.println("Error: " + e);
 		}
