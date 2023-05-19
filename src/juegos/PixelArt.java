@@ -17,6 +17,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -27,11 +31,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-
 public class PixelArt extends JFrame {
 	private Casilla casillaSeleccionada = null;
 	private Color colorSeleccionado = Color.BLACK;
 	private JPanel contentPane;
+	private JPanel tablero = new JPanel();
 
 	/**
 	 * Launch the application.
@@ -63,19 +67,19 @@ public class PixelArt extends JFrame {
 		IniciodeJuego();
 
 	}
-	
+
 	private void centrarInterficiePantalla() {
-	    // Calcular la posición de la ventana
-	    Dimension tamañoPantalla = Toolkit.getDefaultToolkit().getScreenSize();
-	    int width = this.getSize().width;
-	    int height = this.getSize().height;
-	    int x = (tamañoPantalla.width - width) / 2; // Centrado horizontalmente
-	    int y =(tamañoPantalla.height - height) / 2;; // En la parte superior de la pantalla
+		// Calcular la posición de la ventana
+		Dimension tamañoPantalla = Toolkit.getDefaultToolkit().getScreenSize();
+		int width = this.getSize().width;
+		int height = this.getSize().height;
+		int x = (tamañoPantalla.width - width) / 2; // Centrado horizontalmente
+		int y = (tamañoPantalla.height - height) / 2;
+		; // En la parte superior de la pantalla
 
-	    // Establecer la posición de la ventana
-	    this.setLocation(x, y);
+		// Establecer la posición de la ventana
+		this.setLocation(x, y);
 	}
-
 
 	private void IniciodeJuego() {
 
@@ -85,11 +89,11 @@ public class PixelArt extends JFrame {
 		JLabel seleccionaTableroJLabel = new JLabel("Selecciona el tamaño del tablero");
 		seleccionaTableroJLabel.setFont(new Font("Unispace", Font.BOLD, 12));
 		inicio.add(seleccionaTableroJLabel);
-		//Siempre tendra el mismo tamaño
+		// Siempre tendra el mismo tamaño
 		setSize(600, 600);
-		//Centramos pantalla
+		// Centramos pantalla
 		centrarInterficiePantalla();
-		
+
 		// Botones de selección de tamaño del tablero
 		JPanel botonesJPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -132,7 +136,7 @@ public class PixelArt extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setSize(600, 600);
-				//Centramos pantalla
+				// Centramos pantalla
 				centrarInterficiePantalla();
 				crearTablero(20);
 			}
@@ -142,7 +146,7 @@ public class PixelArt extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setSize(800, 800);
-				//Centramos pantalla
+				// Centramos pantalla
 				centrarInterficiePantalla();
 				crearTablero(50);
 			}
@@ -152,7 +156,7 @@ public class PixelArt extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setSize(1000, 1000);
-				//Centramos pantalla
+				// Centramos pantalla
 				centrarInterficiePantalla();
 				crearTablero(100);
 			}
@@ -219,7 +223,7 @@ public class PixelArt extends JFrame {
 
 	private void crearTablero(int f) {
 
-		JPanel tablero = new JPanel(new GridLayout(f, f));
+		tablero.setLayout(new GridLayout(f, f));
 		int anchoVentana = getWidth();
 		int altoVentana = getHeight();
 		// con esto sacamos el tamaño para q las casillas sean iguales
@@ -238,7 +242,9 @@ public class PixelArt extends JFrame {
 					public void mousePressed(MouseEvent e) {
 						if (SwingUtilities.isLeftMouseButton(e)) {
 							casilla.setBackground(colorSeleccionado);
-
+						}
+						if (SwingUtilities.isRightMouseButton(e)) {
+							casilla.setBackground(Color.WHITE);
 						}
 					}
 				});
@@ -250,8 +256,8 @@ public class PixelArt extends JFrame {
 							// Convetir las coordenadas donde se ha presionado el raton (e.getComponent) con
 							// (e.getPoint) obtenemos las coordenadas donde ocurrio el evento, para cuando
 							// se arrastre que empieze desde ese punto.
-							Point coordenadasPanelPresionado = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(),
-									tablero);
+							Point coordenadasPanelPresionado = SwingUtilities.convertPoint(e.getComponent(),
+									e.getPoint(), tablero);
 							// Obtener el componente del panel tablero que se encuentra en la posicion
 							// presionada
 							Component componente = tablero.getComponentAt(coordenadasPanelPresionado);
@@ -259,15 +265,15 @@ public class PixelArt extends JFrame {
 							if (componente instanceof Casilla) {
 								componente.setBackground(colorSeleccionado);
 							}
-						}else{
+						} else {
 							// Borrar las casillas arrastradas
-							//Hacer lo mismo pero a la inversa para borrar desde el click derecho
-							Point coordenadasPanelPresionado=SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), tablero);
+							// Hacer lo mismo pero a la inversa para borrar desde el click derecho
+							Point coordenadasPanelPresionado = SwingUtilities.convertPoint(e.getComponent(),
+									e.getPoint(), tablero);
 							Component componente = tablero.getComponentAt(coordenadasPanelPresionado);
 							if (componente instanceof Casilla) {
 								componente.setBackground(Color.WHITE);
 							}
-
 						}
 					}
 				});
@@ -275,8 +281,8 @@ public class PixelArt extends JFrame {
 				// MAS TARDE PONER EL GRISEN BLANCO , AHORA
 				// DEJARLO ASI PARA
 				// DISTINGUIR MEJOR EL COLOR
-				//Color colorGris = new Color(217, 217, 217);
-				//casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : colorGris);
+				// Color colorGris = new Color(217, 217, 217);
+				// casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : colorGris);
 
 			}
 		}
@@ -287,6 +293,44 @@ public class PixelArt extends JFrame {
 		contentPane.add(paleta, BorderLayout.SOUTH);
 		repaint();
 		revalidate();
+	}
+
+	private void guardarEstadoTablero(String filePath) {
+		File file = new File(filePath);
+		try (FileWriter writer = new FileWriter(file)) {
+			// Verificar si el archivo no existe y crearlo
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+
+			// Recorrer todas las casillas del tablero y guardar su color en el archivo
+			Component[] casillas = tablero.getComponents();
+
+			for (Component componente : casillas) {
+
+				if (componente instanceof Casilla) {
+					Color color = componente.getBackground();
+					// Escribir el color en el archivo en formato RGB
+					writer.write(color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "\n");
+
+					System.out.println("Estado del tablero guardado correctamente en: " + filePath);
+				}
+			}
+		} catch (IOException e) {
+			System.out.println("Error al guardar el estado del tablero: " + e.getMessage());
+		}
+		contentPane.removeAll();
+		IniciodeJuego();
+	}
+	private void cargarPartidaDesdeArchivo(String filepath) {
+		File file =new File(filepath);
+		try {
+			FileReader leerCasilla=new FileReader(file)
+			
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 	private void BotonesDescartaryGuardar() {
@@ -324,6 +368,19 @@ public class PixelArt extends JFrame {
 		gbcGuardar.gridx = 1;
 		gbcGuardar.gridy = 0;
 		BotonesJuego.add(Guardar, gbcGuardar);
+		Guardar.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				// Mostrar un cuadro de diálogo para que el usuario seleccione la ubicación y el
+				// nombre del archivo
+				// Guardar el estado del tablero en el archivo seleccionado
+				String filePath = "PixelArt.txt"; // Aquí debes asignar la ruta del archivo seleccionado
+				guardarEstadoTablero(filePath);
+
+			}
+		});
 
 		contentPane.add(BotonesJuego, BorderLayout.NORTH);
 	}
