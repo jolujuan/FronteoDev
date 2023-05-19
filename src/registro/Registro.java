@@ -4,12 +4,17 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Base64;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,8 +24,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import conexionBaseDatos.Conexion;
+import usuarios.User;
 
 public class Registro extends JFrame {
+
+	/// VARIABLES GLOBALES
+	private static final int LONGITUD_SALTO = 16;
+	private static final int FORTALEZA = 65536;
+	private static final int LONGITUD_HASH = 64 * 8;
 
 	private JPanel contentPanel = new JPanel();
 	private JLabel etiqueta_Vacia = new JLabel("");
@@ -58,6 +69,11 @@ public class Registro extends JFrame {
 	private JLabel errorPassword = new JLabel();
 	private JPanel panel_password = new JPanel();
 
+	private JLabel etiqueta_password_repetida = new JLabel("Repetir contraseña:");
+	private JPasswordField campoPasswordRepetida = new JPasswordField(20);
+	private JLabel errorPasswordRepetida = new JLabel();
+	private JPanel panel_password_repetida = new JPanel();
+
 	private JButton botonCerrar = new JButton("Cerrar");
 	private JButton botonResetear = new JButton("Reset");
 	private JButton botonRetgistrar = new JButton("Registrar");
@@ -69,7 +85,7 @@ public class Registro extends JFrame {
 		setSize(350, 200);
 //
 //		// Crear el panel de registro
-		contentPanel.setLayout(new GridLayout(8, 4));
+		contentPanel.setLayout(new GridLayout(9, 4));
 
 		panel_titulo.setLayout(new GridLayout(0, 3));
 		panel_titulo.add(etiqueta_Vacia);
@@ -113,6 +129,12 @@ public class Registro extends JFrame {
 		panel_password.add(errorPassword);
 		contentPanel.add(panel_password);
 
+		panel_password_repetida.setLayout(new GridLayout(0, 3));
+		panel_password_repetida.add(etiqueta_password_repetida);
+		panel_password_repetida.add(campoPasswordRepetida);
+		panel_password_repetida.add(errorPasswordRepetida);
+		contentPanel.add(panel_password_repetida);
+
 		panel_botones.setLayout(new GridLayout(0, 3));
 		panel_botones.add(botonCerrar);
 		panel_botones.add(botonResetear);
@@ -137,6 +159,7 @@ public class Registro extends JFrame {
 				campoPoblacion.setText(null);
 				campoImagen.setText(null);
 				campoPassword.setText(null);
+				campoPasswordRepetida.setText(null);
 
 				errorNombre.setText(null);
 				errorApellido.setText(null);
@@ -144,6 +167,7 @@ public class Registro extends JFrame {
 				errorPoblacion.setText(null);
 				errorImagen.setText(null);
 				errorPassword.setText(null);
+				errorPasswordRepetida.setText(null);
 
 				mensajeGeneral.setText(null);
 			}
@@ -154,7 +178,10 @@ public class Registro extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int camposCompletados = 0;
-				String nombre = "", apellido = "", email = "", poblacion = "", imagen = "", password = "";
+				String nombre = "", apellido = "", email = "", poblacion = "", imagen = "", password = "",
+						passwordRepetida = "";
+				char[] passwordA = campoPassword.getPassword();
+				char[] passwordB = campoPasswordRepetida.getPassword();
 				if (campoNombre.getText().isEmpty()) {
 					errorNombre.setText("El campo no puede estar vacio.");
 					errorNombre.setForeground(Color.red);
@@ -195,6 +222,9 @@ public class Registro extends JFrame {
 					errorImagen.setText("");
 					camposCompletados++;
 				}
+				
+				
+				
 				if (campoPassword.getText().isEmpty()) {
 					errorPassword.setText("El campo no puede estar vacio.");
 					errorPassword.setForeground(Color.red);
@@ -205,20 +235,42 @@ public class Registro extends JFrame {
 //						errorCiclo.setText("SOLO VALIDAS: DAW, DAM, ASIX, SMX");
 //						errorCiclo.setForeground(Color.red);
 //					} else {
-//						ciclo = campoCiclo.getText();
-//						errorCiclo.setText("");
+					password = campoPassword.getText();
+					errorPassword.setText("");
 					camposCompletados++;
 				}
 
-				if (camposCompletados == 6) {
+				if (campoPasswordRepetida.getText().isEmpty()) {
+					errorPasswordRepetida.setText("El campo no puede estar vacio.");
+					errorPasswordRepetida.setForeground(Color.red);
 
+				} else {
+					passwordRepetida = campoPasswordRepetida.getText();
+					errorPasswordRepetida.setText("");
+					camposCompletados++;
+				}
+
+				if (password.equals(passwordRepetida)) {
+					camposCompletados++;
+					errorPassword.setText("");
+					errorPasswordRepetida.setText("");
+				} else {
+					errorPassword.setText("La contraseña debe ser la misma");
+					errorPassword.setForeground(Color.red);
+					errorPasswordRepetida.setText("La contraseña debe ser la misma");
+					errorPasswordRepetida.setForeground(Color.red);
+				}
+
+				if (camposCompletados == 8) {
+
+					System.out.println(password + passwordRepetida);
 					Connection c = Conexion.obtenerConexion();
 
 					String sentenciaCrearTablaUsuario = "CREATE TABLE IF NOT EXISTS usuarios (id INT AUTO_INCREMENT PRIMARY KEY, "
 							+ "nombre VARCHAR(50), " + "apellidos VARCHAR(50), " + "imagen VARCHAR(50), "
 							+ "poblacion VARCHAR(50), " + "email VARCHAR(50))";
 					String sentenciaCrearTablaPassword = "CREATE TABLE IF NOT EXISTS passwords (id INT AUTO_INCREMENT PRIMARY KEY, "
-							+ "idUsuario INT, " + "password VARCHAR(100), "
+							+ "idUsuario INT, " + "password VARCHAR(200), "
 							+ "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
 
 					try {
@@ -258,25 +310,34 @@ public class Registro extends JFrame {
 	public void registrarUsuario(String nombre, String apellido, String imagen, String poblacion, String email,
 			String password, Connection conexion) {
 		String insertUsuarios = "INSERT INTO usuarios (nombre, apellidos, imagen, poblacion, email) VALUES (?,?,?,?,?)";
+		User usuario = new User(nombre, apellido, imagen, password, email, poblacion);
+
 		try {
 			PreparedStatement preparandoInsert = conexion.prepareStatement(insertUsuarios);
-			preparandoInsert.setString(1, nombre);
-			preparandoInsert.setString(2, apellido);
-			preparandoInsert.setString(3, imagen);
-			preparandoInsert.setString(4, poblacion);
-			preparandoInsert.setString(5, email);
+			preparandoInsert.setString(1, usuario.getNombre());
+			preparandoInsert.setString(2, usuario.getApellidos());
+			preparandoInsert.setString(3, usuario.getImagen());
+			preparandoInsert.setString(4, usuario.getPoblacion());
+			preparandoInsert.setString(5, usuario.getEmail());
 
 			preparandoInsert.executeUpdate();
 
-			obtenerUltimoId(conexion);
+			// DEBERIA FALLAR
+
+			String insertPasswords = "INSERT INTO passwords (idUsuario, password) VALUES (?, ?)";
+			preparandoInsert = conexion.prepareStatement(insertPasswords);
+			preparandoInsert.setInt(1, obtenerUltimoId(conexion));
+			preparandoInsert.setString(2, encriptarPassword(usuario.getPassword()));
+
+			preparandoInsert.executeUpdate();
+
 			System.out.println("Usuario de prueba registrado");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		/// EDU ACUERDATE DE HACER UN REINICIO EN LA BASE DE DATOS DE LA PRIMARY KEY
 		/// AUN TENGO QUE HACER ESTE INSERT
-		String insertPasswords = "INSERT INTO passwords (idUsuario, password) VALUES (?, ?)";
+
 	}
 
 	public int obtenerUltimoId(Connection conexion) {
@@ -290,13 +351,43 @@ public class Registro extends JFrame {
 			while (consultaSelect.next()) {
 				id = consultaSelect.getInt("id");
 			}
-			System.out.println(id);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return id;
+	}
+
+	public String encriptarPassword(String passWord) {
+		byte[] salto = null;
+		String passwordEncriptada = "";
+		
+		try {
+			SecureRandom random = new SecureRandom();
+			salto = new byte[LONGITUD_SALTO];
+			random.nextBytes(salto);
+
+			KeySpec spec = new PBEKeySpec(passWord.toCharArray(), salto, FORTALEZA, LONGITUD_HASH);
+			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+
+			byte[] hash = factory.generateSecret(spec).getEncoded();
+			passWord = Base64.getEncoder().encodeToString(hash);
+
+			passwordEncriptada = FORTALEZA + conversionSalto(salto) + LONGITUD_HASH  + passWord;
+			
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+
+		return passwordEncriptada;
+	}
+
+	public String conversionSalto(byte[] salto) {
+		String saltosTexto = "";
+		for (int i = 0; i < salto.length; i++) {
+			// PASAMOS LA CONVERSION DE BYTES A CADENA
+			saltosTexto += String.format("%02x", salto[i]);
+		}
+		return saltosTexto;
 	}
 
 }
