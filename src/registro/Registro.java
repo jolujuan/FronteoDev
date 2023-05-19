@@ -4,6 +4,10 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.sql.Connection;
@@ -16,14 +20,16 @@ import java.util.Base64;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import conexionBaseDatos.Conexion;
+import panel_inicio.Panel_inicio;
 import usuarios.User;
 
 public class Registro extends JPanel {
@@ -32,6 +38,7 @@ public class Registro extends JPanel {
 	private static final int LONGITUD_SALTO = 16;
 	private static final int FORTALEZA = 65536;
 	private static final int LONGITUD_HASH = 64 * 8;
+	private static byte[] arrayBits;
 
 	private JPanel contentPanel = new JPanel();
 	private JLabel etiqueta_Vacia = new JLabel("");
@@ -59,8 +66,10 @@ public class Registro extends JPanel {
 	private JLabel errorPoblacion = new JLabel();
 	private JPanel panel_poblacion = new JPanel();
 
-	private JLabel etiqueta_imagen = new JLabel("Imagen:");
+	private JLabel etiqueta_imagen = new JLabel("");
 	private JTextField campoImagen = new JTextField(20);
+	private JButton botonSeleccionarImagen = new JButton("Imagen perfil:");
+	// private JFileChooser chooserImagen = new JFileChooser();
 	private JLabel errorImagen = new JLabel();
 	private JPanel panel_imagen = new JPanel();
 
@@ -74,7 +83,7 @@ public class Registro extends JPanel {
 	private JLabel errorPasswordRepetida = new JLabel();
 	private JPanel panel_password_repetida = new JPanel();
 
-	private JButton botonCerrar = new JButton("Cerrar");
+	private JButton botonVolver = new JButton("Volver");
 	private JButton botonResetear = new JButton("Reset");
 	private JButton botonRetgistrar = new JButton("Registrar");
 	private JPanel panel_botones = new JPanel();
@@ -118,7 +127,7 @@ public class Registro extends JPanel {
 		add(panel_poblacion);
 
 		panel_imagen.setLayout(new GridLayout(0, 3));
-		panel_imagen.add(etiqueta_imagen);
+		panel_imagen.add(botonSeleccionarImagen);
 		panel_imagen.add(campoImagen);
 		panel_imagen.add(errorImagen);
 		add(panel_imagen);
@@ -136,16 +145,42 @@ public class Registro extends JPanel {
 		add(panel_password_repetida);
 
 		panel_botones.setLayout(new GridLayout(0, 3));
-		panel_botones.add(botonCerrar);
+		panel_botones.add(botonVolver);
 		panel_botones.add(botonResetear);
 		panel_botones.add(botonRetgistrar);
 		add(panel_botones);
 
-		botonCerrar.addActionListener(new ActionListener() {
+		botonSeleccionarImagen.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				dispose();
+				JFileChooser fileChooser = new JFileChooser();
+				int result = fileChooser.showOpenDialog(null);
+				if (result == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = fileChooser.getSelectedFile();
+
+					arrayBits = convertirImagen(selectedFile);
+					// etiqueta_imagen.setText(selectedFile.getName());
+					campoImagen.setText(selectedFile.getName());
+				} else {
+					System.out.println("Ningún archivo seleccionado");
+				}
+
+			}
+		});
+
+		botonVolver.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Registro.this);
+				// p.getContentPane().add(p.getContenedor());
+				p.getContentPane().removeAll();
+				p.getContentPane().add(p.getContenedor());
+				p.revalidate();
+				p.repaint();
+
 			}
 		});
 
@@ -158,6 +193,7 @@ public class Registro extends JPanel {
 				campoCorreo.setText(null);
 				campoPoblacion.setText(null);
 				campoImagen.setText(null);
+
 				campoPassword.setText(null);
 				campoPasswordRepetida.setText(null);
 
@@ -180,7 +216,7 @@ public class Registro extends JPanel {
 				int camposCompletados = 0;
 				String nombre = "", apellido = "", email = "", poblacion = "", imagen = "", password = "",
 						passwordRepetida = "";
-
+				
 				if (campoNombre.getText().isEmpty()) {
 					errorNombre.setText("El campo no puede estar vacio.");
 					errorNombre.setForeground(Color.red);
@@ -218,30 +254,19 @@ public class Registro extends JPanel {
 					errorImagen.setText("El campo no puede estar vacio.");
 					errorImagen.setForeground(Color.red);
 				} else {
-					imagen = campoImagen.getText();
 					errorImagen.setText("");
-					camposCompletados++;
+					if (!campoImagen.getText().contains(".jpg")) {
+						errorImagen.setText("Solo archivos .jpg");
+						errorImagen.setForeground(Color.red);
+					} else {
+						imagen = campoImagen.getText();
+						
+						errorImagen.setText("");
+						camposCompletados++;
+
+					}
 				}
 
-//				if (campoPassword.getText().isEmpty()) {
-//					errorPassword.setText("El campo no puede estar vacio.");
-//					errorPassword.setForeground(Color.red);
-//				} else {
-//					password = campoPassword.getText();
-//					errorPassword.setText("");
-//					camposCompletados++;
-//				}
-//
-//				if (campoPasswordRepetida.getText().isEmpty()) {
-//					errorPasswordRepetida.setText("El campo no puede estar vacio.");
-//					errorPasswordRepetida.setForeground(Color.red);
-//
-//				} else {
-//					passwordRepetida = campoPasswordRepetida.getText();
-//					errorPasswordRepetida.setText("");
-//					camposCompletados++;
-//				}
-				
 				if (campoPassword.getText().isEmpty() || campoPasswordRepetida.getText().isEmpty()) {
 					errorPassword.setText("El campo no puede estar vacio.");
 					errorPassword.setForeground(Color.red);
@@ -265,11 +290,7 @@ public class Registro extends JPanel {
 					}
 				}
 
-				
-
 				System.out.println(camposCompletados);
-
-				
 
 				if (camposCompletados == 7) {
 
@@ -277,7 +298,7 @@ public class Registro extends JPanel {
 					Connection c = Conexion.obtenerConexion();
 
 					String sentenciaCrearTablaUsuario = "CREATE TABLE IF NOT EXISTS usuarios (id INT AUTO_INCREMENT PRIMARY KEY, "
-							+ "nombre VARCHAR(50), " + "apellidos VARCHAR(50), " + "imagen VARCHAR(50), "
+							+ "nombre VARCHAR(50), " + "apellidos VARCHAR(50), " + "imagen BLOB, "
 							+ "poblacion VARCHAR(50), " + "email VARCHAR(50))";
 					String sentenciaCrearTablaPassword = "CREATE TABLE IF NOT EXISTS passwords (id INT AUTO_INCREMENT PRIMARY KEY, "
 							+ "idUsuario INT, " + "password VARCHAR(200), "
@@ -302,7 +323,7 @@ public class Registro extends JPanel {
 							errorPasswordRepetida.setText("La contraseña debe ser la misma");
 							errorPasswordRepetida.setForeground(Color.red);
 						}
-						
+
 						System.out.println("Error: " + e1);
 					}
 
@@ -311,7 +332,11 @@ public class Registro extends JPanel {
 
 						// System.out.println(nombre + apellido + poblacion + imagen + correo + password
 						// + c);
-						registrarUsuario(nombre, apellido, poblacion, imagen, email, password, c);
+						//byte[] imagenBinaria = Base64.getDecoder().decode(imagen);
+//						File rutaImagen = new File(imagen);
+//						System.out.println(convertirImagen(rutaImagen));
+//						System.out.println(rutaImagen);
+						registrarUsuario(nombre, apellido, poblacion, arrayBits, email, password, c);
 						mensajeGeneral.setText("Datos Guardados");
 						mensajeGeneral.setForeground(Color.green);
 					} catch (Exception e2) {
@@ -321,12 +346,11 @@ public class Registro extends JPanel {
 					mensajeGeneral.setText("Error Datos/Conexion");
 					mensajeGeneral.setForeground(Color.red);
 				}
-
 			}
 		});
 	}
 
-	public void registrarUsuario(String nombre, String apellido, String imagen, String poblacion, String email,
+	public void registrarUsuario(String nombre, String apellido,  String poblacion, byte[] imagen, String email,
 			String password, Connection conexion) {
 		String insertUsuarios = "INSERT INTO usuarios (nombre, apellidos, imagen, poblacion, email) VALUES (?,?,?,?,?)";
 		User usuario = new User(nombre, apellido, imagen, password, email, poblacion);
@@ -335,7 +359,7 @@ public class Registro extends JPanel {
 			PreparedStatement preparandoInsert = conexion.prepareStatement(insertUsuarios);
 			preparandoInsert.setString(1, usuario.getNombre());
 			preparandoInsert.setString(2, usuario.getApellidos());
-			preparandoInsert.setString(3, usuario.getImagen());
+			preparandoInsert.setBytes(3, usuario.getImagen());
 			preparandoInsert.setString(4, usuario.getPoblacion());
 			preparandoInsert.setString(5, usuario.getEmail());
 
@@ -407,6 +431,18 @@ public class Registro extends JPanel {
 			saltosTexto += String.format("%02x", salto[i]);
 		}
 		return saltosTexto;
+	}
+
+	public byte[] convertirImagen(File imagen) {
+		byte[] fileBytes = new byte[(int) imagen.length()];
+		try {
+			FileInputStream fis = new FileInputStream(imagen);
+
+			fis.read(fileBytes);
+		} catch (IOException e) {
+			System.out.println("Error: " + e);
+		}
+		return fileBytes;
 	}
 
 }
