@@ -40,7 +40,7 @@ public class Registro extends JPanel {
 	private static final int LONGITUD_HASH = 64 * 8;
 	private static byte[] arrayBits;
 
-	private JPanel contentPanel = new JPanel();
+	//private JPanel contentPanel = new JPanel();
 	private JLabel etiqueta_Vacia = new JLabel("");
 	private JLabel etiquetaTitulo = new JLabel("Formulario Registro", SwingConstants.CENTER);
 	private JLabel mensajeGeneral = new JLabel();
