@@ -324,6 +324,14 @@ public class PixelArt extends JFrame {
 		gbcGuardar.gridx = 1;
 		gbcGuardar.gridy = 0;
 		BotonesJuego.add(Guardar, gbcGuardar);
+		Guardar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 
 		contentPane.add(BotonesJuego, BorderLayout.NORTH);
 	}
