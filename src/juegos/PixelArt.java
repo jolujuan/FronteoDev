@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -333,7 +334,8 @@ public class PixelArt extends JFrame {
 					// Escribir el color en el archivo en formato RGB
 					writer.write(color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "\n");
 
-					//System.out.println("Estado del tablero guardado correctamente en: " + filePath);
+					// System.out.println("Estado del tablero guardado correctamente en: " +
+					// filePath);
 				}
 			}
 		} catch (IOException e) {
@@ -344,11 +346,33 @@ public class PixelArt extends JFrame {
 	private void cargarPartidaDesdeArchivo(String filepath) {
 		File file = new File(filepath);
 		Color color = null;
+		int contadorLinieas = 0;
+		String lineaString = null;
+
 		try {
 			BufferedReader leerCasilla = new BufferedReader(new FileReader(file));
+			BufferedReader contarcasillas = new BufferedReader(new FileReader(file));
+			while ((lineaString = contarcasillas.readLine()) != null) {
+				contadorLinieas++; // guarda en el numero de lineas
+			}
+			if (Math.sqrt(contadorLinieas) == 20) {
+				crearTablero(20);
+
+			} else if (Math.sqrt(contadorLinieas) == 50) {
+				crearTablero(50);
+
+			} else if (Math.sqrt(contadorLinieas) == 100) {
+				crearTablero(100);
+
+			} else {
+				System.err.println("No creo tablero");
+			}
+
 			if (file.exists()) {
 				// Obtenermos todos los paneles del tablero en una matriz
 				Component[] casillas = tablero.getComponents();
+
+				System.out.println(Arrays.toString(casillas));
 				String line = null;
 
 				int recorrido = 0;
@@ -369,8 +393,8 @@ public class PixelArt extends JFrame {
 						} else {
 							// Sino guardar el color con las propiedades leidas del fichero
 							color = new Color(red + green + blue);
-							// System.out.println(" " + recorrido + " color " + color);
-
+							System.out.println(" " + recorrido + " color " + color);
+							
 							casillas[recorrido].setBackground(color);
 							recorrido++;
 						}
