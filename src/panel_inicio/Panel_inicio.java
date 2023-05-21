@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import login.Login;
 import registro.Registro;
 
 public class Panel_inicio extends JFrame {
@@ -142,7 +143,14 @@ public class Panel_inicio extends JFrame {
 				
 			}
 		});
-
+		boton_login.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mostrarLogin();
+			}
+		});
+		
 		this.setSize(500, 500);
 		this.setVisible(true);
 	}
@@ -151,6 +159,17 @@ public class Panel_inicio extends JFrame {
         // Crear y mostrar el contenido de la ventana de registro
         Registro ventanaRegistro = new Registro();
         setContentPane(ventanaRegistro);
+        revalidate();
+        repaint();
+ //       ventanaRegistro.setVisible(true);
+ //       ventanaRegistro.setSize(500, 500);
+        // Ocultar la ventana actual
+ //       setVisible(false);
+    }
+	private void mostrarLogin() {
+        // Crear y mostrar el contenido de la ventana de registro
+       Login ventanaLogin = new Login();
+        setContentPane(ventanaLogin);
         revalidate();
         repaint();
  //       ventanaRegistro.setVisible(true);
