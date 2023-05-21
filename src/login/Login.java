@@ -40,6 +40,9 @@ public class Login extends JPanel {
 	private static final int LONGITUD_HASH = 64 * 8;
 
 	private JPanel contentPane;
+	private static final int FORTALEZA = 65536;
+	private static final int LONGITUD_HASH = 64 * 8;
+
 	private JTextField textFieldNom;
 	private JPasswordField textFieldPwd;
 
