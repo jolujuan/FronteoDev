@@ -53,11 +53,6 @@ public class Login extends JPanel {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setLayout(new BorderLayout(0, 0));
-		ImageIcon icona = new ImageIcon("Imatges/Ex05/login.jpeg");
-		Image imatge = icona.getImage();
-		Image novaImg = imatge.getScaledInstance(180, (icona.getIconHeight() * 180) / icona.getIconWidth(),
-				Image.SCALE_SMOOTH);
-		ImageIcon novaIcona = new ImageIcon(novaImg);
 
 		JPanel panel = new JPanel();
 		add(panel, BorderLayout.CENTER);
@@ -154,17 +149,17 @@ public class Login extends JPanel {
 						while (consulta.next() && !userTrobat) {
 							String nom = consulta.getString("email");
 							String pwd= consulta.getString("password");
+							String salto=consulta.getString("salto");
 							// login correcte
 							if (textFieldNom.getText().equals(nom)) {
 								userTrobat=true;
-								if(encriptarPassword(textFieldPwd.getPassword(),extraeSalto(pwd)).equals(pwd)) {
-									panel.setVisible(false);
-									login.setText("Logout");
+								if(encriptarPassword(textFieldPwd.getPassword(),salto).equals(pwd)) {
+									System.out.println("Login exitoso");
 								}else {
 //									JOptionPane.showMessageDialog(contentPane, "Contrasenya incorrecta per a l'usuari "+nom);
 									System.out.println("No ha coincidit password");
 									System.out.println(pwd);
-									System.out.println(encriptarPassword(textFieldPwd.getPassword(),extraeSalto(pwd)));
+									System.out.println(encriptarPassword(textFieldPwd.getPassword(),salto));
 								}
 							}
 						}
@@ -188,7 +183,7 @@ public class Login extends JPanel {
 		try {
 			// Enviar una sentència SQL per recuperar els clients
 			Statement cerca = c.createStatement();
-			r = cerca.executeQuery("SELECT usuarios.email, passwords.password FROM usuarios JOIN passwords ON usuarios.id=passwords.idUsuario");
+			r = cerca.executeQuery("SELECT usuarios.email, passwords.password, passwords.salto FROM usuarios JOIN passwords ON usuarios.id=passwords.idUsuario");
 //			c.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -201,7 +196,7 @@ public class Login extends JPanel {
 
 		try {
 			SecureRandom random = new SecureRandom();
-			salto = new byte[LONGITUD_SALTO];
+			salto = revertirSalto(saltoStr);
 
 			KeySpec spec = new PBEKeySpec(passWord, salto, FORTALEZA, LONGITUD_HASH);
 			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
@@ -209,7 +204,7 @@ public class Login extends JPanel {
 			byte[] hash = factory.generateSecret(spec).getEncoded();
 //			passWord = Base64.getEncoder().encodeToString(hash);
 
-			passwordEncriptada = FORTALEZA + conversionSalto(salto) + LONGITUD_HASH + Base64.getEncoder().encodeToString(hash);
+			passwordEncriptada = FORTALEZA + saltoStr + LONGITUD_HASH + Base64.getEncoder().encodeToString(hash);
 
 		} catch (Exception e) {
 			System.out.println("Error: " + e);
@@ -217,17 +212,15 @@ public class Login extends JPanel {
 
 		return passwordEncriptada;
 	}
-	public String conversionSalto(byte[] salto) {
-		String saltosTexto = "";
-		for (int i = 0; i < salto.length; i++) {
-			// PASAMOS LA CONVERSION DE BYTES A CADENA
-			saltosTexto += String.format("%02x", salto[i]);
+	public static byte[] revertirSalto(String salto) {
+		byte[] saltoBytes = new byte[salto.length() / 2];// Cada dos caracters de la String representen un byte de
+															// l'array
+		for (int i = 0; i < saltoBytes.length; i++) {
+			int rango = i * 2;
+			String pareja = salto.substring(rango, rango + 2);
+			saltoBytes[i] = (byte) Integer.parseInt(pareja,16);
 		}
-		return saltosTexto;
-	}
-	public String extraeSalto(String password) {
-		
-		return "";
+		return saltoBytes;
 	}
 
 }
