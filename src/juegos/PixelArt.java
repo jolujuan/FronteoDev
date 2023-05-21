@@ -105,14 +105,14 @@ public class PixelArt extends JFrame {
 		gbc.insets = new Insets(10, 0, 10, 0);
 
 		JButton tamañoPequeño = new JButton("Pequeño");
-		tamañoPequeño.setPreferredSize(new Dimension(120, 40));
+		tamañoPequeño.setPreferredSize(new Dimension(130, 40));
 		tamañoPequeño.setFont(new Font("Unispace", Font.BOLD, 12));// FUENTE
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		botonesJPanel.add(tamañoPequeño, gbc);
 
 		JButton tamañoMediano = new JButton("Mediano");
-		tamañoMediano.setPreferredSize(new Dimension(120, 40));// TAMAÑO BOTON
+		tamañoMediano.setPreferredSize(new Dimension(130, 40));// TAMAÑO BOTON
 		tamañoMediano.setFont(new Font("Unispace", Font.BOLD, 12));// FUENTE
 		gbc = new GridBagConstraints(); // PARA CENTRAR BOTONES
 		gbc.anchor = GridBagConstraints.CENTER;
@@ -121,7 +121,7 @@ public class PixelArt extends JFrame {
 		botonesJPanel.add(tamañoMediano, gbc);
 
 		JButton tamañoGrande = new JButton("Grande");
-		tamañoGrande.setPreferredSize(new Dimension(120, 40));// TAMAÑO
+		tamañoGrande.setPreferredSize(new Dimension(130, 40));// TAMAÑO
 		tamañoGrande.setFont(new Font("Unispace", Font.BOLD, 12));// FUENTE
 		gbc = new GridBagConstraints(); // PARA CENTRAR BOTONES
 		gbc.anchor = GridBagConstraints.CENTER;
@@ -130,8 +130,8 @@ public class PixelArt extends JFrame {
 		gbc.gridy = 2;
 		botonesJPanel.add(tamañoGrande, gbc);
 
-		JButton cargarPartida = new JButton("Cargar partida");
-		cargarPartida.setPreferredSize(new Dimension(120, 40));// TAMAÑO
+		JButton cargarPartida = new JButton("Cargar Partida");
+		cargarPartida.setPreferredSize(new Dimension(130, 40));// TAMAÑO
 		cargarPartida.setFont(new Font("Unispace", Font.BOLD, 12));// FUENTE
 		gbc = new GridBagConstraints(); // PARA CENTRAR BOTONES
 		gbc.anchor = GridBagConstraints.CENTER;
@@ -157,7 +157,7 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSize(600, 600);
+				setSize(470, 470);
 				// Centramos pantalla
 				centrarInterficiePantalla();
 				crearTablero(20);
@@ -167,7 +167,7 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSize(800, 800);
+				setSize(670, 670);
 				// Centramos pantalla
 				centrarInterficiePantalla();
 				crearTablero(50);
@@ -177,7 +177,7 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSize(1000, 1000);
+				setSize(870, 870);
 				// Centramos pantalla
 				centrarInterficiePantalla();
 				crearTablero(100);
@@ -353,15 +353,18 @@ public class PixelArt extends JFrame {
 			BufferedReader leerCasilla = new BufferedReader(new FileReader(file));
 			BufferedReader contarcasillas = new BufferedReader(new FileReader(file));
 			while ((lineaString = contarcasillas.readLine()) != null) {
-				contadorLinieas++; // guarda en el numero de lineas
+				contadorLinieas++; // guarda en el numero de lineas que equivalen a las casillas y sus colores adjuntos , y con el la raiz cuadrada sacamos el tamaño el tablero
 			}
 			if (Math.sqrt(contadorLinieas) == 20) {
+				setSize(470, 470);
 				crearTablero(20);
 
 			} else if (Math.sqrt(contadorLinieas) == 50) {
+				setSize(670, 670);
 				crearTablero(50);
 
 			} else if (Math.sqrt(contadorLinieas) == 100) {
+				setSize(870, 870);
 				crearTablero(100);
 
 			} else {
@@ -392,8 +395,8 @@ public class PixelArt extends JFrame {
 							recorrido++;
 						} else {
 							// Sino guardar el color con las propiedades leidas del fichero
-							color = new Color(red + green + blue);
-							System.out.println(" " + recorrido + " color " + color);
+							color = new Color(red ,green , blue);
+							//System.out.println(" " + recorrido + " color " + color);
 							
 							casillas[recorrido].setBackground(color);
 							recorrido++;
