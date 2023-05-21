@@ -1,5 +1,8 @@
 package login;
 
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -7,11 +10,15 @@ import conexionBaseDatos.Conexion;
 
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.Image;
 
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.sql.*;
 import java.util.Base64;
@@ -28,6 +35,11 @@ import javax.swing.JPasswordField;
 
 public class Login extends JPanel {
 	
+	private static final int LONGITUD_SALTO = 16;
+	private static final int FORTALEZA = 65536;
+	private static final int LONGITUD_HASH = 64 * 8;
+
+	private JPanel contentPane;
 	private static final int FORTALEZA = 65536;
 	private static final int LONGITUD_HASH = 64 * 8;
 
@@ -186,6 +198,7 @@ public class Login extends JPanel {
 		String passwordEncriptada = "";
 
 		try {
+			SecureRandom random = new SecureRandom();
 			salto = revertirSalto(saltoStr);
 
 			KeySpec spec = new PBEKeySpec(passWord, salto, FORTALEZA, LONGITUD_HASH);
