@@ -1,7 +1,6 @@
 package registro;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Base64;
+import java.util.regex.Pattern;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -232,13 +232,41 @@ public class Registro extends JPanel {
 					errorApellido.setText("");
 					camposCompletados++;
 				}
+
 				if (campoCorreo.getText().isEmpty()) {
 					errorCorreo.setText("El campo no puede estar vacio.");
 					errorCorreo.setForeground(Color.red);
-				} else {
-					email = campoCorreo.getText();
-					errorCorreo.setText("");
-					camposCompletados++;
+				} else if (!Pattern.compile("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$").matcher(campoCorreo.getText())
+						.find()) {
+					errorCorreo.setText("El correo introducido no es correcto.");
+					errorCorreo.setForeground(Color.red);
+				} else {					
+					
+					Connection c = Conexion.obtenerConexion();
+
+					try {
+						//Obtener los correos de la base de datos
+						String correosListados = "SELECT email FROM usuarios";
+						PreparedStatement comprobarCorreos = c.prepareStatement(correosListados);
+						ResultSet resultado = comprobarCorreos.executeQuery();
+
+						while (resultado.next()) {
+							//Comprobar que no exista coincidencia con el campo introducido
+							//Si es asi salir del bucle
+							if (resultado.getString("email").equals(campoCorreo.getText())) {
+								errorCorreo.setText("El correo introducido ya existe.");
+								errorCorreo.setForeground(Color.red);
+								break;
+							}else {
+								email = campoCorreo.getText();
+								errorCorreo.setText("");
+								camposCompletados++;
+							}						
+						}
+
+					} catch (Exception e2) {
+						System.out.println(e2);
+					}										
 				}
 
 				if (campoPoblacion.getText().isEmpty()) {
