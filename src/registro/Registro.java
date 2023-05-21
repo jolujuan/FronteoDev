@@ -1,12 +1,12 @@
 package registro;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
@@ -29,6 +29,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import conexionBaseDatos.Conexion;
+import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
 import usuarios.User;
 
@@ -40,7 +41,7 @@ public class Registro extends JPanel {
 	private static final int LONGITUD_HASH = 64 * 8;
 	private static byte[] arrayBits;
 
-	//private JPanel contentPanel = new JPanel();
+	// private JPanel contentPanel = new JPanel();
 	private JLabel etiqueta_Vacia = new JLabel("");
 	private JLabel etiquetaTitulo = new JLabel("Formulario Registro", SwingConstants.CENTER);
 	private JLabel mensajeGeneral = new JLabel();
@@ -89,7 +90,7 @@ public class Registro extends JPanel {
 	public Registro() {
 //		setTitle("Registro");
 //		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(350, 200);
+		// setSize(350, 200);
 //
 //		// Crear el panel de registro
 		setLayout(new GridLayout(9, 4));
@@ -297,7 +298,7 @@ public class Registro extends JPanel {
 							+ "nombre VARCHAR(50), " + "apellidos VARCHAR(50), " + "imagen BLOB, "
 							+ "poblacion VARCHAR(50), " + "email VARCHAR(50))";
 					String sentenciaCrearTablaPassword = "CREATE TABLE IF NOT EXISTS passwords (id INT AUTO_INCREMENT PRIMARY KEY, "
-							+ "idUsuario INT, " + "password VARCHAR(200), "
+							+ "idUsuario INT, " + "password VARCHAR(200), " + "salto VARCHAR(200),"  
 							+ "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
 
 					try {
@@ -341,6 +342,7 @@ public class Registro extends JPanel {
 			String password, Connection conexion) {
 		String insertUsuarios = "INSERT INTO usuarios (nombre, apellidos, imagen, poblacion, email) VALUES (?,?,?,?,?)";
 		User usuario = new User(nombre, apellido, imagen, password, email, poblacion);
+		String[] datosPassword = encriptarPassword(usuario.getPassword());
 
 		try {
 			PreparedStatement preparandoInsert = conexion.prepareStatement(insertUsuarios);
@@ -352,14 +354,26 @@ public class Registro extends JPanel {
 
 			preparandoInsert.executeUpdate();
 
-			String insertPasswords = "INSERT INTO passwords (idUsuario, password) VALUES (?, ?)";
+			String insertPasswords = "INSERT INTO passwords (idUsuario, password, salto) VALUES (?, ?, ?)";
 			preparandoInsert = conexion.prepareStatement(insertPasswords);
 			preparandoInsert.setInt(1, obtenerUltimoId(conexion));
-			preparandoInsert.setString(2, encriptarPassword(usuario.getPassword()));
+			preparandoInsert.setString(2, datosPassword[0]);
+			preparandoInsert.setString(3, datosPassword[1]);
 
 			preparandoInsert.executeUpdate();
 
 			System.out.println("Usuario de prueba registrado");
+			
+			
+			Menu menuJuegos = new Menu();
+			removeAll();
+			//add(menuJuegos);
+			
+			revalidate();
+			repaint();
+			
+			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -385,10 +399,11 @@ public class Registro extends JPanel {
 		return id;
 	}
 
-	public String encriptarPassword(String passWord) {
+	public String[] encriptarPassword(String passWord) {
+		String[] datosPasswords = new String[2]; 
 		byte[] salto = null;
-		String passwordEncriptada = "";
-
+		String passwordEncriptada = "", saltoPassword = "";
+		
 		try {
 			SecureRandom random = new SecureRandom();
 			salto = new byte[LONGITUD_SALTO];
@@ -399,14 +414,17 @@ public class Registro extends JPanel {
 
 			byte[] hash = factory.generateSecret(spec).getEncoded();
 			passWord = Base64.getEncoder().encodeToString(hash);
-
-			passwordEncriptada = FORTALEZA + conversionSalto(salto) + LONGITUD_HASH + passWord;
-
+			
+			saltoPassword = conversionSalto(salto);
+			passwordEncriptada = FORTALEZA + saltoPassword + LONGITUD_HASH + passWord;
+			
+			datosPasswords[0] = passwordEncriptada;
+			datosPasswords[1] = saltoPassword;
 		} catch (Exception e) {
 			System.out.println("Error: " + e);
 		}
 
-		return passwordEncriptada;
+		return datosPasswords;
 	}
 
 	public String conversionSalto(byte[] salto) {
@@ -429,5 +447,7 @@ public class Registro extends JPanel {
 		}
 		return fileBytes;
 	}
+	
+
 
 }
