@@ -4,12 +4,13 @@ public class User {
 
 	protected String nombre;
 	protected String apellidos;
-	protected String imagen;
+	//protected String imagen;
+	protected byte[] imagen;
 	protected String password;
 	protected String email;
 	protected String poblacion;
 	
-	public User(String nombre, String apellidos, String imagen, String email, String poblacion) {
+	public User(String nombre, String apellidos, byte[] imagen, String email, String poblacion) {
 		super();
 		this.nombre = nombre;
 		this.apellidos = apellidos;
@@ -18,7 +19,7 @@ public class User {
 		this.poblacion = poblacion;
 	}
 
-	public User(String nombre, String apellidos, String imagen, String password, String email, String poblacion) {
+	public User(String nombre, String apellidos, byte[] imagen, String password, String email, String poblacion) {
 		super();
 		this.nombre = nombre;
 		this.apellidos = apellidos;
@@ -44,11 +45,11 @@ public class User {
 		this.apellidos = apellidos;
 	}
 
-	public String getImagen() {
+	public byte[] getImagen() {
 		return imagen;
 	}
 
-	public void setImagen(String imagen) {
+	public void setImagen(byte[] imagen) {
 		this.imagen = imagen;
 	}
 

@@ -27,6 +27,78 @@ public class Panel_inicio extends JFrame {
 	private JPanel panel_principal = new JPanel();
 	private GridBagConstraints gbc = new GridBagConstraints();
 
+	public Container getContenedor() {
+		return contenedor;
+	}
+
+	public void setContenedor(Container contenedor) {
+		this.contenedor = contenedor;
+	}
+
+	public JPanel getPanel_superior() {
+		return panel_superior;
+	}
+
+	public void setPanel_superior(JPanel panel_superior) {
+		this.panel_superior = panel_superior;
+	}
+
+	public JLabel getEtiqueta_superior() {
+		return etiqueta_superior;
+	}
+
+	public void setEtiqueta_superior(JLabel etiqueta_superior) {
+		this.etiqueta_superior = etiqueta_superior;
+	}
+
+	public JButton getBoton_registro() {
+		return boton_registro;
+	}
+
+	public void setBoton_registro(JButton boton_registro) {
+		this.boton_registro = boton_registro;
+	}
+
+	public JLabel getEtiqueta_registro() {
+		return etiqueta_registro;
+	}
+
+	public void setEtiqueta_registro(JLabel etiqueta_registro) {
+		this.etiqueta_registro = etiqueta_registro;
+	}
+
+	public JButton getBoton_login() {
+		return boton_login;
+	}
+
+	public void setBoton_login(JButton boton_login) {
+		this.boton_login = boton_login;
+	}
+
+	public JLabel getEtiqueta_login() {
+		return etiqueta_login;
+	}
+
+	public void setEtiqueta_login(JLabel etiqueta_login) {
+		this.etiqueta_login = etiqueta_login;
+	}
+
+	public JPanel getPanel_principal() {
+		return panel_principal;
+	}
+
+	public void setPanel_principal(JPanel panel_principal) {
+		this.panel_principal = panel_principal;
+	}
+
+	public GridBagConstraints getGbc() {
+		return gbc;
+	}
+
+	public void setGbc(GridBagConstraints gbc) {
+		this.gbc = gbc;
+	}
+
 	public Panel_inicio() {
 		this.setTitle("Programa Juegos");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -78,10 +150,13 @@ public class Panel_inicio extends JFrame {
 	private void mostrarRegistro() {
         // Crear y mostrar el contenido de la ventana de registro
         Registro ventanaRegistro = new Registro();
-        ventanaRegistro.setVisible(true);
-        ventanaRegistro.setSize(500, 500);
+        setContentPane(ventanaRegistro);
+        revalidate();
+        repaint();
+ //       ventanaRegistro.setVisible(true);
+ //       ventanaRegistro.setSize(500, 500);
         // Ocultar la ventana actual
-        setVisible(false);
+ //       setVisible(false);
     }
 	
 }
