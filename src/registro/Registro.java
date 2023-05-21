@@ -250,19 +250,22 @@ public class Registro extends JPanel {
 						String correosListados = "SELECT email FROM usuarios";
 						PreparedStatement comprobarCorreos = c.prepareStatement(correosListados);
 						ResultSet resultado = comprobarCorreos.executeQuery();
-
+						boolean comproba=false;
+						
 						while (resultado.next()) {
 							//Comprobar que no exista coincidencia con el campo introducido
-							//Si es asi salir del bucle
+							//Si es asi cambiar el semaforo ha acertado					
 							if (resultado.getString("email").equals(campoCorreo.getText())) {
 								errorCorreo.setText("El correo introducido ya existe.");
 								errorCorreo.setForeground(Color.red);
-								break;
-							}else {
-								email = campoCorreo.getText();
-								errorCorreo.setText("");
-								camposCompletados++;
-							}						
+								comproba=true;
+							}					
+						}
+						
+						if (!comproba) {
+							email = campoCorreo.getText();
+							errorCorreo.setText("");
+							camposCompletados++;
 						}
 
 					} catch (Exception e2) {
