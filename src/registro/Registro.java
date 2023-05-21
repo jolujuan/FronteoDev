@@ -29,6 +29,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import conexionBaseDatos.Conexion;
+import login.Login;
 import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
 import usuarios.User;
@@ -182,7 +183,7 @@ public class Registro extends JPanel {
 
 			}
 		});
-
+		
 		botonResetear.addActionListener(new ActionListener() {
 
 			@Override
@@ -364,6 +365,7 @@ public class Registro extends JPanel {
 				}
 			}
 		});
+		setVisible(true);
 	}
 
 	public void registrarUsuario(String nombre, String apellido, String poblacion, byte[] imagen, String email,
@@ -394,12 +396,17 @@ public class Registro extends JPanel {
 			
 			
 			Menu menuJuegos = new Menu();
-			removeAll();
-			//add(menuJuegos);
 			
-			revalidate();
-			repaint();
+//			removeAll();
+//			//add(menuJuegos);
+//			revalidate();
+//			repaint();
 			
+			Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Registro.this);
+			p.getContentPane().removeAll();
+			p.getContentPane().add(p.getContenedor());
+			p.revalidate();
+			p.repaint();
 			
 
 		} catch (SQLException e) {

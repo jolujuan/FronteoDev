@@ -1,40 +1,37 @@
 package login;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import conexionBaseDatos.Conexion;
-
 import java.awt.BorderLayout;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import java.awt.Image;
-
-import javax.swing.SwingConstants;
-import javax.swing.JTextField;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import java.sql.*;
-import java.util.Base64;
-import java.awt.GridBagLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
-import java.awt.Font;
-import java.awt.Color;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Base64;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+
+import conexionBaseDatos.Conexion;
+import panel_inicio.Panel_inicio;
 
 public class Login extends JPanel {
-	
+
 	private static final int LONGITUD_SALTO = 16;
 	private static final int FORTALEZA = 65536;
 	private static final int LONGITUD_HASH = 64 * 8;
@@ -43,7 +40,6 @@ public class Login extends JPanel {
 
 	private JTextField textFieldNom;
 	private JPasswordField textFieldPwd;
-
 
 	/**
 	 * Create the frame.
@@ -81,7 +77,7 @@ public class Login extends JPanel {
 		gbc_textFieldNom.gridy = 0;
 		panel.add(textFieldNom, gbc_textFieldNom);
 		textFieldNom.setColumns(10);
-		
+
 		JLabel errorNom = new JLabel("");
 		errorNom.setForeground(new Color(255, 0, 0));
 		GridBagConstraints gbc_errorNom = new GridBagConstraints();
@@ -108,7 +104,7 @@ public class Login extends JPanel {
 		gbc_textFieldPwd.gridy = 2;
 		panel.add(textFieldPwd, gbc_textFieldPwd);
 		textFieldPwd.setColumns(10);
-		
+
 		JLabel errorPwd = new JLabel("");
 		errorPwd.setForeground(new Color(255, 0, 0));
 		GridBagConstraints gbc_errorPwd = new GridBagConstraints();
@@ -122,18 +118,18 @@ public class Login extends JPanel {
 		JPanel panel_1 = new JPanel();
 		add(panel_1, BorderLayout.SOUTH);
 
-		JButton login = new JButton("Login");
-		panel_1.add(login);
-		
-		JButton arrere = new JButton("Vés enrere");
-		panel_1.add(arrere);
-		
+		JButton botonLogin = new JButton("Login");
+		panel_1.add(botonLogin);
+
+		JButton botonVolver = new JButton("Volver");
+		panel_1.add(botonVolver);
+
 		JLabel text = new JLabel("Login");
 		text.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		text.setHorizontalAlignment(SwingConstants.CENTER);
 		add(text, BorderLayout.NORTH);
-		
-		login.addActionListener(new ActionListener() {
+
+		botonLogin.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -141,30 +137,30 @@ public class Login extends JPanel {
 				errorPwd.setText("");
 				if (textFieldNom.getText().isEmpty()) {
 					errorNom.setText("Error. Introduce un nombre.");
-				}else if(textFieldPwd.getPassword().length==0) {
+				} else if (textFieldPwd.getPassword().length == 0) {
 					errorPwd.setText("Error. Introduce una contraseña.");
-				}else {
+				} else {
 					ResultSet consulta = consultaSql();
 					try {
-						boolean userTrobat=false;
+						boolean userTrobat = false;
 						while (consulta.next() && !userTrobat) {
 							String nom = consulta.getString("email");
-							String pwd= consulta.getString("password");
-							String salto=consulta.getString("salto");
+							String pwd = consulta.getString("password");
+							String salto = consulta.getString("salto");
 							// login correcte
 							if (textFieldNom.getText().equals(nom)) {
-								userTrobat=true;
-								if(encriptarPassword(textFieldPwd.getPassword(),salto).equals(pwd)) {
+								userTrobat = true;
+								if (encriptarPassword(textFieldPwd.getPassword(), salto).equals(pwd)) {
 									System.out.println("Login exitoso");
-								}else {
+								} else {
 //									JOptionPane.showMessageDialog(contentPane, "Contrasenya incorrecta per a l'usuari "+nom);
 									System.out.println("No ha coincidit password");
 									System.out.println(pwd);
-									System.out.println(encriptarPassword(textFieldPwd.getPassword(),salto));
+									System.out.println(encriptarPassword(textFieldPwd.getPassword(), salto));
 								}
 							}
 						}
-						if(!userTrobat) {
+						if (!userTrobat) {
 //							JOptionPane.showMessageDialog(contentPane, "No s'ha trobat aquest usuari");
 						}
 					} catch (SQLException e1) {
@@ -174,7 +170,20 @@ public class Login extends JPanel {
 				}
 			}
 		});
-		
+
+		botonVolver.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
+				p.getContentPane().removeAll();
+				p.getContentPane().add(p.getContenedor());
+				p.revalidate();
+				p.repaint();
+
+			}
+		});
+
 		setVisible(true);
 	}
 
@@ -184,13 +193,15 @@ public class Login extends JPanel {
 		try {
 			// Enviar una sentència SQL per recuperar els clients
 			Statement cerca = c.createStatement();
-			r = cerca.executeQuery("SELECT usuarios.email, passwords.password, passwords.salto FROM usuarios JOIN passwords ON usuarios.id=passwords.idUsuario");
+			r = cerca.executeQuery(
+					"SELECT usuarios.email, passwords.password, passwords.salto FROM usuarios JOIN passwords ON usuarios.id=passwords.idUsuario");
 //			c.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return r;
 	}
+
 	public String encriptarPassword(char[] passWord, String saltoStr) {
 		byte[] salto = null;
 		String passwordEncriptada = "";
@@ -213,13 +224,14 @@ public class Login extends JPanel {
 
 		return passwordEncriptada;
 	}
+
 	public static byte[] revertirSalto(String salto) {
 		byte[] saltoBytes = new byte[salto.length() / 2];// Cada dos caracters de la String representen un byte de
 															// l'array
 		for (int i = 0; i < saltoBytes.length; i++) {
 			int rango = i * 2;
 			String pareja = salto.substring(rango, rango + 2);
-			saltoBytes[i] = (byte) Integer.parseInt(pareja,16);
+			saltoBytes[i] = (byte) Integer.parseInt(pareja, 16);
 		}
 		return saltoBytes;
 	}
