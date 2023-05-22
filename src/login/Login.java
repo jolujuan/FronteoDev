@@ -5,10 +5,12 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import conexionBaseDatos.Conexion;
+import panel_inicio.Panel_inicio;
 
 import javax.swing.JLabel;
 
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.JTextField;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -185,7 +187,11 @@ public class Login extends JPanel {
 		});
 		botoTorna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-					
+				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
+				p.getContentPane().removeAll();
+				p.getContentPane().add(p.getContenedor());
+				p.revalidate();
+				p.repaint();
 			}
 		});
 		
