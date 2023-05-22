@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import conexionBaseDatos.Conexion;
+import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
 
 import javax.swing.JLabel;
@@ -165,7 +166,14 @@ public class Login extends JPanel {
 							if (fieldUsr.getText().equals(nom)) {
 								userTrobat = true;
 								if (encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
-									System.out.println("Login exitoso");
+									System.out.println("Login exitoso");//Si el loguin es exitoso abre menu juegos
+									Menu menuJuegos = new Menu();
+									Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
+									p.getContentPane().removeAll();
+									p.getContentPane().add(menuJuegos);
+									p.revalidate();
+									p.repaint();
+
 								} else {
 //											JOptionPane.showMessageDialog(contentPane, "Contrasenya incorrecta per a l'usuari "+nom);
 									System.out.println("No ha coincidit password");
