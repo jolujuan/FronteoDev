@@ -5,7 +5,9 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import conexionBaseDatos.Conexion;
+import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
+import registro.Registro;
 
 import javax.swing.JLabel;
 
@@ -25,8 +27,10 @@ import java.awt.event.ActionListener;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.awt.Font;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.JPasswordField;
+import javax.swing.BoxLayout;
 
 public class Login extends JPanel {
 	
@@ -40,34 +44,17 @@ public class Login extends JPanel {
 	
 	public Login() {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
-
-		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[]{0, 0, 0};
-		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0};
-		gbl_contentPane.columnWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
-		gbl_contentPane.rowWeights = new double[]{1.0, 0.0, 1.0, Double.MIN_VALUE};
-		setLayout(gbl_contentPane);
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 			
 		text = new JLabel();
 		text.setFont(new Font("Dialog", Font.BOLD, 30));
 		text.setHorizontalAlignment(SwingConstants.CENTER);
 		text.setText("Login");
-		GridBagConstraints gbc_text = new GridBagConstraints();
-		gbc_text.gridwidth = 2;
-		gbc_text.insets = new Insets(0, 0, 5, 0);
-		gbc_text.gridx = 0;
-		gbc_text.gridy = 0;
-		add(text, gbc_text);
+		add(text);
 			
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(238, 238, 238));
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.gridwidth = 2;
-		gbc_panel.insets = new Insets(0, 0, 5, 0);
-		gbc_panel.fill = GridBagConstraints.VERTICAL;
-		gbc_panel.gridx = 0;
-		gbc_panel.gridy = 1;
-		add(panel, gbc_panel);
+		add(panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[]{300, 0};
 		gbl_panel.rowHeights = new int[]{15, 40, 0, 15, 40, 1, 0};
@@ -128,21 +115,10 @@ public class Login extends JPanel {
 		panel.add(errorPwd, gbc_errorPwd);
 			
 		JButton botoLogin = new JButton("Entra");
-			
-		GridBagConstraints gbc_botoLogin = new GridBagConstraints();
-		gbc_botoLogin.anchor = GridBagConstraints.NORTHEAST;
-		gbc_botoLogin.insets = new Insets(0, 0, 0, 5);
-		gbc_botoLogin.gridx = 0;
-		gbc_botoLogin.gridy = 2;
-		add(botoLogin, gbc_botoLogin);
+		add(botoLogin);
 			
 		JButton botoTorna = new JButton("Atrás");
-			
-		GridBagConstraints gbc_botoTorna = new GridBagConstraints();
-		gbc_botoTorna.anchor = GridBagConstraints.NORTHWEST;
-		gbc_botoTorna.gridx = 1;
-		gbc_botoTorna.gridy = 2;
-		add(botoTorna, gbc_botoTorna);
+		add(botoTorna);
 			
 		botoLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -165,7 +141,16 @@ public class Login extends JPanel {
 							if (fieldUsr.getText().equals(nom)) {
 								userTrobat = true;
 								if (encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
-									System.out.println("Login exitoso");
+									Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
+									
+									Menu menuJuegos = new Menu();
+									p.getContentPane().removeAll();
+									p.getContentPane().setLayout(new BorderLayout()); 
+
+									p.getContentPane().add(menuJuegos);
+									p.revalidate();
+									p.repaint();
+									
 								} else {
 //											JOptionPane.showMessageDialog(contentPane, "Contrasenya incorrecta per a l'usuari "+nom);
 									System.out.println("No ha coincidit password");
@@ -187,9 +172,19 @@ public class Login extends JPanel {
 		});
 		botoTorna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+//				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
+//				p.getContentPane().removeAll();
+//				p.getContentPane().add(p.getContenedor());
+//				p.revalidate();
+//				p.repaint();
+//				
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
+				
+				Menu menuJuegos = new Menu();
 				p.getContentPane().removeAll();
-				p.getContentPane().add(p.getContenedor());
+				p.getContentPane().setLayout(new BorderLayout()); 
+
+				p.getContentPane().add(menuJuegos);
 				p.revalidate();
 				p.repaint();
 			}
