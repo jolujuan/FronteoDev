@@ -9,6 +9,9 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -70,14 +73,20 @@ public class Menu extends JPanel {
 				 if (!pixelArtAbierto) { // Verificar si PixelArt está abierto
 	                    pixelArtAbierto = true; // Establecer como abierto
 
-//				if (botonJugar == 0) {
+
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
 								PixelArt frame1 = new PixelArt();
 								frame1.setSize(500, 500);
 								frame1.setVisible(true);
-//								botonJugar++;
+								frame1.addWindowListener(new WindowAdapter() {
+									  @Override
+				                        public void windowClosed(WindowEvent e) {
+				                            pixelArtAbierto = false; // Restablecer como cerrado
+				                        }
+				                    });
+								
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
