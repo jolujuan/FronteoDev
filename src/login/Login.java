@@ -171,6 +171,13 @@ public class Login extends JPanel {
 								userTrobat = true;
 								if (encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
 									System.out.println("Login exitoso");
+									Menu menu= new Menu();
+									Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
+									p.getContentPane().removeAll();
+									p.getContentPane().add(menu);
+									p.revalidate();
+									p.repaint();
+									
 								} else {
 //											JOptionPane.showMessageDialog(contentPane, "Contrasenya incorrecta per a l'usuari "+nom);
 									System.out.println("No ha coincidit password");
