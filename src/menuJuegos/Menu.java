@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import juegos.BuscaMinas;
 import juegos.PixelArt;
 
 public class Menu extends JPanel {
@@ -87,6 +88,28 @@ public class Menu extends JPanel {
 				                        }
 				                    });
 								
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
+			}
+		});
+		botonJugarBuscaminas.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Esbozo de método generado automáticamente
+
+				if (botonJugar == 0) {
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							try {
+								BuscaMinas frame = new BuscaMinas();
+								frame.setSize(500, 500);
+								frame.setVisible(true);
+								botonJugar++;
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
