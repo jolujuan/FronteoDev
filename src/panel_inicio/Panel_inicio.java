@@ -1,10 +1,14 @@
 package panel_inicio;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -20,6 +24,7 @@ public class Panel_inicio extends JFrame {
 
 	private Container contenedor = getContentPane();
 	private JPanel panel_superior = new JPanel();
+
 	private JLabel etiqueta_superior = new JLabel();
 	private JButton boton_registro = new JButton();
 	private JLabel etiqueta_registro = new JLabel();
@@ -28,7 +33,11 @@ public class Panel_inicio extends JFrame {
 	private JPanel panel_principal = new JPanel();
 	private GridBagConstraints gbc = new GridBagConstraints();
 
+	
+	
 	public Panel_inicio() {
+		
+
 		this.setTitle("Programa Juegos");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -37,13 +46,20 @@ public class Panel_inicio extends JFrame {
 		panel_superior.setLayout(new FlowLayout());
 
 		etiqueta_superior.setText("¡BIENVENIDO!");
+		etiqueta_superior.setFont(new Font("Arial", Font.BOLD, 20));
+		etiqueta_superior.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel_superior.add(etiqueta_superior);
-
-		etiqueta_registro.setText("Resgistrarse");
+		
+		etiqueta_registro.setText("Registrarse");
 		boton_registro.add(etiqueta_registro);
+		etiqueta_registro.setAlignmentX(Component.CENTER_ALIGNMENT);
+		etiqueta_registro.setPreferredSize(new Dimension(130, 45)); 
 
 		etiqueta_login.setText("Iniciar Sesión");
 		boton_login.add(etiqueta_login);
+		etiqueta_login.setAlignmentX(Component.CENTER_ALIGNMENT);
+		etiqueta_login.setPreferredSize(new Dimension(130, 45)); 
+
 
 		panel_principal.setLayout(new FlowLayout());
 
@@ -67,8 +83,7 @@ public class Panel_inicio extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mostrarRegistro();
-
+				 mostrarRegistro();
 			}
 		});
 
@@ -76,13 +91,13 @@ public class Panel_inicio extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mostrarLogin();
-
+				 mostrarLogin();
 			}
 		});
 
-		this.setSize(500, 500);
+		this.setSize(600, 500);
 		this.setVisible(true);
+		centrarInterficiePantalla();
 	}
 
 	public Container getContenedor() {
@@ -157,6 +172,7 @@ public class Panel_inicio extends JFrame {
 		this.gbc = gbc;
 	}
 
+	
 	private void mostrarLogin() {
 		// Crear y mostrar el contenido de la ventana de registro
 		Login ventanaLogin = new Login();
@@ -179,6 +195,19 @@ public class Panel_inicio extends JFrame {
 		// ventanaRegistro.setSize(500, 500);
 		// Ocultar la ventana actual
 		// setVisible(false);
+	}
+	
+	private void centrarInterficiePantalla() {
+		// Calcular la posición de la ventana
+		Dimension tamañoPantalla = Toolkit.getDefaultToolkit().getScreenSize();
+		int width = this.getSize().width;
+		int height = this.getSize().height;
+		int x = (tamañoPantalla.width - width) / 2; // Centrado horizontalmente
+		int y = (tamañoPantalla.height - height) / 2;
+		 // En la parte superior de la pantalla
+
+		// Establecer la posición de la ventana
+		this.setLocation(x, y);
 	}
 
 }

@@ -1,68 +1,102 @@
 package menuJuegos;
 
-import java.awt.GridLayout;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import juegos.PixelArt;
+
 public class Menu extends JPanel {
 
-	private JPanel panel_1 = new JPanel();
-	private JPanel panel_2 = new JPanel();
-	private JPanel panel_3 = new JPanel();
-	private JPanel panel_4 = new JPanel();
-
-	private JLabel etiqueta_usuario = new JLabel("Hola");
 	private JButton boton_ver_perfil = new JButton("Ver Perfil");
-
-	private JLabel etiqueta_pixelArt = new JLabel();
-	private ImageIcon imagenPixelArt = new ImageIcon("src/imagenes/pixel_art.jpg");
-	private JLabel etiqueta_BuscaMinas = new JLabel();
-	private ImageIcon imagenBuscaminas = new ImageIcon("src/imagenes/busca_minas.jpg");
-	private JLabel etiqueta_JuegoDeLavida = new JLabel();
-	private ImageIcon imagenJuegoDeLaVida = new ImageIcon("src/imagenes/juego_de_la_vida.jpg");
-
-	private JButton botonJugarPixelArt = new JButton("Jugar");
-	private JButton botonJugarBuscaminas = new JButton("Jugar");
-	private JButton botonJugarJuegoDeLaVida = new JButton("Jugar");
-
-	private JLabel etiqueta_vacia = new JLabel();
-	private JButton botonLogout = new JButton("LogOut");
+	private JButton botonJugarPixelArt = new JButton("Jugar PixelArt");
+	private JButton botonJugarBuscaminas = new JButton("Jugar Buscaminas");
+	private JButton botonJugarJuegoDeLaVida = new JButton("Jugar JuegoDeLaVida");
+	private JButton botonLogout = new JButton("Logout");
+	private int botonJugar = 0;
 
 	public Menu() {
-		setLayout(new GridLayout(4, 3));
+		setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(10,10,30,10);  
 
-		panel_1.setLayout(new GridLayout(0, 3));
-		panel_1.add(etiqueta_usuario);
-		panel_1.add(boton_ver_perfil);
-		add(panel_1);
-		
-		panel_2.setLayout(new GridLayout(0, 3));
-		etiqueta_pixelArt.setIcon(imagenPixelArt);
-		etiqueta_BuscaMinas.setIcon(imagenBuscaminas);
-		etiqueta_JuegoDeLavida.setIcon(imagenJuegoDeLaVida);
-		panel_2.add(etiqueta_pixelArt);
-		panel_2.add(etiqueta_BuscaMinas);
-		panel_2.add(etiqueta_JuegoDeLavida);
-		add(panel_2);
-		
-		panel_3.setLayout(new GridLayout(0, 3));
-		panel_3.add(botonJugarPixelArt);
-		panel_3.add(botonJugarBuscaminas);
-		panel_3.add(botonJugarJuegoDeLaVida);
-		add(panel_3);
-		
-		panel_4.setLayout(new GridLayout(0, 3));
-		panel_4.add(etiqueta_vacia);
-		panel_4.add(botonLogout);
-		add(panel_4);
-		
-		setSize(600,600);
+		c.gridx = 1;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		add(boton_ver_perfil, c);
+
+		addImageLabel("src/imagenes/pixel_art.jpg", 0, 1);
+		addImageLabel("src/imagenes/busca_minas.jpg", 1, 1);
+		addImageLabel("src/imagenes/juego_de_la_vida.jpg", 2, 1);
+
+		 // Botones Jugar
+        c.gridwidth = 1;
+        c.gridy = 2;
+
+        c.gridx = 0;
+        add(botonJugarPixelArt, c);
+
+        c.gridx = 1;
+        add(botonJugarBuscaminas, c);
+
+        c.gridx = 2;
+        add(botonJugarJuegoDeLaVida, c);
+
+        // Botón Logout
+        c.gridx = 1;
+        c.gridy = 3;
+        add(botonLogout, c);
+
+		botonJugarPixelArt.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Esbozo de método generado automáticamente
+
+				if (botonJugar == 0) {
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							try {
+								PixelArt frame = new PixelArt();
+								frame.setSize(500, 500);
+								frame.setVisible(true);
+								botonJugar++;
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
+			}
+		});
+	}
+
+	private void addImageLabel(String imagePath, int x, int y) {
+		ImageIcon imagen = new ImageIcon(
+				new ImageIcon(imagePath).getImage().getScaledInstance(50, 50, Image.SCALE_DEFAULT));
+		JLabel etiqueta = new JLabel(imagen);
+		GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets(10, 10, 10, 10);
+
+		c.gridx = x;
+		c.gridy = y;
+		add(etiqueta, c);
 	}
 	
-	public static void main (String[] args) {
+
+	public static void main(String[] args) {
 		Menu m = new Menu();
 	}
-
 }
