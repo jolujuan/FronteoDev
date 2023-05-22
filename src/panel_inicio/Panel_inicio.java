@@ -28,54 +28,6 @@ public class Panel_inicio extends JFrame {
 	private JPanel panel_principal = new JPanel();
 	private GridBagConstraints gbc = new GridBagConstraints();
 
-	public Panel_inicio() {
-		this.setTitle("Programa Juegos");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		contenedor.setLayout(new BorderLayout());
-
-		panel_superior.setLayout(new FlowLayout());
-
-		etiqueta_superior.setText("¡BIENVENIDO!");
-		panel_superior.add(etiqueta_superior);
-
-		etiqueta_registro.setText("Resgistrarse");
-		boton_registro.add(etiqueta_registro);
-
-		etiqueta_login.setText("Iniciar Sesión");
-		boton_login.add(etiqueta_login);
-
-		panel_principal.setLayout(new FlowLayout());
-
-		panel_principal.add(boton_registro);
-		panel_principal.add(boton_login);
-
-		contenedor.setLayout(new GridBagLayout());
-
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.weightx = 1.0;
-		gbc.weighty = 0.0;
-		gbc.fill = GridBagConstraints.CENTER;
-		contenedor.add(panel_superior, gbc);
-
-		gbc.gridy = 1;
-		gbc.weighty = 1.0;
-		contenedor.add(panel_principal, gbc);
-
-		boton_registro.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				mostrarRegistro();
-
-			}
-		});
-
-		this.setSize(500, 500);
-		this.setVisible(true);
-	}
-
 	public Container getContenedor() {
 		return contenedor;
 	}
@@ -226,16 +178,5 @@ public class Panel_inicio extends JFrame {
  //       setVisible(false);
     }
 	
-	private void mostrarRegistro() {
-		// Crear y mostrar el contenido de la ventana de registro
-		Registro ventanaRegistro = new Registro();
-		setContentPane(ventanaRegistro);
-		revalidate();
-		repaint();
-		// ventanaRegistro.setVisible(true);
-		// ventanaRegistro.setSize(500, 500);
-		// Ocultar la ventana actual
-		// setVisible(false);
-	}
 
 }
