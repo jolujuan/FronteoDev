@@ -1,6 +1,5 @@
 package login;
 
-
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -34,43 +33,41 @@ import java.awt.FlowLayout;
 import java.awt.Component;
 
 public class Login extends JPanel {
-	
+
 	private static final int FORTALEZA = 65536;
 	private static final int LONGITUD_HASH = 64 * 8;
-	
+
 	private JTextField fieldUsr;
 	private JPasswordField fieldPwd;
 	private JLabel text;
 
-	
 	public Login() {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
+
 		JPanel panel_1 = new JPanel();
 		add(panel_1);
-		
+
 		text = new JLabel();
 		panel_1.add(text);
 		text.setFont(new Font("Dialog", Font.BOLD, 30));
 		text.setHorizontalAlignment(SwingConstants.CENTER);
 		text.setText("Login");
-		
+
 		JPanel panel_2 = new JPanel();
 		add(panel_2);
 		panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
-		
+
 		JPanel panel = new JPanel();
 		panel_2.add(panel);
 		panel.setBackground(new Color(238, 238, 238));
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{300, 0};
-		gbl_panel.rowHeights = new int[]{15, 40, 0, 15, 40, 1, 0, 0};
-		gbl_panel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel.columnWidths = new int[] { 300, 0 };
+		gbl_panel.rowHeights = new int[] { 15, 40, 0, 15, 40, 1, 0, 0 };
+		gbl_panel.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		
 		JLabel texto1 = new JLabel("Usuario");
 		texto1.setFont(new Font("Dialog", Font.BOLD, 13));
 		texto1.setBackground(new Color(255, 255, 255));
@@ -80,7 +77,7 @@ public class Login extends JPanel {
 		gbc_texto1.gridx = 0;
 		gbc_texto1.gridy = 0;
 		panel.add(texto1, gbc_texto1);
-		
+
 		fieldUsr = new JTextField();
 		fieldUsr.setFont(new Font("Dialog", Font.PLAIN, 13));
 		GridBagConstraints gbc_fieldUsr = new GridBagConstraints();
@@ -90,7 +87,7 @@ public class Login extends JPanel {
 		gbc_fieldUsr.gridy = 1;
 		panel.add(fieldUsr, gbc_fieldUsr);
 		fieldUsr.setColumns(15);
-		
+
 		JLabel errorUsr = new JLabel("");
 		errorUsr.setForeground(new Color(224, 27, 36));
 		GridBagConstraints gbc_errorUsr = new GridBagConstraints();
@@ -99,7 +96,7 @@ public class Login extends JPanel {
 		gbc_errorUsr.gridx = 0;
 		gbc_errorUsr.gridy = 2;
 		panel.add(errorUsr, gbc_errorUsr);
-		
+
 		JLabel text2 = new JLabel("Contraseña");
 		text2.setFont(new Font("Dialog", Font.BOLD, 13));
 		GridBagConstraints gbc_text2 = new GridBagConstraints();
@@ -108,7 +105,7 @@ public class Login extends JPanel {
 		gbc_text2.gridx = 0;
 		gbc_text2.gridy = 3;
 		panel.add(text2, gbc_text2);
-		
+
 		fieldPwd = new JPasswordField();
 		fieldPwd.setFont(new Font("Dialog", Font.PLAIN, 13));
 		GridBagConstraints gbc_fieldPwd = new GridBagConstraints();
@@ -118,7 +115,7 @@ public class Login extends JPanel {
 		gbc_fieldPwd.gridy = 4;
 		panel.add(fieldPwd, gbc_fieldPwd);
 		fieldPwd.setColumns(15);
-		
+
 		JLabel errorPwd = new JLabel("");
 		errorPwd.setForeground(new Color(224, 27, 36));
 		GridBagConstraints gbc_errorPwd = new GridBagConstraints();
@@ -127,14 +124,14 @@ public class Login extends JPanel {
 		gbc_errorPwd.gridx = 0;
 		gbc_errorPwd.gridy = 5;
 		panel.add(errorPwd, gbc_errorPwd);
-		
+
 		JPanel panelBotones = new JPanel();
 		panelBotones.setAlignmentY(Component.TOP_ALIGNMENT);
 		FlowLayout flowLayout = (FlowLayout) panelBotones.getLayout();
 		flowLayout.setVgap(0);
 		flowLayout.setHgap(10);
 		add(panelBotones);
-		
+
 		JButton botoTorna = new JButton("Atrás");
 		botoTorna.setBorder(new EmptyBorder(8, 28, 8, 28));
 		panelBotones.add(botoTorna);
@@ -147,66 +144,66 @@ public class Login extends JPanel {
 				p.repaint();
 			}
 		});
-		
+
 		JButton botoLogin = new JButton("Entra");
 		botoLogin.setBorder(new EmptyBorder(8, 28, 8, 28));
 		panelBotones.add(botoLogin);
-		
+
 		botoLogin.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {
 
-			errorUsr.setText("");
-			errorPwd.setText("");
-			if (fieldUsr.getText().isEmpty()) {
-				errorUsr.setText("Error. Introduce un nombre.");
-			} else if (fieldPwd.getPassword().length == 0) {
-				errorPwd.setText("Error. Introduce una contraseña.");
-			} else {
-				ResultSet consulta = consultaSql();
-				try {
-					boolean userTrobat = false;
-					while (consulta.next() && !userTrobat) {
-						String nom = consulta.getString("email");
-						String pwd = consulta.getString("password");
-						String salto = consulta.getString("salto");
-						// login correcte
-						if (fieldUsr.getText().equals(nom)) {
-							userTrobat = true;
-							if (encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
-								System.out.println("Login exitoso");//Si el loguin es exitoso abre menu juegos
-								Menu menuJuegos = new Menu();
-								Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
-								p.getContentPane().removeAll();
-								p.getContentPane().add(menuJuegos);
-								p.revalidate();
-								p.repaint();
-
-							} else {
+				errorUsr.setText("");
+				errorPwd.setText("");
+				if (fieldUsr.getText().isEmpty()) {
+					errorUsr.setText("Error. Introduce un nombre.");
+				} else if (fieldPwd.getPassword().length == 0) {
+					errorPwd.setText("Error. Introduce una contraseña.");
+				} else {
+					ResultSet consulta = consultaSql();
+					try {
+						boolean userTrobat = false;
+						while (consulta.next() && !userTrobat) {
+							String nom = consulta.getString("email");
+							String pwd = consulta.getString("password");
+							String salto = consulta.getString("salto");
+							// login correcte
+							if (fieldUsr.getText().equals(nom)) {
+								userTrobat = true;
+								if (encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
+									System.out.println("Login exitoso");
+								} else {
 //											JOptionPane.showMessageDialog(contentPane, "Contrasenya incorrecta per a l'usuari "+nom);
-								System.out.println("No ha coincidit password");
-								System.out.println(pwd);
-								System.out.println(encriptarPassword(fieldPwd.getPassword(), salto));
+									System.out.println("No ha coincidit password");
+									System.out.println(pwd);
+									System.out.println(encriptarPassword(fieldPwd.getPassword(), salto));
+								}
 							}
 						}
-					}
-					if (!userTrobat) {
+						if (!userTrobat) {
 //									JOptionPane.showMessageDialog(contentPane, "No s'ha trobat aquest usuari");
+						}
+					} catch (SQLException e1) {
+						System.err.println("Error al recorrer la consulta.");
+						e1.printStackTrace();
 					}
-				} catch (SQLException e1) {
-					System.err.println("Error al recorrer la consulta.");
-					e1.printStackTrace();
 				}
-			}
-		
-		}
-		});
-		
 
-	setVisible(true);
+			}
+		});
+		botoTorna.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
+				p.getContentPane().removeAll();
+				p.getContentPane().add(p.getContenedor());
+				p.revalidate();
+				p.repaint();
+			}
+		});
+		setVisible(true);
 	}
 
 	public ResultSet consultaSql() {
-		
+
 		Connection c = Conexion.obtenerConexion();
 		ResultSet r = null;
 		try {
