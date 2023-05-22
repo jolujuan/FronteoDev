@@ -1,24 +1,17 @@
 package login;
 
-import java.awt.EventQueue;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import conexionBaseDatos.Conexion;
 
-import java.awt.BorderLayout;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import java.awt.Image;
 
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.sql.*;
 import java.util.Base64;
@@ -75,9 +68,9 @@ public class Login extends JPanel {
 		add(panel, gbc_panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[]{300, 0};
-		gbl_panel.rowHeights = new int[]{15, 40, 15, 40, 1, 0};
+		gbl_panel.rowHeights = new int[]{15, 40, 0, 15, 40, 1, 0};
 		gbl_panel.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 			
 		JLabel texto1 = new JLabel("Usuario");
@@ -97,16 +90,9 @@ public class Login extends JPanel {
 		gbc_fieldUsr.gridy = 1;
 		panel.add(fieldUsr, gbc_fieldUsr);
 		fieldUsr.setColumns(15);
-			
-		JLabel text2 = new JLabel("Contraseña");
-		GridBagConstraints gbc_text2 = new GridBagConstraints();
-		gbc_text2.anchor = GridBagConstraints.WEST;
-		gbc_text2.insets = new Insets(0, 0, 5, 0);
-		gbc_text2.gridx = 0;
-		gbc_text2.gridy = 2;
-		panel.add(text2, gbc_text2);
-			
+		
 		JLabel errorUsr = new JLabel("");
+		errorUsr.setForeground(new Color(224, 27, 36));
 		GridBagConstraints gbc_errorUsr = new GridBagConstraints();
 		gbc_errorUsr.anchor = GridBagConstraints.WEST;
 		gbc_errorUsr.insets = new Insets(0, 0, 5, 0);
@@ -114,20 +100,29 @@ public class Login extends JPanel {
 		gbc_errorUsr.gridy = 2;
 		panel.add(errorUsr, gbc_errorUsr);
 			
+		JLabel text2 = new JLabel("Contraseña");
+		GridBagConstraints gbc_text2 = new GridBagConstraints();
+		gbc_text2.anchor = GridBagConstraints.WEST;
+		gbc_text2.insets = new Insets(0, 0, 5, 0);
+		gbc_text2.gridx = 0;
+		gbc_text2.gridy = 3;
+		panel.add(text2, gbc_text2);
+			
 		fieldPwd = new JPasswordField();
 		GridBagConstraints gbc_fieldPwd = new GridBagConstraints();
 		gbc_fieldPwd.anchor = GridBagConstraints.WEST;
 		gbc_fieldPwd.insets = new Insets(0, 0, 5, 0);
 		gbc_fieldPwd.gridx = 0;
-		gbc_fieldPwd.gridy = 3;
+		gbc_fieldPwd.gridy = 4;
 		panel.add(fieldPwd, gbc_fieldPwd);
 		fieldPwd.setColumns(15);
 			
 		JLabel errorPwd = new JLabel("");
+		errorPwd.setForeground(new Color(224, 27, 36));
 		GridBagConstraints gbc_errorPwd = new GridBagConstraints();
 		gbc_errorPwd.anchor = GridBagConstraints.WEST;
 		gbc_errorPwd.gridx = 0;
-		gbc_errorPwd.gridy = 4;
+		gbc_errorPwd.gridy = 5;
 		panel.add(errorPwd, gbc_errorPwd);
 			
 		JButton botoLogin = new JButton("Entra");
@@ -199,6 +194,7 @@ public class Login extends JPanel {
 	}
 
 	public ResultSet consultaSql() {
+		
 		Connection c = Conexion.obtenerConexion();
 		ResultSet r = null;
 		try {
@@ -218,7 +214,6 @@ public class Login extends JPanel {
 		String passwordEncriptada = "";
 
 		try {
-			SecureRandom random = new SecureRandom();
 			salto = revertirSalto(saltoStr);
 
 			KeySpec spec = new PBEKeySpec(passWord, salto, FORTALEZA, LONGITUD_HASH);
