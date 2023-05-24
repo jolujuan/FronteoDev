@@ -18,8 +18,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import juegos.PixelArt;
+import panel_inicio.Panel_inicio;
 
 public class Menu extends JPanel {
 
@@ -59,7 +61,7 @@ public class Menu extends JPanel {
 
         c.gridx = 2;
         add(botonJugarJuegoDeLaVida, c);
-
+ 
         // Botón Logout
         c.gridx = 1;
         c.gridy = 3;
@@ -95,8 +97,22 @@ public class Menu extends JPanel {
 				}
 			}
 		});
+		
+		botonLogout.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SwingUtilities.getWindowAncestor(Menu.this).dispose();
+				
+				Panel_inicio ventanaInicio = new Panel_inicio();
+				ventanaInicio.setVisible(true);
+				
+			}
+		});
 	}
 
+	
+	
 	private void addImageLabel(String imagePath, int x, int y) {
 		ImageIcon imagen = new ImageIcon(
 				new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT));

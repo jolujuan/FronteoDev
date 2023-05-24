@@ -94,7 +94,7 @@ public class Panel_inicio extends JFrame {
 				 mostrarLogin();
 			}
 		});
-
+ 
 		this.setSize(600, 500);
 		this.setVisible(true);
 		centrarInterficiePantalla();

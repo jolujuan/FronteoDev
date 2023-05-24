@@ -267,42 +267,45 @@ public class Registro extends JPanel {
 					errorCorreo.setText("El campo no puede estar vacio.");
 					errorCorreo.setForeground(Color.red);
 					errorCorreo.setHorizontalAlignment(SwingConstants.CENTER);
+					
 				} else if (!Pattern.compile("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$").matcher(campoCorreo.getText())
 						.find()) {
 					errorCorreo.setText("El correo introducido no es correcto.");
 					errorCorreo.setForeground(Color.red);
 					errorCorreo.setHorizontalAlignment(SwingConstants.CENTER);
-				} else {					
 					
-					Connection c = Conexion.obtenerConexion();
+				} else {					
+					email = campoCorreo.getText();
+					camposCompletados++;
+					//Connection c = Conexion.obtenerConexion();
 
-					try {
-						//Obtener los correos de la base de datos
-						String correosListados = "SELECT email FROM usuarios";
-						PreparedStatement comprobarCorreos = c.prepareStatement(correosListados);
-						ResultSet resultado = comprobarCorreos.executeQuery();
-						boolean comproba=false;
-						
-						while (resultado.next()) {
-							//Comprobar que no exista coincidencia con el campo introducido
-							//Si es asi cambiar el semaforo ha acertado					
-							if (resultado.getString("email").equals(campoCorreo.getText())) {
-								errorCorreo.setText("El correo introducido ya existe.");
-								errorCorreo.setForeground(Color.red);
-								errorCorreo.setHorizontalAlignment(SwingConstants.CENTER);
-								comproba=true;
-							}					
-						}
-						
-						if (!comproba) {
-							email = campoCorreo.getText();
-							errorCorreo.setText("");
-							camposCompletados++;
-						}
-
-					} catch (Exception e2) {
-						System.out.println(e2);
-					}										
+//					try {
+//						//Obtener los correos de la base de datos
+//						String correosListados = "SELECT email FROM usuarios";
+//						PreparedStatement comprobarCorreos = c.prepareStatement(correosListados);
+//						ResultSet resultado = comprobarCorreos.executeQuery();
+//						boolean comproba=false;
+//						
+//						while (resultado.next()) {
+//							//Comprobar que no exista coincidencia con el campo introducido
+//							//Si es asi cambiar el semaforo ha acertado					
+//							if (resultado.getString("email").equals(campoCorreo.getText())) {
+//								errorCorreo.setText("El correo introducido ya existe.");
+//								errorCorreo.setForeground(Color.red);
+//								errorCorreo.setHorizontalAlignment(SwingConstants.CENTER);
+//								comproba=true;
+//							}					
+//						}
+//						
+//						if (!comproba) {
+//							email = campoCorreo.getText();
+//							errorCorreo.setText("");
+//							camposCompletados++;
+//						}
+//
+//					} catch (Exception e2) {
+//						System.out.println(e2);
+//					}										
 				}
 
 				if (campoPoblacion.getText().isEmpty()) {
