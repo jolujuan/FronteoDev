@@ -135,6 +135,7 @@ public class Login extends JPanel {
 		JButton botoTorna = new JButton("Atrás");
 		botoTorna.setBorder(new EmptyBorder(8, 28, 8, 28));
 		panelBotones.add(botoTorna);
+		
 		botoTorna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
@@ -171,7 +172,7 @@ public class Login extends JPanel {
 								userTrobat = true;
 								if (encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
 									System.out.println("Login exitoso");
-									Menu menu= new Menu();
+									Menu menu= new Menu(consulta.getString("email"));
 									Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
 									p.getContentPane().removeAll();
 									p.getContentPane().add(menu);
@@ -197,6 +198,7 @@ public class Login extends JPanel {
 
 			}
 		});
+		
 		botoTorna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);

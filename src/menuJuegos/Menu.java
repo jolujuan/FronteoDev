@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import juegos.BuscaMinas;
 import juegos.PixelArt;
 import panel_inicio.Panel_inicio;
 import perfil.Perfil;
@@ -30,11 +31,7 @@ public class Menu extends JPanel {
 	private int botonJugar = 0;
 	private boolean pixelArtAbierto = false;
 
-	public static void main(String[] args) {
-		Menu m = new Menu();
-	}
-
-	public Menu() {
+	public Menu(String correo) {
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(10, 10, 30, 10);
@@ -70,7 +67,6 @@ public class Menu extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Esbozo de método generado automáticamente
 				if (!pixelArtAbierto) { // Verificar si PixelArt está abierto
 					pixelArtAbierto = true; // Establecer como abierto
 
@@ -104,7 +100,27 @@ public class Menu extends JPanel {
 
 				Panel_inicio ventanaInicio = new Panel_inicio();
 				ventanaInicio.setVisible(true);
+			}
+		});
 
+		botonJugarBuscaminas.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (botonJugar == 0) {
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							try {
+								BuscaMinas frame = new BuscaMinas();
+								frame.setSize(500, 500);
+								frame.setVisible(true);
+								botonJugar++;
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
 			}
 		});
 
@@ -112,7 +128,7 @@ public class Menu extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Perfil perfil = new Perfil();
+				Perfil perfil = new Perfil(correo);
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Menu.this);
 				p.getContentPane().removeAll();
 				p.getContentPane().add(perfil);

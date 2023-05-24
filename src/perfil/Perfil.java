@@ -3,12 +3,18 @@ package perfil;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import conexionBaseDatos.Conexion;
 import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
 
@@ -44,7 +50,13 @@ public class Perfil extends JPanel {
 	JButton botonEliminarCuenta = new JButton("Eliminar Cuenta");
 	JButton botonVolver = new JButton("Volver");
 
-	public Perfil() {
+	public Perfil(String correo) {
+		String[] datosUsuario = datosUsuarioPerfil(correo);
+		datosNombre.setText(datosUsuario[1]);
+		datosApellido.setText(datosUsuario[2]);
+		datosPoblacion.setText(datosUsuario[4]);
+		datosCorreo.setText(datosUsuario[5]);
+
 		setLayout(new GridLayout(6, 3));
 
 		panel_titulo.setLayout(new GridLayout(0, 3));
@@ -80,20 +92,13 @@ public class Perfil extends JPanel {
 		panel_boton.add(botonEliminarCuenta);
 		panel_boton.add(botonVolver);
 		add(panel_boton);
-//		
-//		add(etiquetaPoblacion);
-//		add(datosPoblacion);
-//		
-//		add(etiquetaCorreo);
-//		add(datosCorreo);
-//		
-//		add(etiquetaVacia);
-//		add(botonEliminarCuenta);
+
 		botonVolver.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Menu menu = new Menu();
+				Menu menu = new Menu(correo);
+
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Perfil.this);
 				p.getContentPane().removeAll();
 				p.getContentPane().add(menu);
@@ -102,5 +107,77 @@ public class Perfil extends JPanel {
 
 			}
 		});
+
+		botonEliminarCuenta.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				eleminarUsuario(Integer.parseInt(datosUsuario[0]));
+				
+			}
+		});
 	}
+
+	public String[] datosUsuarioPerfil(String correo) {
+		String[] datos = new String[6];
+		String sentencia = "SELECT * FROM usuarios WHERE email = ?";
+		Connection c = Conexion.obtenerConexion();
+
+		try {
+			PreparedStatement consulta = c.prepareStatement(sentencia);
+			consulta.setString(1, correo);
+			ResultSet resultado = consulta.executeQuery();
+
+			while (resultado.next()) {
+				datos[0] = "" + resultado.getInt("id");
+
+				datos[1] = resultado.getString("nombre");
+				datos[2] = resultado.getString("apellidos");
+				System.out.println("Imagen:" + resultado.getBytes("imagen"));
+				datos[4] = resultado.getString("poblacion");
+				datos[5] = resultado.getString("email");
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return datos;
+	}
+
+	public void eleminarUsuario(int id) {
+		String sentenciaTablaPasswords = "DELETE FROM passwords WHERE idUsuario = ?";
+		String sentenciaTablaUsuarios = "DELETE FROM usuarios WHERE id = ?";
+		Connection c = Conexion.obtenerConexion();
+		
+		int opcion = JOptionPane.showConfirmDialog(null, "¿Esta seguro que desea eliminar su cuenta?", "Eliminar cuenta", JOptionPane.YES_NO_OPTION);
+		
+		
+		if(opcion == JOptionPane.YES_OPTION) {
+			try {
+				PreparedStatement consulta = c.prepareStatement(sentenciaTablaPasswords);
+				consulta.setInt(1, id);
+				consulta.executeUpdate();
+				
+				consulta = c.prepareStatement(sentenciaTablaUsuarios);
+				consulta.setInt(1, id);
+				consulta.executeUpdate();
+				
+				JOptionPane.showMessageDialog(null, "La cuenta ha sido eliminada");
+				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Perfil.this);
+				p.getContentPane().removeAll();
+				p.getContentPane().add(p.getContenedor());
+				p.revalidate();
+				p.repaint();
+				
+			} catch (Exception e) {
+				System.out.println("Error: " + e);
+			}
+		}
+		
+		
+	}
+
 }
