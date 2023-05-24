@@ -1,35 +1,21 @@
 package juegos;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+
 import javax.swing.border.EmptyBorder;
 
-import juegos.PixelArt.Casilla;
-import juegos.PixelArt.PaletaColores;
 
 public class BuscaMinas extends JFrame {
 	private Color colorSeleccionado = Color.BLACK;
@@ -58,8 +44,9 @@ public class BuscaMinas extends JFrame {
 	 * Create the frame.
 	 */
 	public BuscaMinas() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
+		setTitle("BuscaMinas");
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout());
@@ -78,10 +65,13 @@ public class BuscaMinas extends JFrame {
 	}
 	
 	public void IniciodeJuego() {
+//		setLayout(new BorderLayout());
+		setTitle("Buscaminas");
+		
 		JPanel inicio = new JPanel();
 		inicio.setFont(new Font("Verdana", Font.BOLD, 13));
 		// Siempre tendra el mismo tamaño
-		setSize(600, 600);
+		
 		// Centramos pantalla
 		centrarInterficiePantalla();
 
@@ -128,11 +118,13 @@ public class BuscaMinas extends JFrame {
 		botonesJPanel.add(cargarPartida, gbc);
 		// Lo que se visualizará directamente
 		contentPane.add(inicio, BorderLayout.NORTH);
-		JLabel seleccionaTableroJLabel = new JLabel("Selecciona la dificultat de la partida\r\n");
+		JLabel seleccionaTableroJLabel = new JLabel("Selecciona la dificultat de la partida \n");
 		inicio.add(seleccionaTableroJLabel);
 		seleccionaTableroJLabel.setBorder(new EmptyBorder(30, 0, 0, 0));
 		seleccionaTableroJLabel.setFont(new Font("Dialog", Font.BOLD, 14));
 		contentPane.add(botonesJPanel, BorderLayout.CENTER);
+		
+		
 		// Llamada al método para crear el tablero
 				tamañoPequeño.addActionListener(new ActionListener() {
 
@@ -142,6 +134,7 @@ public class BuscaMinas extends JFrame {
 						// Centramos pantalla
 						centrarInterficiePantalla();
 						crearTablero(8);
+						
 					}
 				});
 				tamañoMediano.addActionListener(new ActionListener() {
@@ -152,6 +145,7 @@ public class BuscaMinas extends JFrame {
 						// Centramos pantalla
 						centrarInterficiePantalla();
 						crearTablero(16);
+						
 					}
 				});
 				tamañoGrande.addActionListener(new ActionListener() {
@@ -162,6 +156,7 @@ public class BuscaMinas extends JFrame {
 						// Centramos pantalla
 						centrarInterficiePantalla();
 						crearTablero(25);
+						
 					}
 				});
 				repaint();
@@ -205,11 +200,98 @@ public class BuscaMinas extends JFrame {
 		}
 		
 		contentPane.removeAll();
-//		BotonesDescartaryGuardar();
+		
 		contentPane.add(tablero, BorderLayout.CENTER);
+		BotonesDescartaryGuardar();
+		
 		
 		repaint();
 		revalidate();
+	}
+	private void BotonesDescartaryGuardar() {
+		JPanel BotonesJuego = new JPanel(new GridBagLayout());
+
+		JButton Borrar = new JButton("Borrar");
+		Borrar.setPreferredSize(new Dimension(120, 40));
+		Borrar.setFont(new Font("Unispace", Font.BOLD, 12));
+		GridBagConstraints gbcBorrar = new GridBagConstraints();
+		gbcBorrar.anchor = GridBagConstraints.CENTER;
+		gbcBorrar.insets = new Insets(5, 10, 10, 10); // Añade espacio inferior
+		gbcBorrar.gridx = 0;
+		gbcBorrar.gridy = 0;
+		BotonesJuego.add(Borrar, gbcBorrar);
+
+		Borrar.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				contentPane.removeAll();
+				tablero.removeAll();
+				// Reininializar el color
+				colorSeleccionado = Color.gray;
+				IniciodeJuego();
+
+			}
+		});
+		JButton Nueva = new JButton("Nueva partida");
+		Nueva.setPreferredSize(new Dimension(120, 40));
+		Nueva.setFont(new Font("Unispace", Font.BOLD, 12));
+		GridBagConstraints gbcGNewGame = new GridBagConstraints();
+		gbcGNewGame.anchor = GridBagConstraints.CENTER;
+		gbcGNewGame.insets = new Insets(5, 10, 10, 10); // No añade espacio inferior
+		gbcGNewGame.gridx = 2;
+		gbcGNewGame.gridy = 0;
+		BotonesJuego.add(Nueva, gbcGNewGame);
+		Nueva.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+			
+
+			}
+		});
+		JButton Ranking = new JButton("Ranking");
+		Ranking.setPreferredSize(new Dimension(120, 40));
+		Ranking.setFont(new Font("Unispace", Font.BOLD, 12));
+		GridBagConstraints gbcGNewRank = new GridBagConstraints();
+		gbcGNewRank.anchor = GridBagConstraints.CENTER;
+		gbcGNewRank.insets = new Insets(5, 10, 10, 10); // No añade espacio inferior
+		gbcGNewRank.gridx = 3;
+		gbcGNewRank.gridy = 0;
+		BotonesJuego.add(Ranking, gbcGNewRank);
+		Nueva.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+			
+
+			}
+		});
+		
+
+		JButton Guardar = new JButton("Guardar");
+		Guardar.setPreferredSize(new Dimension(120, 40));
+		Guardar.setFont(new Font("Unispace", Font.BOLD, 12));
+		GridBagConstraints gbcGuardar = new GridBagConstraints();
+		gbcGuardar.anchor = GridBagConstraints.CENTER;
+		gbcGuardar.insets = new Insets(5, 10, 10, 10); // No añade espacio inferior
+		gbcGuardar.gridx = 4;
+		gbcGuardar.gridy = 0;
+		BotonesJuego.add(Guardar, gbcGuardar);
+		Guardar.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+			
+
+			}
+		});
+
+		contentPane.add(BotonesJuego, BorderLayout.SOUTH);
 	}
 	
 	private void centrarInterficiePantalla() {
