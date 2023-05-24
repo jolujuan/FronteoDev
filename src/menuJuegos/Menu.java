@@ -9,6 +9,9 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import juegos.BuscaMinas;
 import juegos.PixelArt;
 import panel_inicio.Panel_inicio;
 
@@ -28,7 +32,10 @@ public class Menu extends JPanel {
 	private JButton botonJugarJuegoDeLaVida = new JButton("Jugar JuegoDeLaVida");
 	private JButton botonLogout = new JButton("Logout");
 	private int botonJugar = 0;
-
+	private boolean pixelArtAbierto= false;
+	public static void main(String[] args) {
+		Menu m =new Menu();
+	}
 	public Menu() {
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -66,15 +73,23 @@ public class Menu extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Esbozo de método generado automáticamente
+				 if (!pixelArtAbierto) { // Verificar si PixelArt está abierto
+	                    pixelArtAbierto = true; // Establecer como abierto
 
-				if (botonJugar == 0) {
+
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
-								PixelArt frame = new PixelArt();
-								frame.setSize(500, 500);
-								frame.setVisible(true);
-								botonJugar++;
+								PixelArt frame1 = new PixelArt();
+								frame1.setSize(500, 500);
+								frame1.setVisible(true);
+								frame1.addWindowListener(new WindowAdapter() {
+									  @Override
+				                        public void windowClosed(WindowEvent e) {
+				                            pixelArtAbierto = false; // Restablecer como cerrado
+				                        }
+				                    });
+								
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -83,6 +98,7 @@ public class Menu extends JPanel {
 				}
 			}
 		});
+
 		
 		botonLogout.addActionListener(new ActionListener() {
 			
@@ -93,6 +109,28 @@ public class Menu extends JPanel {
 				Panel_inicio ventanaInicio = new Panel_inicio();
 				ventanaInicio.setVisible(true);
 				
+
+		botonJugarBuscaminas.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Esbozo de método generado automáticamente
+
+				if (botonJugar == 0) {
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							try {
+								BuscaMinas frame = new BuscaMinas();
+								frame.setSize(500, 500);
+								frame.setVisible(true);
+								botonJugar++;
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
+
 			}
 		});
 	}
@@ -101,7 +139,7 @@ public class Menu extends JPanel {
 	
 	private void addImageLabel(String imagePath, int x, int y) {
 		ImageIcon imagen = new ImageIcon(
-				new ImageIcon(imagePath).getImage().getScaledInstance(50, 50, Image.SCALE_DEFAULT));
+				new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT));
 		JLabel etiqueta = new JLabel(imagen);
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(10, 10, 10, 10);
@@ -112,7 +150,5 @@ public class Menu extends JPanel {
 	}
 	
 
-	public static void main(String[] args) {
-		Menu m = new Menu();
-	}
+	
 }
