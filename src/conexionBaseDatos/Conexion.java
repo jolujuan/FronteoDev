@@ -12,7 +12,7 @@ public class Conexion {
 	private static final String URL = "jdbc:mysql://ticsimarro.org:3306/1daw04_pro";
 	private static final String USERNAME = "1daw04_pro";
 	private static final String PASSWORD = "V8o1wKVgqV";
-	
+	//private static final String URL ="jdbc:mysql://192.168.14.200:3306/1daw04_pro";
 //	public boolean conectar() {
 //		
 //		try {
