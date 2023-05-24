@@ -1,10 +1,16 @@
 package perfil;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import menuJuegos.Menu;
+import panel_inicio.Panel_inicio;
 
 public class Perfil extends JPanel {
 
@@ -36,7 +42,7 @@ public class Perfil extends JPanel {
 	JLabel etiquetaVacia5 = new JLabel();
 	JLabel etiquetaVacia6 = new JLabel();
 	JButton botonEliminarCuenta = new JButton("Eliminar Cuenta");
-	JButton botonVolver = new JButton("Volver"); 
+	JButton botonVolver = new JButton("Volver");
 
 	public Perfil() {
 		setLayout(new GridLayout(6, 3));
@@ -56,7 +62,7 @@ public class Perfil extends JPanel {
 		panel_apellido.setLayout(new GridLayout(0, 3));
 		panel_apellido.add(etiquetaApellido);
 		panel_apellido.add(datosApellido);
- 
+
 		add(panel_apellido);
 //
 		panel_poblacion.setLayout(new GridLayout(0, 3));
@@ -83,5 +89,18 @@ public class Perfil extends JPanel {
 //		
 //		add(etiquetaVacia);
 //		add(botonEliminarCuenta);
+		botonVolver.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Menu menu = new Menu();
+				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Perfil.this);
+				p.getContentPane().removeAll();
+				p.getContentPane().add(menu);
+				p.revalidate();
+				p.repaint();
+
+			}
+		});
 	}
 }
