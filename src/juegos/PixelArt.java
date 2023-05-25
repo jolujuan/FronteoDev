@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -18,6 +19,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,41 +37,52 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 public class PixelArt extends JFrame {
 	private Color colorSeleccionado = Color.BLACK;
 	private JPanel contentPane;
 	private JPanel tablero = new JPanel();
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
+	//Para trabajar directamente eliminaremos desmarcaremos el main
+	/*public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					PixelArt frame = new PixelArt();
 					frame.setSize(500, 500);
 					frame.setVisible(true);
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
-	}
-
+	}*/
+	
 	/**
 	 * Create the frame.
 	 */
 	public PixelArt() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout());
 		IniciodeJuego();
+		 addWindowListener(new WindowAdapter() {
+         	
+             @Override
+             
+             public void windowClosed(WindowEvent e) {
+             	setVisible(false);
+                
+             }
+         });
 
 	}
 
@@ -79,7 +93,7 @@ public class PixelArt extends JFrame {
 		int height = this.getSize().height;
 		int x = (tamañoPantalla.width - width) / 2; // Centrado horizontalmente
 		int y = (tamañoPantalla.height - height) / 2;
-		; // En la parte superior de la pantalla
+		 // En la parte superior de la pantalla
 
 		// Establecer la posición de la ventana
 		this.setLocation(x, y);
@@ -91,7 +105,8 @@ public class PixelArt extends JFrame {
 		JPanel inicio = new JPanel();
 		inicio.setFont(new Font("Verdana", Font.BOLD, 13));
 		JLabel seleccionaTableroJLabel = new JLabel("Selecciona el tamaño del tablero");
-		seleccionaTableroJLabel.setFont(new Font("Unispace", Font.BOLD, 12));
+		seleccionaTableroJLabel.setBorder(new EmptyBorder(30, 0, 0, 0));
+		seleccionaTableroJLabel.setFont(new Font("Dialog", Font.BOLD, 14));
 		inicio.add(seleccionaTableroJLabel);
 		// Siempre tendra el mismo tamaño
 		setSize(600, 600);
@@ -187,27 +202,51 @@ public class PixelArt extends JFrame {
 		revalidate();
 
 	}
+	
+	public class MyButton extends JButton {
+	    private Color color;
+
+	    public MyButton(Color color) {
+	        this.color = color;
+	        setOpaque(true);
+	        setBorderPainted(false);
+	    }
+
+	    @Override
+	    protected void paintComponent(Graphics g) {
+	        g.setColor(color);
+	        g.fillRect(0, 0, getWidth(), getHeight());
+	        super.paintComponent(g);
+	    }
+	}
+
 
 	public class PaletaColores extends JPanel {
 
 		public PaletaColores() {
 			// Obtener el ancho y la altura configurado como 50 pixeles
 			this.setPreferredSize(new Dimension(getWidth(), 50));
-			this.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 			// Formato para los botnes
 			this.setLayout(new GridLayout(0, 6));
+			this.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
 			// Crear el array con los colores que deseamos
 			Color[] colores = { Color.WHITE, Color.BLUE, Color.GREEN, Color.GRAY, Color.ORANGE, Color.RED };
+			
 			for (Color color : colores) {
 
 				// Pintar los botones con sus colores
 				JButton buttonColor = new JButton();
+				 //buttonColor.setOpaque(false);
 				buttonColor.setBackground(color);
+				buttonColor.setBorder(new LineBorder(color,15));
+
 
 				// Para el color blanco mostrar un mensaje de seleccion color
 				if (color.equals(Color.WHITE)) {
 					buttonColor.setText("Selecciona");
+					buttonColor.setBackground(new Color(230,230,230));
+					buttonColor.setBorder(null);
 				}
 
 				buttonColor.addActionListener(new ActionListener() {
@@ -375,7 +414,6 @@ public class PixelArt extends JFrame {
 				// Obtenermos todos los paneles del tablero en una matriz
 				Component[] casillas = tablero.getComponents();
 
-				System.out.println(Arrays.toString(casillas));
 				String line = null;
 
 				int recorrido = 0;
