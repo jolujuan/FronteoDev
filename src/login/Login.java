@@ -8,7 +8,7 @@ import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
 
 import javax.swing.JLabel;
-
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.JTextField;
@@ -22,12 +22,10 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.awt.Font;
 import java.awt.Color;
 import javax.swing.JPasswordField;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import java.awt.FlowLayout;
 import java.awt.Component;
@@ -48,11 +46,10 @@ public class Login extends JPanel {
 		JPanel panel_1 = new JPanel();
 		add(panel_1);
 
-		text = new JLabel();
+		text = new JLabel("Login");
 		panel_1.add(text);
 		text.setFont(new Font("Dialog", Font.BOLD, 30));
 		text.setHorizontalAlignment(SwingConstants.CENTER);
-		text.setText("Login");
 
 		JPanel panel_2 = new JPanel();
 		add(panel_2);
@@ -68,7 +65,7 @@ public class Login extends JPanel {
 		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JLabel texto1 = new JLabel("Usuario");
+		JLabel texto1 = new JLabel("Email");
 		texto1.setFont(new Font("Dialog", Font.BOLD, 13));
 		texto1.setBackground(new Color(255, 255, 255));
 		GridBagConstraints gbc_texto1 = new GridBagConstraints();
@@ -124,26 +121,6 @@ public class Login extends JPanel {
 		gbc_errorPwd.gridx = 0;
 		gbc_errorPwd.gridy = 5;
 		panel.add(errorPwd, gbc_errorPwd);
-			
-		JButton botoLogin = new JButton("Entra");
-			
-		GridBagConstraints gbc_botoLogin = new GridBagConstraints();
-		gbc_botoLogin.anchor = GridBagConstraints.NORTHEAST;
-		gbc_botoLogin.insets = new Insets(0, 0, 0, 5);
-		gbc_botoLogin.gridx = 0;
-		gbc_botoLogin.gridy = 2;
-		add(botoLogin, gbc_botoLogin);
-			
-		JButton botoTorna = new JButton("Atrás");
-			
-		GridBagConstraints gbc_botoTorna = new GridBagConstraints();
-		gbc_botoTorna.anchor = GridBagConstraints.NORTHWEST;
-		gbc_botoTorna.gridx = 1;
-		gbc_botoTorna.gridy = 2;
-		add(botoTorna, gbc_botoTorna);
-			
-		botoLogin.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
 
 		JPanel panelBotones = new JPanel();
 		panelBotones.setAlignmentY(Component.TOP_ALIGNMENT);
@@ -200,15 +177,12 @@ public class Login extends JPanel {
 									p.repaint();
 									
 								} else {
-//											JOptionPane.showMessageDialog(contentPane, "Contrasenya incorrecta per a l'usuari "+nom);
-									System.out.println("No ha coincidit password");
-									System.out.println(pwd);
-									System.out.println(encriptarPassword(fieldPwd.getPassword(), salto));
+									JOptionPane.showMessageDialog(panel, "Contrasenya incorrecta per a l'usuari "+nom);
 								}
 							}
 						}
 						if (!userTrobat) {
-//									JOptionPane.showMessageDialog(contentPane, "No s'ha trobat aquest usuari");
+							JOptionPane.showMessageDialog(panel, "No s'ha trobat aquest usuari");
 						}
 					} catch (SQLException e1) {
 						System.err.println("Error al recorrer la consulta.");
@@ -216,15 +190,6 @@ public class Login extends JPanel {
 					}
 				}
 
-			}
-		});
-		botoTorna.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
-				p.getContentPane().removeAll();
-				p.getContentPane().add(p.getContenedor());
-				p.revalidate();
-				p.repaint();
 			}
 		});
 		
@@ -243,6 +208,7 @@ public class Login extends JPanel {
 	public ResultSet consultaSql() {
 
 		Connection c = Conexion.obtenerConexion();
+//		Connection c = Conexion.obtenerConexionLocal();
 		ResultSet r = null;
 		try {
 			// Enviar una sentència SQL per recuperar els clients
@@ -267,7 +233,6 @@ public class Login extends JPanel {
 			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
 			byte[] hash = factory.generateSecret(spec).getEncoded();
-//			passWord = Base64.getEncoder().encodeToString(hash);
 
 			passwordEncriptada = FORTALEZA + saltoStr + LONGITUD_HASH + Base64.getEncoder().encodeToString(hash);
 
