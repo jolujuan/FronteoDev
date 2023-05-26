@@ -175,7 +175,7 @@ public class Menu extends JPanel {
 
 	private void addImageLabel(String imagePath, int x, int y) {
 		ImageIcon imagen = new ImageIcon(
-				new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT));
+				new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH));
 		JLabel etiqueta = new JLabel(imagen);
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(10, 10, 10, 10);

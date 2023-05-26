@@ -1,31 +1,36 @@
 package perfil;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
 import conexionBaseDatos.Conexion;
 import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Dimension;
-import javax.swing.border.EmptyBorder;
-import javax.swing.SwingConstants;
 
 public class Perfil extends JPanel {
-
+	private static byte[] arrayBits;
 	JPanel panel_titulo = new JPanel();
 	JPanel panel_nombre = new JPanel();
 	JPanel panel_apellido = new JPanel();
@@ -46,8 +51,7 @@ public class Perfil extends JPanel {
 	JLabel etiquetaCorreo = new JLabel("Correo:");
 	JLabel datosCorreo = new JLabel("Datos Correo");
 
-
-	JLabel etiquetaImagenPerfil = new JLabel("Imagen");
+	JLabel etiquetaImagenPerfil = new JLabel();
 	JLabel etiquetaVacia1 = new JLabel();
 
 	JLabel etiquetaVacia2 = new JLabel();
@@ -57,7 +61,7 @@ public class Perfil extends JPanel {
 	JLabel etiquetaVacia6 = new JLabel();
 	JButton botonEliminarCuenta = new JButton("Eliminar Cuenta");
 	JButton botonVolver = new JButton("Volver");
-     
+
 	public Perfil(String correo) {
 		String[] datosUsuario = datosUsuarioPerfil(correo);
 		datosNombre.setText(datosUsuario[1]);
@@ -66,15 +70,16 @@ public class Perfil extends JPanel {
 		datosCorreo.setText(datosUsuario[5]);
 
 		setLayout(new GridLayout(6, 3));
-
-
-		panel_titulo.setLayout(new GridLayout(0, 3));
+		panel_titulo.setLayout(new GridLayout(0, 3, 0, 0));
+		etiquetaImagenPerfil.setFont(new Font("Dialog", Font.PLAIN, 12));
 		panel_titulo.add(etiquetaImagenPerfil);
 
-		panel_titulo.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel_titulo.setLayout(new GridLayout(0, 3));
+		panel_titulo.setBorder(new EmptyBorder(0, 20, 0, 0));
+
 		etiquetaTitulo.setHorizontalTextPosition(SwingConstants.CENTER);
 		etiquetaTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-		etiquetaTitulo.setBorder(new EmptyBorder(10, 0, 0, 0));
+		etiquetaTitulo.setBorder(new EmptyBorder(0, 0, 0, 0));
 		etiquetaTitulo.setFont(new Font("Dialog", Font.BOLD, 16));
 
 		panel_titulo.add(etiquetaTitulo);
@@ -140,7 +145,7 @@ public class Perfil extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 
 				eleminarUsuario(Integer.parseInt(datosUsuario[0]));
-				
+
 			}
 		});
 	}
@@ -160,10 +165,15 @@ public class Perfil extends JPanel {
 
 				datos[1] = resultado.getString("nombre");
 				datos[2] = resultado.getString("apellidos");
-				System.out.println("Imagen:" + resultado.getBytes("imagen"));
+				arrayBits = resultado.getBytes("imagen");
+				System.out.println("Array de bits " + arrayBits);
+				System.out.println("Consulta " + resultado.getBytes("imagen"));
 				datos[4] = resultado.getString("poblacion");
 				datos[5] = resultado.getString("email");
+
 			}
+			//adaptarImagen(arrayBits);
+			//etiquetaImagenPerfil.setIcon(obtenerImagenDesdeBytes(arrayBits));
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -177,21 +187,20 @@ public class Perfil extends JPanel {
 		String sentenciaTablaPasswords = "DELETE FROM passwords WHERE idUsuario = ?";
 		String sentenciaTablaUsuarios = "DELETE FROM usuarios WHERE id = ?";
 		Connection c = Conexion.obtenerConexion();
-		
-		int opcion = JOptionPane.showConfirmDialog(null, "¿Esta seguro que desea eliminar su cuenta?", "Eliminar cuenta", JOptionPane.YES_NO_OPTION);
-		
-		
-		if(opcion == JOptionPane.YES_OPTION) {
+
+		int opcion = JOptionPane.showConfirmDialog(null, "¿Esta seguro que desea eliminar su cuenta?",
+				"Eliminar cuenta", JOptionPane.YES_NO_OPTION);
+
+		if (opcion == JOptionPane.YES_OPTION) {
 			try {
 				PreparedStatement consulta = c.prepareStatement(sentenciaTablaPasswords);
 				consulta.setInt(1, id);
 				consulta.executeUpdate();
-				
+
 				consulta = c.prepareStatement(sentenciaTablaUsuarios);
 				consulta.setInt(1, id);
 				consulta.executeUpdate();
-				
-				
+
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Perfil.this);
 				p.getContentPane().removeAll();
 				p.getContentPane().add(p.getContenedor());
@@ -202,8 +211,56 @@ public class Perfil extends JPanel {
 				System.out.println("Error: " + e);
 			}
 		}
-		
-		
 	}
 
+	public void adaptarImagen(byte[] arrayBits) {
+		// Crear un flujo de entrada a partir de los bytes de la imagen
+		ByteArrayInputStream bais = new ByteArrayInputStream(arrayBits);
+		System.out.println("ByteArrayInputStream " + bais);
+		// Leer la imagen utilizando ImageIO y convertirla a un objeto de tipo
+		// BufferedImage
+
+		// ImageIcon nuevoIcono = null;
+		try {
+
+			BufferedImage imagen = ImageIO.read(bais);
+			System.out.println("BufferedImage " + imagen);
+			ImageIcon icono = new ImageIcon(imagen);
+
+			Image imagenPerfil = icono.getImage();
+			int anchoImagen = icono.getIconWidth();
+			int altoImagen = icono.getIconHeight();
+			int nuevaResolucion = (altoImagen * 140) / anchoImagen;
+			Image nuevaImagen = imagenPerfil.getScaledInstance(140, nuevaResolucion, java.awt.Image.SCALE_SMOOTH);
+			ImageIcon nuevoIcono = new ImageIcon(nuevaImagen);
+			etiquetaImagenPerfil.setIcon(nuevoIcono);
+		} catch (IOException e) {
+
+			System.out.println("Error: " + e);
+		}
+
+	}
+
+	public static ImageIcon obtenerImagenDesdeBytes(byte[] bytesImagen) {
+        try {
+            // Crear un flujo de entrada a partir de los bytes de la imagen
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytesImagen);
+
+            // Leer la imagen utilizando ImageIO y convertirla a un objeto de tipo BufferedImage
+            BufferedImage imagen = ImageIO.read(bais);
+
+            // Escalar la imagen al tamaño deseado (opcional)
+            int anchoDeseado = 100; // Ajusta el ancho deseado según tus necesidades
+            int altoDeseado = 100; // Ajusta el alto deseado según tus necesidades
+            Image imagenEscalada = imagen.getScaledInstance(anchoDeseado, altoDeseado, Image.SCALE_SMOOTH);
+
+            // Crear un objeto ImageIcon a partir de la imagen escalada
+            return new ImageIcon(imagenEscalada);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+	
 }
