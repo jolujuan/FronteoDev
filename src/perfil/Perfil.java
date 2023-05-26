@@ -166,18 +166,19 @@ public class Perfil extends JPanel {
 				datos[1] = resultado.getString("nombre");
 				datos[2] = resultado.getString("apellidos");
 				arrayBits = resultado.getBytes("imagen");
-				System.out.println("Array de bits " + arrayBits);
-				System.out.println("Consulta " + resultado.getBytes("imagen"));
+//				System.out.println("Array de bits " + arrayBits);
+//				System.out.println("Consulta " + resultado.getBytes("imagen"));
+//				System.out.println("Longitud: " + arrayBits.length);
+
 				datos[4] = resultado.getString("poblacion");
 				datos[5] = resultado.getString("email");
 
 			}
-			//adaptarImagen(arrayBits);
-			//etiquetaImagenPerfil.setIcon(obtenerImagenDesdeBytes(arrayBits));
-
+			// adaptarImagen(arrayBits);
+			// etiquetaImagenPerfil.setIcon(obtenerImagenDesdeBytes(arrayBits));
+			adaptarImagen(arrayBits);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error: " + e);
 		}
 
 		return datos;
@@ -214,53 +215,17 @@ public class Perfil extends JPanel {
 	}
 
 	public void adaptarImagen(byte[] arrayBits) {
-		// Crear un flujo de entrada a partir de los bytes de la imagen
-		ByteArrayInputStream bais = new ByteArrayInputStream(arrayBits);
-		System.out.println("ByteArrayInputStream " + bais);
-		// Leer la imagen utilizando ImageIO y convertirla a un objeto de tipo
-		// BufferedImage
 
-		// ImageIcon nuevoIcono = null;
-		try {
-
-			BufferedImage imagen = ImageIO.read(bais);
-			System.out.println("BufferedImage " + imagen);
-			ImageIcon icono = new ImageIcon(imagen);
-
-			Image imagenPerfil = icono.getImage();
-			int anchoImagen = icono.getIconWidth();
-			int altoImagen = icono.getIconHeight();
-			int nuevaResolucion = (altoImagen * 140) / anchoImagen;
-			Image nuevaImagen = imagenPerfil.getScaledInstance(140, nuevaResolucion, java.awt.Image.SCALE_SMOOTH);
-			ImageIcon nuevoIcono = new ImageIcon(nuevaImagen);
-			etiquetaImagenPerfil.setIcon(nuevoIcono);
-		} catch (IOException e) {
-
-			System.out.println("Error: " + e);
-		}
+		ImageIcon icono = new ImageIcon(arrayBits);
+		System.out.println("Metodo");
+		Image imagenPerfil = icono.getImage();
+		int anchoImagen = icono.getIconWidth();
+		int altoImagen = icono.getIconHeight();
+		int nuevaResolucion = (altoImagen * 100) / anchoImagen;
+		Image nuevaImagen = imagenPerfil.getScaledInstance(100, nuevaResolucion, java.awt.Image.SCALE_SMOOTH);
+		ImageIcon nuevoIcono = new ImageIcon(nuevaImagen);
+		etiquetaImagenPerfil.setIcon(nuevoIcono);
 
 	}
 
-	public static ImageIcon obtenerImagenDesdeBytes(byte[] bytesImagen) {
-        try {
-            // Crear un flujo de entrada a partir de los bytes de la imagen
-            ByteArrayInputStream bais = new ByteArrayInputStream(bytesImagen);
-
-            // Leer la imagen utilizando ImageIO y convertirla a un objeto de tipo BufferedImage
-            BufferedImage imagen = ImageIO.read(bais);
-
-            // Escalar la imagen al tamaño deseado (opcional)
-            int anchoDeseado = 100; // Ajusta el ancho deseado según tus necesidades
-            int altoDeseado = 100; // Ajusta el alto deseado según tus necesidades
-            Image imagenEscalada = imagen.getScaledInstance(anchoDeseado, altoDeseado, Image.SCALE_SMOOTH);
-
-            // Crear un objeto ImageIcon a partir de la imagen escalada
-            return new ImageIcon(imagenEscalada);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        return null;
-    }
-	
 }
