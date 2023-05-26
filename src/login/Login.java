@@ -38,6 +38,7 @@ public class Login extends JPanel {
 	private JTextField fieldUsr;
 	private JPasswordField fieldPwd;
 	private JLabel text;
+	private JPanel panel;
 
 	public Login() {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -55,7 +56,7 @@ public class Login extends JPanel {
 		add(panel_2);
 		panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
 
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		panel_2.add(panel);
 		panel.setBackground(new Color(238, 238, 238));
 		GridBagLayout gbl_panel = new GridBagLayout();
@@ -156,38 +157,15 @@ public class Login extends JPanel {
 					errorUsr.setText("Error. Introduce un nombre.");
 				} else if (fieldPwd.getPassword().length == 0) {
 					errorPwd.setText("Error. Introduce una contraseña.");
-				} else {
-					ResultSet consulta = consultaSql();
-					try {
-						boolean userTrobat = false;
-						while (consulta.next() && !userTrobat) {
-							String nom = consulta.getString("email");
-							String pwd = consulta.getString("password");
-							String salto = consulta.getString("salto");
-							// login correcte
-							if (fieldUsr.getText().equals(nom)) {
-								userTrobat = true;
-								if (encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
-									System.out.println("Login exitoso");
-									Menu menu= new Menu(consulta.getString("email"));
-									Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
-									p.getContentPane().removeAll();
-									p.getContentPane().add(menu);
-									p.revalidate();
-									p.repaint();
-									
-								} else {
-									JOptionPane.showMessageDialog(panel, "Contrasenya incorrecta per a l'usuari "+nom);
-								}
-							}
-						}
-						if (!userTrobat) {
-							JOptionPane.showMessageDialog(panel, "No s'ha trobat aquest usuari");
-						}
-					} catch (SQLException e1) {
-						System.err.println("Error al recorrer la consulta.");
-						e1.printStackTrace();
-					}
+				} else if(consultaSql()){
+					System.out.println("Login exitoso");
+					Menu menu= new Menu(fieldUsr.getText());
+					Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
+					p.getContentPane().removeAll();
+					p.getContentPane().add(menu);
+					p.revalidate();
+					p.repaint();
+					
 				}
 
 			}
@@ -205,21 +183,47 @@ public class Login extends JPanel {
 		setVisible(true);
 	}
 
-	public ResultSet consultaSql() {
+	public boolean consultaSql() {
 
 		Connection c = Conexion.obtenerConexion();
 //		Connection c = Conexion.obtenerConexionLocal();
 		ResultSet r = null;
+		boolean usrValidat=true;
 		try {
 			// Enviar una sentència SQL per recuperar els clients
 			Statement cerca = c.createStatement();
 			r = cerca.executeQuery(
 					"SELECT usuarios.email, passwords.password, passwords.salto FROM usuarios JOIN passwords ON usuarios.id=passwords.idUsuario");
-//			c.close();
+			try {
+				boolean userTrobat = false;
+				while (r.next() && !userTrobat) {
+					String nom = r.getString("email");
+					String pwd = r.getString("password");
+					String salto = r.getString("salto");
+					// login correcte
+					if (fieldUsr.getText().equals(nom)) {
+						userTrobat = true;
+						if (!encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
+							JOptionPane.showMessageDialog(panel, "Contrasenya incorrecta per a l'usuari "+nom);
+							usrValidat=false;
+							
+						}
+					}
+				}
+				if (!userTrobat) {
+					JOptionPane.showMessageDialog(panel, "No s'ha trobat aquest usuari");
+					usrValidat=false;
+				}
+			} catch (SQLException e1) {
+				System.err.println("Error al recorrer la consulta.");
+				e1.printStackTrace();
+			}
+			c.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return r;
+		
+		return usrValidat;
 	}
 
 	public String encriptarPassword(char[] passWord, String saltoStr) {
