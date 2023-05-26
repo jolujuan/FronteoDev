@@ -3,7 +3,8 @@ package juegos;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -12,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.OverlayLayout;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
@@ -29,7 +31,7 @@ public class BuscaMinas extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -43,7 +45,7 @@ public class BuscaMinas extends JFrame {
 				}
 			}
 		});
-	}*/
+	}
 
 	/**
 	 * Create the frame.
@@ -180,10 +182,13 @@ public class BuscaMinas extends JFrame {
 			setBackground(colorActual);
 			setBorder(BorderFactory.createLineBorder(new Color(128, 128, 128, 50), 1));
 		}
+		
 
 	}
 
 	private void crearTablero(int f, int numeroMinas) {
+		JPanel TableroFinal= new JPanel();
+		TableroFinal.setLayout(new OverlayLayout(TableroFinal));
 		tableroCasillas = new Casilla[f][f];
 		// Verificar que el número de minas sea válido
 		int totalCasillas = f * f;
@@ -210,25 +215,38 @@ public class BuscaMinas extends JFrame {
 			}
 		}
 
-		contentPane.removeAll();
-		contentPane.add(tablero, BorderLayout.CENTER);
+		
+		
 
 		// TABLERO SECUNDARIO DONDE SE TAPARAN LAS MINAS Y LOS NUMEROS .....
 		// Crear el tablero secundario con casillas de fondo gris
-		/*
-		 * tableroSecundario = new JPanel(); tableroSecundario.setPreferredSize(new
-		 * Dimension(f * tamañoCasilla, f * tamañoCasilla));
-		 * tableroSecundario.setBounds(50, 50, f * tamañoCasilla, f * tamañoCasilla);
-		 * tableroSecundario.setLayout(new GridLayout(f, f));
-		 * 
-		 * for (int fila = 0; fila < f; fila++) { for (int columna = 0; columna < f;
-		 * columna++) { Casilla casilla = new Casilla();
-		 * 
-		 * casilla.setPreferredSize(new Dimension(tamañoCasilla, tamañoCasilla));
-		 * tableroSecundario.add(casilla); } }
-		 * 
-		 * contentPane.add(tableroSecundario, BorderLayout.CENTER);
-		 */
+
+		tableroSecundario = new JPanel();
+		tableroSecundario.setPreferredSize(new Dimension(f * tamañoCasilla, f * tamañoCasilla));
+		tableroSecundario.setBounds(50, 50, f * tamañoCasilla, f * tamañoCasilla);
+		tableroSecundario.setLayout(new GridLayout(f, f));
+
+		for (int fila = 0; fila < f; fila++) {
+			for (int columna = 0; columna < f; columna++) {
+				Casilla casilla = new Casilla();
+
+				casilla.setPreferredSize(new Dimension(tamañoCasilla, tamañoCasilla));
+				casilla.addMouseListener(new MouseAdapter() {
+		            @Override
+		            public void mouseClicked(MouseEvent e) {
+		                if (e.getButton() == MouseEvent.BUTTON1) {
+		                    // Código a ejecutar cuando se hace clic izquierdo en el panel
+		                	casilla.setVisible(false);
+		                }
+		            }
+		        });
+				tableroSecundario.add(casilla);
+			}
+		}
+		TableroFinal.add(tableroSecundario);
+		TableroFinal.add(tablero);
+		contentPane.removeAll();
+		contentPane.add(TableroFinal, BorderLayout.CENTER);
 
 		BotonesDescartaryGuardar();
 
@@ -261,7 +279,7 @@ public class BuscaMinas extends JFrame {
 
 	public void contarMinasAdyacentes(int f) {
 		for (int fila = 0; fila < f; fila++) {
-		    // Iteramos sobre cada fila del tablero
+			// Iteramos sobre cada fila del tablero
 			for (int columna = 0; columna < f; columna++) {
 				// Si la celda actual contiene una mina, no necesitamos contar las minas
 				// adyacentes
@@ -274,13 +292,14 @@ public class BuscaMinas extends JFrame {
 				// Revisar las celdas adyacentes
 				for (int i = -1; i <= 1; i++) {
 					for (int j = -1; j <= 1; j++) {
-	                    // Calculamos las coordenadas de la celda adyacente
+						// Calculamos las coordenadas de la celda adyacente
 						int filaAdyacente = fila + i;
 						int columnaAdyacente = columna + j;
 
 						// Verificar que la celda adyacente se encuentre dentro del tablero
 						if (filaAdyacente >= 0 && filaAdyacente < f && columnaAdyacente >= 0 && columnaAdyacente < f) {
-	                        // Si la celda adyacente tiene una mina, incrementamos el contador de minas adyacentes
+							// Si la celda adyacente tiene una mina, incrementamos el contador de minas
+							// adyacentes
 							if (tableroCasillas[filaAdyacente][columnaAdyacente].tieneMina) {
 								minasAdyacentes++;
 							}
@@ -290,26 +309,27 @@ public class BuscaMinas extends JFrame {
 
 				// Asignar el número de minas adyacentes a la celda actual
 				tableroCasillas[fila][columna].minasAdyacentes = minasAdyacentes;
-	            // Si hay minas adyacentes, añadimos una etiqueta a la celda con el número de minas adyacentes
+				// Si hay minas adyacentes, añadimos una etiqueta a la celda con el número de
+				// minas adyacentes
 				if (minasAdyacentes > 0) {
 					JLabel label = new JLabel(String.valueOf(minasAdyacentes));
 					label.setFont(new Font("Dialog", Font.BOLD, 20));
 //					label.setHorizontalAlignment(JLabel.CENTER);
 //					label.setVerticalAlignment(JLabel.CENTER);
 
-					if(label.getText().equals("1")) {
+					if (label.getText().equals("1")) {
 						label.setForeground(Color.decode("#0000FF"));
-						
-					}else if(label.getText().equals("2")) {
+
+					} else if (label.getText().equals("2")) {
 						label.setForeground(Color.green);
 
-					}else if (label.getText().equals("3")) {
+					} else if (label.getText().equals("3")) {
 						label.setForeground(Color.red);
 
-					}else if(label.getText().equals("4")) {
+					} else if (label.getText().equals("4")) {
 						label.setForeground(Color.decode("#000080"));
 
-					}else {
+					} else {
 						label.setForeground(Color.decode("#8B4513"));
 
 					}
