@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -210,7 +211,8 @@ public class Registro extends JPanel {
 					// Comprobar que la imagen seleccionada sea del tamaño correcto
 					if (selectedFile.length() <= 64 * 1024) {
 						errorImagen.setText("");
-						arrayBits = convertirImagen(selectedFile);
+						// arrayBits = convertirImagen(selectedFile);
+						arrayBits = converitirImagenByte(selectedFile);
 						campoImagen.setText(selectedFile.getName());
 					} else {
 						errorImagen.setText("Tamaño imagen maximo 64KB.");
@@ -278,7 +280,9 @@ public class Registro extends JPanel {
 				} else {
 					nombre = campoNombre.getText();
 					errorNombre.setText("");
-					camposCompletados++;
+
+					camposCompletados++; // 1
+					System.out.println("Nombre " + camposCompletados);
 				}
 				if (campoApellido.getText().isEmpty()) {
 					errorApellido.setText("El campo no puede estar vacio.");
@@ -287,7 +291,8 @@ public class Registro extends JPanel {
 				} else {
 					apellido = campoApellido.getText();
 					errorApellido.setText("");
-					camposCompletados++;
+					camposCompletados++;// 2
+					System.out.println("Apellido  " + camposCompletados);
 				}
 
 				if (campoCorreo.getText().isEmpty()) {
@@ -328,7 +333,8 @@ public class Registro extends JPanel {
 						if (!comproba) {
 							email = campoCorreo.getText();
 							errorCorreo.setText("");
-							camposCompletados++;
+							camposCompletados++;// 3
+							System.out.println("Correo " + camposCompletados);
 						}
 
 					} catch (Exception e2) {
@@ -350,7 +356,8 @@ public class Registro extends JPanel {
 				} else {
 					poblacion = campoPoblacion.getText();
 					errorPoblacion.setText("");
-					camposCompletados++;
+					camposCompletados++;// 4
+					System.out.println("Poblacion " + camposCompletados);
 				}
 
 				if (campoImagen.getText().isEmpty()) {
@@ -366,7 +373,8 @@ public class Registro extends JPanel {
 					} else {
 						imagen = campoImagen.getText();
 						errorImagen.setText("");
-						camposCompletados++;
+						camposCompletados++;// 5
+						System.out.println("Imagen " + camposCompletados);
 					}
 				}
 
@@ -383,7 +391,8 @@ public class Registro extends JPanel {
 					errorPassword.setText("");
 					passwordRepetida = campoPasswordRepetida.getText();
 					errorPasswordRepetida.setText("");
-					camposCompletados++;
+					camposCompletados++;// 6
+					System.out.println("Paswords no vacias " + camposCompletados);
 
 					if (password.length() < 5 || passwordRepetida.length() < 5) {
 
@@ -396,7 +405,8 @@ public class Registro extends JPanel {
 						errorPasswordRepetida.setHorizontalAlignment(SwingConstants.CENTER);
 					} else {
 						if (password.equals(passwordRepetida)) {
-							camposCompletados++;
+							camposCompletados++;// 7
+							System.out.println("Paswords iguales " + camposCompletados);
 							errorPassword.setText("");
 							errorPasswordRepetida.setText("");
 						} else {
@@ -412,6 +422,8 @@ public class Registro extends JPanel {
 
 				}
 
+				System.out.println(camposCompletados);
+				// SI AUN NO HAY TABLAS CREADAS PONER -> if(camposCompletados == 6) y comentar las lineas de comprobacion del correo
 				if (camposCompletados == 7) {
 
 					Connection c = Conexion.obtenerConexion();
@@ -427,7 +439,7 @@ public class Registro extends JPanel {
 						Statement consulta = c.createStatement();
 						consulta.execute(sentenciaCrearTablaUsuario);
 						consulta.close();
-
+						System.out.println("Crear tablas");
 						consulta = c.createStatement();
 						consulta.execute(sentenciaCrearTablaPassword);
 						consulta.close();
@@ -573,8 +585,34 @@ public class Registro extends JPanel {
 		return saltosTexto;
 	}
 
-	public byte[] convertirImagen(File imagen) {
-		byte[] fileBytes = new byte[(int) imagen.length()];
-		return fileBytes;
+//	public byte[] convertirImagen(File imagen) {
+//		byte[] fileBytes = new byte[(int) imagen.length()];
+//		return fileBytes;
+//	}
+
+	public byte[] converitirImagenByte(File imagen) {
+		byte[] imagenBytes = null;
+
+		try {
+			FileInputStream fis = new FileInputStream(imagen);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+			byte[] buffer = new byte[1024];
+			int bytesRead;
+
+			while ((bytesRead = fis.read(buffer)) != -1) {
+				bos.write(buffer, 0, bytesRead);
+			}
+			imagenBytes = bos.toByteArray();
+			fis.close();
+			bos.close();
+			return imagenBytes;
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+		return imagenBytes;
+
 	}
+
 }
