@@ -20,6 +20,10 @@ import juegos.BuscaMinas;
 import juegos.PixelArt;
 import panel_inicio.Panel_inicio;
 import perfil.Perfil;
+import java.awt.Font;
+import java.awt.Dimension;
+import java.awt.Cursor;
+import javax.swing.border.EmptyBorder;
 
 public class Menu extends JPanel {
 
@@ -39,6 +43,9 @@ public class Menu extends JPanel {
 		c.gridx = 1;
 		c.gridy = 0;
 		c.gridwidth = 1;
+		boton_ver_perfil.setPreferredSize(new Dimension(110, 35));
+		boton_ver_perfil.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		boton_ver_perfil.setFont(new Font("Dialog", Font.PLAIN, 13));
 		add(boton_ver_perfil, c);
 
 		addImageLabel("src/imagenes/pixel_art.jpg", 0, 1);
@@ -46,22 +53,49 @@ public class Menu extends JPanel {
 		addImageLabel("src/imagenes/juego_de_la_vida.jpg", 2, 1);
 
 		// Botones Jugar
-		c.gridwidth = 1;
-		c.gridy = 2;
+		GridBagConstraints c1 = new GridBagConstraints();
+		c1.insets = new Insets(10, 10, 30, 10);
+		c1.gridwidth = 1;
+		c1.gridy = 2;
 
-		c.gridx = 0;
-		add(botonJugarPixelArt, c);
+		c1.gridx = 0;
+		botonJugarPixelArt.setMargin(new Insets(0, 0, 0, 0));
+		botonJugarPixelArt.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		botonJugarPixelArt.setPreferredSize(new Dimension(160, 35));
+		botonJugarPixelArt.setFont(new Font("Dialog", Font.PLAIN, 13));
+		add(botonJugarPixelArt, c1);
 
-		c.gridx = 1;
-		add(botonJugarBuscaminas, c);
+		GridBagConstraints c2 = new GridBagConstraints();
+		c2.insets = new Insets(10, 10, 30, 10);
+		c2.gridwidth = 1;
+		c2.gridy = 2;
+		c2.gridx = 1;
+		botonJugarBuscaminas.setMargin(new Insets(0, 0, 0, 0));
+		botonJugarBuscaminas.setPreferredSize(new Dimension(160, 35));
+		botonJugarBuscaminas.setFont(new Font("Dialog", Font.PLAIN, 13));
+		botonJugarBuscaminas.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		add(botonJugarBuscaminas, c2);
 
-		c.gridx = 2;
-		add(botonJugarJuegoDeLaVida, c);
+		GridBagConstraints c3 = new GridBagConstraints();
+		c3.insets = new Insets(10, 10, 30, 10);
+		c3.gridwidth = 1;
+		c3.gridy = 2;
+		c3.gridx = 2;
+		botonJugarJuegoDeLaVida.setMargin(new Insets(0, 0, 0, 0));
+		botonJugarJuegoDeLaVida.setPreferredSize(new Dimension(160, 35));
+		botonJugarJuegoDeLaVida.setFont(new Font("Dialog", Font.PLAIN, 13));
+		botonJugarJuegoDeLaVida.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		add(botonJugarJuegoDeLaVida, c3);
 
 		// Botón Logout
-		c.gridx = 1;
-		c.gridy = 3;
-		add(botonLogout, c);
+		GridBagConstraints c4 = new GridBagConstraints();
+		c4.insets = new Insets(10, 10, 30, 10);
+		c4.gridx = 1;
+		c4.gridy = 3;
+		botonLogout.setPreferredSize(new Dimension(110, 35));
+		botonLogout.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		botonLogout.setFont(new Font("Dialog", Font.PLAIN, 13));
+		add(botonLogout, c4);
 
 		botonJugarPixelArt.addActionListener(new ActionListener() {
 

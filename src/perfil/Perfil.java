@@ -17,6 +17,12 @@ import javax.swing.SwingUtilities;
 import conexionBaseDatos.Conexion;
 import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Dimension;
+import javax.swing.border.EmptyBorder;
+import javax.swing.SwingConstants;
 
 public class Perfil extends JPanel {
 
@@ -31,17 +37,20 @@ public class Perfil extends JPanel {
 	JLabel etiquetaNombre = new JLabel("Nombre:");
 	JLabel datosNombre = new JLabel("");
 
-	JLabel etiquetaApellido = new JLabel("Apellidos");
+	JLabel etiquetaApellido = new JLabel("Apellidos:");
 	JLabel datosApellido = new JLabel("Datos Apellidos");
 
-	JLabel etiquetaPoblacion = new JLabel("Poblacion");
+	JLabel etiquetaPoblacion = new JLabel("Población:");
 	JLabel datosPoblacion = new JLabel("Datos Poblacion");
 
-	JLabel etiquetaCorreo = new JLabel("Correo");
+	JLabel etiquetaCorreo = new JLabel("Correo:");
 	JLabel datosCorreo = new JLabel("Datos Correo");
+<<<<<<< HEAD
 
 	JLabel etiquetaImagenPerfil = new JLabel("Imagen");
 	JLabel etiquetaVacia1 = new JLabel();
+=======
+>>>>>>> branch 'desarrollo' of https://github.com/jolujuan/FronteoDev.git
 	JLabel etiquetaVacia2 = new JLabel();
 	JLabel etiquetaVacia3 = new JLabel();
 	JLabel etiquetaVacia4 = new JLabel();
@@ -58,38 +67,56 @@ public class Perfil extends JPanel {
 		datosCorreo.setText(datosUsuario[5]);
 
 		setLayout(new GridLayout(6, 3));
+<<<<<<< HEAD
 
 		panel_titulo.setLayout(new GridLayout(0, 3));
 		panel_titulo.add(etiquetaImagenPerfil);
+=======
+		panel_titulo.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		etiquetaTitulo.setHorizontalTextPosition(SwingConstants.CENTER);
+		etiquetaTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+		etiquetaTitulo.setBorder(new EmptyBorder(10, 0, 0, 0));
+		etiquetaTitulo.setFont(new Font("Dialog", Font.BOLD, 16));
+>>>>>>> branch 'desarrollo' of https://github.com/jolujuan/FronteoDev.git
 		panel_titulo.add(etiquetaTitulo);
 
 		add(panel_titulo);
 
 		panel_nombre.setLayout(new GridLayout(0, 3));
+		etiquetaNombre.setBorder(new EmptyBorder(0, 20, 0, 0));
+		etiquetaNombre.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panel_nombre.add(etiquetaNombre);
 		panel_nombre.add(datosNombre);
 
 		add(panel_nombre);
 
 		panel_apellido.setLayout(new GridLayout(0, 3));
+		etiquetaApellido.setBorder(new EmptyBorder(0, 20, 0, 0));
+		etiquetaApellido.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panel_apellido.add(etiquetaApellido);
 		panel_apellido.add(datosApellido);
 
 		add(panel_apellido);
 //
 		panel_poblacion.setLayout(new GridLayout(0, 3));
+		etiquetaPoblacion.setBorder(new EmptyBorder(0, 20, 0, 0));
+		etiquetaPoblacion.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panel_poblacion.add(etiquetaPoblacion);
 		panel_poblacion.add(datosPoblacion);
 		add(panel_poblacion);
 //
 		panel_correo.setLayout(new GridLayout(0, 3));
+		etiquetaCorreo.setBorder(new EmptyBorder(0, 20, 0, 0));
+		etiquetaCorreo.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panel_correo.add(etiquetaCorreo);
 		panel_correo.add(datosCorreo);
 		add(panel_correo);
-// 
-		panel_boton.setLayout(new GridLayout(0, 3));
-		panel_boton.add(etiquetaVacia1);
+		panel_boton.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 5));
+		botonEliminarCuenta.setPreferredSize(new Dimension(150, 35));
+		botonEliminarCuenta.setFont(new Font("Dialog", Font.PLAIN, 13));
 		panel_boton.add(botonEliminarCuenta);
+		botonVolver.setPreferredSize(new Dimension(150, 35));
+		botonVolver.setFont(new Font("Dialog", Font.PLAIN, 13));
 		panel_boton.add(botonVolver);
 		add(panel_boton);
 
