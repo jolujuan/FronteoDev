@@ -100,7 +100,7 @@ public class Registro extends JPanel {
 
 	public Registro() {
 		setBorder(new EmptyBorder(10, 10, 10, 10));
-		
+
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		panel_titulo.setBorder(new EmptyBorder(15, 15, 15, 15));
 
@@ -113,7 +113,7 @@ public class Registro extends JPanel {
 
 		panel_nombre.setLayout(new GridLayout(0, 3));
 		etiqueta_Nombre.setFont(new Font("Dialog", Font.PLAIN, 14));
-		panel_nombre.add(etiqueta_Nombre);		
+		panel_nombre.add(etiqueta_Nombre);
 		campoNombre.setHorizontalAlignment(SwingConstants.CENTER);
 		campoNombre.setFont(new Font("Dialog", Font.PLAIN, 13));
 		panel_nombre.add(campoNombre);
@@ -157,7 +157,7 @@ public class Registro extends JPanel {
 		botonSeleccionarImagen.setPreferredSize(new Dimension(20, botonSeleccionarImagen.getPreferredSize().height));
 
 		panel_imagen.add(botonSeleccionarImagen);
-		
+
 		campoImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		campoImagen.setFont(new Font("Dialog", Font.PLAIN, 13));
 		panel_imagen.add(campoImagen);
@@ -184,7 +184,7 @@ public class Registro extends JPanel {
 		panel_password_repetida.add(errorPasswordRepetida);
 		add(panel_password_repetida);
 		panel_password_repetida.setBorder(new EmptyBorder(4, 4, 4, 4));
-		
+
 		panel_botones.setLayout(new GridLayout(0, 3, 15, 0));
 		botonVolver.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		botonVolver.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -213,7 +213,7 @@ public class Registro extends JPanel {
 						arrayBits = convertirImagen(selectedFile);
 						campoImagen.setText(selectedFile.getName());
 					} else {
-						errorImagen.setText("Imagen grande < 64KB.");
+						errorImagen.setText("Tamaño imagen maximo 64KB.");
 						campoImagen.setText("");
 						errorImagen.setHorizontalAlignment(SwingConstants.CENTER);
 						errorImagen.setForeground(Color.red);
