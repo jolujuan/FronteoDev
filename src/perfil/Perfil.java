@@ -45,12 +45,11 @@ public class Perfil extends JPanel {
 
 	JLabel etiquetaCorreo = new JLabel("Correo:");
 	JLabel datosCorreo = new JLabel("Datos Correo");
-<<<<<<< HEAD
+
 
 	JLabel etiquetaImagenPerfil = new JLabel("Imagen");
 	JLabel etiquetaVacia1 = new JLabel();
-=======
->>>>>>> branch 'desarrollo' of https://github.com/jolujuan/FronteoDev.git
+
 	JLabel etiquetaVacia2 = new JLabel();
 	JLabel etiquetaVacia3 = new JLabel();
 	JLabel etiquetaVacia4 = new JLabel();
@@ -67,17 +66,17 @@ public class Perfil extends JPanel {
 		datosCorreo.setText(datosUsuario[5]);
 
 		setLayout(new GridLayout(6, 3));
-<<<<<<< HEAD
+
 
 		panel_titulo.setLayout(new GridLayout(0, 3));
 		panel_titulo.add(etiquetaImagenPerfil);
-=======
+
 		panel_titulo.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		etiquetaTitulo.setHorizontalTextPosition(SwingConstants.CENTER);
 		etiquetaTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		etiquetaTitulo.setBorder(new EmptyBorder(10, 0, 0, 0));
 		etiquetaTitulo.setFont(new Font("Dialog", Font.BOLD, 16));
->>>>>>> branch 'desarrollo' of https://github.com/jolujuan/FronteoDev.git
+
 		panel_titulo.add(etiquetaTitulo);
 
 		add(panel_titulo);
