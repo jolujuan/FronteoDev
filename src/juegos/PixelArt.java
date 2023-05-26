@@ -47,7 +47,7 @@ public class PixelArt extends JFrame {
 	private JPanel tablero = new JPanel();
 
 	//Para trabajar directamente eliminaremos desmarcaremos el main
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -61,23 +61,24 @@ public class PixelArt extends JFrame {
 				}
 			}
 		});
-	}*/
+	}
 	
 	/**
 	 * Create the frame.
 	 */
 	public PixelArt() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setTitle("PixelArt");
+//		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout());
+		
 		IniciodeJuego();
 		 addWindowListener(new WindowAdapter() {
          	
-             @Override
-             
+             @Override      
              public void windowClosed(WindowEvent e) {
              	setVisible(false);
                 
@@ -109,7 +110,7 @@ public class PixelArt extends JFrame {
 		seleccionaTableroJLabel.setFont(new Font("Dialog", Font.BOLD, 14));
 		inicio.add(seleccionaTableroJLabel);
 		// Siempre tendra el mismo tamaño
-		setSize(600, 600);
+		setSize(500, 500);
 		// Centramos pantalla
 		centrarInterficiePantalla();
 
@@ -442,6 +443,7 @@ public class PixelArt extends JFrame {
 					}
 				}
 				leerCasilla.close();
+				contarcasillas.close();
 			}
 		} catch (Exception e) {
 			System.out.println("Error cargar partida: " + e);

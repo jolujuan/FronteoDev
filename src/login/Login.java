@@ -1,36 +1,40 @@
 package login;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.security.spec.KeySpec;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Base64;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import conexionBaseDatos.Conexion;
 import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
-
-import javax.swing.JLabel;
-
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.JTextField;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import javax.swing.JButton;
-import java.sql.*;
-import java.util.Base64;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.security.SecureRandom;
-import java.security.spec.KeySpec;
-import java.awt.Font;
-import java.awt.Color;
-import javax.swing.JPasswordField;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import java.awt.FlowLayout;
-import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Cursor;
 
 public class Login extends JPanel {
 
@@ -59,6 +63,7 @@ public class Login extends JPanel {
 		panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
 
 		JPanel panel = new JPanel();
+		panel.setOpaque(false);
 		panel_2.add(panel);
 		panel.setBackground(new Color(238, 238, 238));
 		GridBagLayout gbl_panel = new GridBagLayout();
@@ -80,6 +85,11 @@ public class Login extends JPanel {
 
 		fieldUsr = new JTextField();
 		fieldUsr.setFont(new Font("Dialog", Font.PLAIN, 13));
+		Border existingBorder = fieldUsr.getBorder();
+		Border emptyBorder = BorderFactory.createEmptyBorder(5, 8, 5, 8);
+		Border compoundBorder = BorderFactory.createCompoundBorder(existingBorder, emptyBorder);
+		fieldUsr.setBorder(compoundBorder);
+
 		GridBagConstraints gbc_fieldUsr = new GridBagConstraints();
 		gbc_fieldUsr.anchor = GridBagConstraints.WEST;
 		gbc_fieldUsr.insets = new Insets(0, 0, 5, 0);
@@ -108,6 +118,10 @@ public class Login extends JPanel {
 
 		fieldPwd = new JPasswordField();
 		fieldPwd.setFont(new Font("Dialog", Font.PLAIN, 13));
+		Border existingBorder2 = fieldPwd.getBorder();
+		Border emptyBorder2 = BorderFactory.createEmptyBorder(5, 8, 5, 8);
+		Border compoundBorder2 = BorderFactory.createCompoundBorder(existingBorder2, emptyBorder2);
+		fieldPwd.setBorder(compoundBorder2);
 		GridBagConstraints gbc_fieldPwd = new GridBagConstraints();
 		gbc_fieldPwd.anchor = GridBagConstraints.WEST;
 		gbc_fieldPwd.insets = new Insets(0, 0, 5, 0);
@@ -133,8 +147,11 @@ public class Login extends JPanel {
 		add(panelBotones);
 
 		JButton botoTorna = new JButton("Atrás");
-		botoTorna.setBorder(new EmptyBorder(8, 28, 8, 28));
+		botoTorna.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		botoTorna.setPreferredSize(new Dimension(110, 35));
+		botoTorna.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panelBotones.add(botoTorna);
+		
 		botoTorna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
@@ -146,7 +163,9 @@ public class Login extends JPanel {
 		});
 
 		JButton botoLogin = new JButton("Entra");
-		botoLogin.setBorder(new EmptyBorder(8, 28, 8, 28));
+		botoLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		botoLogin.setPreferredSize(new Dimension(110, 35));
+		botoLogin.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panelBotones.add(botoLogin);
 
 		botoLogin.addActionListener(new ActionListener() {
@@ -171,7 +190,7 @@ public class Login extends JPanel {
 								userTrobat = true;
 								if (encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
 									System.out.println("Login exitoso");
-									Menu menu= new Menu();
+									Menu menu= new Menu(consulta.getString("email"));
 									Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
 									p.getContentPane().removeAll();
 									p.getContentPane().add(menu);
@@ -197,6 +216,7 @@ public class Login extends JPanel {
 
 			}
 		});
+		
 		botoTorna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
