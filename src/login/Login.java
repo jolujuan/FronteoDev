@@ -185,8 +185,8 @@ public class Login extends JPanel {
 
 	public boolean consultaSql() {
 
-		Connection c = Conexion.obtenerConexion();
-//		Connection c = Conexion.obtenerConexionLocal();
+//		Connection c = Conexion.obtenerConexion();
+		Connection c = Conexion.obtenerConexionLocal();
 		ResultSet r = null;
 		boolean usrValidat=true;
 		try {

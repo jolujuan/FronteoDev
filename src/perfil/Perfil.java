@@ -122,7 +122,8 @@ public class Perfil extends JPanel {
 	public String[] datosUsuarioPerfil(String correo) {
 		String[] datos = new String[6];
 		String sentencia = "SELECT * FROM usuarios WHERE email = ?";
-		Connection c = Conexion.obtenerConexion();
+//		Connection c = Conexion.obtenerConexion();
+		Connection c = Conexion.obtenerConexionLocal();//connexio local
 
 		try {
 			PreparedStatement consulta = c.prepareStatement(sentencia);
@@ -150,7 +151,8 @@ public class Perfil extends JPanel {
 	public void eleminarUsuario(int id) {
 		String sentenciaTablaPasswords = "DELETE FROM passwords WHERE idUsuario = ?";
 		String sentenciaTablaUsuarios = "DELETE FROM usuarios WHERE id = ?";
-		Connection c = Conexion.obtenerConexion();
+//		Connection c = Conexion.obtenerConexion();
+		Connection c = Conexion.obtenerConexionLocal();//connexio local
 		
 		int opcion = JOptionPane.showConfirmDialog(null, "¿Esta seguro que desea eliminar su cuenta?", "Eliminar cuenta", JOptionPane.YES_NO_OPTION);
 		

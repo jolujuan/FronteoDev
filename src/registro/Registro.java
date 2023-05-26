@@ -376,7 +376,8 @@ public class Registro extends JPanel {
 
 				if (camposCompletados == 7) {
 
-					Connection c = Conexion.obtenerConexion();
+//					Connection c = Conexion.obtenerConexion();
+					Connection c = Conexion.obtenerConexionLocal();//conexion local
 
 					String sentenciaCrearTablaUsuario = "CREATE TABLE IF NOT EXISTS usuarios (id INT AUTO_INCREMENT PRIMARY KEY, "
 							+ "nombre VARCHAR(50), " + "apellidos VARCHAR(50), " + "imagen BLOB, "
