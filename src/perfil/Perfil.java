@@ -40,7 +40,7 @@ public class Perfil extends JPanel {
 	JLabel etiquetaCorreo = new JLabel("Correo");
 	JLabel datosCorreo = new JLabel("Datos Correo");
 
-	JLabel etiquetaVacia = new JLabel();
+	JLabel etiquetaImagenPerfil = new JLabel("Imagen");
 	JLabel etiquetaVacia1 = new JLabel();
 	JLabel etiquetaVacia2 = new JLabel();
 	JLabel etiquetaVacia3 = new JLabel();
@@ -49,7 +49,7 @@ public class Perfil extends JPanel {
 	JLabel etiquetaVacia6 = new JLabel();
 	JButton botonEliminarCuenta = new JButton("Eliminar Cuenta");
 	JButton botonVolver = new JButton("Volver");
-
+     
 	public Perfil(String correo) {
 		String[] datosUsuario = datosUsuarioPerfil(correo);
 		datosNombre.setText(datosUsuario[1]);
@@ -60,7 +60,7 @@ public class Perfil extends JPanel {
 		setLayout(new GridLayout(6, 3));
 
 		panel_titulo.setLayout(new GridLayout(0, 3));
-		panel_titulo.add(etiquetaVacia);
+		panel_titulo.add(etiquetaImagenPerfil);
 		panel_titulo.add(etiquetaTitulo);
 
 		add(panel_titulo);
@@ -165,13 +165,13 @@ public class Perfil extends JPanel {
 				consulta.setInt(1, id);
 				consulta.executeUpdate();
 				
-				JOptionPane.showMessageDialog(null, "La cuenta ha sido eliminada");
+				
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Perfil.this);
 				p.getContentPane().removeAll();
 				p.getContentPane().add(p.getContenedor());
 				p.revalidate();
 				p.repaint();
-				
+				JOptionPane.showMessageDialog(null, "La cuenta ha sido eliminada");
 			} catch (Exception e) {
 				System.out.println("Error: " + e);
 			}
