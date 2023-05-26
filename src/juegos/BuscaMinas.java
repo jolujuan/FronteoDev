@@ -38,7 +38,6 @@ public class BuscaMinas extends JFrame {
 					BuscaMinas frame = new BuscaMinas();
 					frame.setSize(500, 500);
 					frame.setVisible(true);
-					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -171,12 +170,14 @@ public class BuscaMinas extends JFrame {
 		revalidate();
 	}
 
-	public class Casilla extends JPanel {
+	public class Casilla extends JButton {
 
 		private Color colorActual = Color.WHITE;
 
 		private boolean tieneMina;
 		private int minasAdyacentes;
+		private int filaC;
+		private int columnaC;
 
 		public Casilla() {
 			setBackground(colorActual);
@@ -229,7 +230,9 @@ public class BuscaMinas extends JFrame {
 		for (int fila = 0; fila < f; fila++) {
 			for (int columna = 0; columna < f; columna++) {
 				Casilla casilla = new Casilla();
-
+				casilla.filaC=fila;
+				casilla.columnaC=columna;
+			
 				casilla.setPreferredSize(new Dimension(tamañoCasilla, tamañoCasilla));
 				casilla.addMouseListener(new MouseAdapter() {
 		            @Override
@@ -237,6 +240,8 @@ public class BuscaMinas extends JFrame {
 		                if (e.getButton() == MouseEvent.BUTTON1) {
 		                    // Código a ejecutar cuando se hace clic izquierdo en el panel
 		                	casilla.setVisible(false);
+		                	tableroCasillas[casilla.filaC][casilla.columnaC].setVisible(true);
+		                	
 		                }
 		            }
 		        });
