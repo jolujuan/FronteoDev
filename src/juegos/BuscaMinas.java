@@ -12,6 +12,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.OverlayLayout;
 import javax.swing.UIManager;
@@ -173,10 +174,13 @@ public class BuscaMinas extends JFrame {
 
 		private Color colorActual = Color.WHITE;
 
+		private boolean vacia;
+		private boolean tieneNum;
 		private boolean tieneMina;
 		private int minasAdyacentes;
-		private int filaC;
-		private int columnaC;
+//		private int filaC;
+//		private int columnaC;
+		private boolean esRevelada = false;
 
 		public Casilla() {
 			super(" ");
@@ -199,6 +203,23 @@ public class BuscaMinas extends JFrame {
 		public int getMinasAdyacentes() {
 			return this.minasAdyacentes;
 		}
+		
+		 private void actualizarApariencia() {
+		        if (esRevelada) {
+		            if (tieneMina) {
+		               
+		            } else {
+		               
+		            	setFont(new Font("Dialog", Font.BOLD, 20));
+						setForeground(getColorNumero(minasAdyacentes));
+						setText(String.valueOf(minasAdyacentes));
+						setBackground(new Color(128, 128, 128, 50));
+		            }
+		        } else {
+		           
+		            setText("");
+		        }
+		    }
 
 	}
 
@@ -209,6 +230,7 @@ public class BuscaMinas extends JFrame {
 		tableroCasillas = new Casilla[f][f];
 		// Verificar que el número de minas sea válido
 		int totalCasillas = f * f;
+
 		if (numeroMinas > totalCasillas) {
 			throw new IllegalArgumentException("El número de minas excede el tamaño del tablero.");
 		}
@@ -219,9 +241,11 @@ public class BuscaMinas extends JFrame {
 		// con esto sacamos el tamaño para q las casillas sean iguales
 		int size = Math.min(anchoVentana / f, altoVentana / f);
 		tamañoCasilla = size;
+
 		for (int fila = 0; fila < f; fila++) {
 			for (int columna = 0; columna < f; columna++) {
-
+				int filas = fila;
+				int columnas = columna;
 				Casilla casilla = new Casilla();
 
 				casilla.setPreferredSize(new Dimension(size, size));
@@ -234,7 +258,7 @@ public class BuscaMinas extends JFrame {
 
 								// Asignar la imagen de la mina aquí
 								ImageIcon icono = new ImageIcon("src/imagenes/mina.png"); // Ajusta la ruta y el nombre
-																					// del archivo de imagen
+								// del archivo de imagen
 								// Obtener el tamaño deseado para la imagen
 								int anchoDeseado = 25; // Ajusta el ancho deseado de la imagen
 								int altoDeseado = 25; // Ajusta el alto deseado de la imagen
@@ -244,24 +268,39 @@ public class BuscaMinas extends JFrame {
 										Image.SCALE_SMOOTH);
 								// Crear un nuevo ImageIcon con la imagen redimensionada
 								ImageIcon iconoRedimensionado = new ImageIcon(imagenRedimensionada);
-								
+
 								// Asignar la imagen al JLabel de la casilla
 								JLabel etiqueta = new JLabel(iconoRedimensionado);
-								casilla.add(etiqueta);
-
+//								casilla.add(etiqueta);
+								casilla.setIcon(iconoRedimensionado);
+								
 								casilla.setText(""); // Ya no queremos mostrar un texto si hay una mina
 								casilla.setEnabled(false);
 								
-							} else {
-								 int minasAdyacentes = casilla.getMinasAdyacentes();
-					                if (minasAdyacentes > 0) {
-//					                    casilla.setForeground(getColorNumero(minasAdyacentes));
-					                    casilla.setFont(new Font("Dialog", Font.BOLD, 20));
-					                	casilla.setForeground(getColorNumero(minasAdyacentes));
-					                	casilla.setText(String.valueOf(minasAdyacentes));
+								casilla.esRevelada = true;
 
-					                }
+							} else {
+								int minasAdyacentes = casilla.getMinasAdyacentes();
+								if (minasAdyacentes > 0) {
+//					                    casilla.setForeground(getColorNumero(minasAdyacentes));
+									casilla.setFont(new Font("Dialog", Font.BOLD, 20));
+									casilla.setForeground(getColorNumero(minasAdyacentes));
+									casilla.setText(String.valueOf(minasAdyacentes));
+									casilla.setBackground(new Color(128, 128, 128, 50));// color grisacio transparente para ver los clicks 
+									casilla.esRevelada = true;
+
+								}
 //					                casilla.setEnabled(false);
+							}
+
+							if (casilla.tieneMina == true) {
+								JOptionPane.showMessageDialog(null, "	Has perdido		");
+							}
+
+							if (casilla.tieneMina == false && casilla.minasAdyacentes == 0) {
+//								JOptionPane.showMessageDialog(null, "	Casilla vacia		");
+
+								revelarCasilla(filas, columnas);
 							}
 						}
 					}
@@ -276,52 +315,86 @@ public class BuscaMinas extends JFrame {
 		BotonesDescartaryGuardar();
 
 	}
+// de manera recursiva entra a ver el estado de la casilla, si no ha sido revelada la revela y revelara las adyacente
+	public void revelarCasilla(int fila, int columna) {
+		// Verificar los límites del tablero
+		if (fila < 0 || fila >= tableroCasillas.length || columna < 0 || columna >= tableroCasillas.length) {
+			return;
+		}
+
+		Casilla casilla = tableroCasillas[fila][columna];
+
+		// Verificar si la casilla ya ha sido revelada
+		if (casilla.esRevelada == true) {
+			return;
+		}
+
+		// Marcar la casilla como revelada y mostrar su contenido
+		casilla.esRevelada = true;
+		casilla.actualizarApariencia();
+
+		// Verificar si la casilla es vacía
+		if (casilla.tieneMina == false && casilla.minasAdyacentes == 0) {
+			// Recursivamente revelar las casillas vecinas vacías
+			for (int i = -1; i <= 1; i++) {
+				for (int j = -1; j <= 1; j++) {
+					if (i == 0 && j == 0) {
+						continue; // Saltar la casilla actual
+					}
+					revelarCasilla(fila + i, columna + j);
+				}
+			}
+
+		}
+	}
 
 	private Color getColorNumero(int numeroMinas) {
-	    switch (numeroMinas) {
-	        case 1:
-	            return Color.decode("#0000FF");
-	        case 2:
-	            return Color.GREEN;
-	        case 3:
-	            return Color.RED;
-	        case 4:
-	            return Color.decode("#000080");
-	        default:
-	            return Color.decode("#8B4513");
-	    }
+		switch (numeroMinas) {
+		case 0:
+			return new Color(128, 128, 128, 0);//aqui pongo que el numero cero se ponga totalmente transparente
+		case 1:
+			return Color.decode("#0000FF");
+		case 2:
+			return Color.GREEN;
+		case 3:
+			return Color.RED;
+		case 4:
+			return Color.decode("#000080");
+		default:
+			return Color.decode("#8B4513");
+		}
 	}
-	
-	public void recorrerTablero(int f, int numeroMinas) {
-	    int minasAsignadas = 0; // Contador de minas asignadas
 
-	    while (minasAsignadas < numeroMinas) {
-	        int filaAleatoria = obtenerFilaAleatoria(f);
-	        int columnaAleatoria = obtenerColumnaAleatoria(f);
-	        Casilla casilla = tableroCasillas[filaAleatoria][columnaAleatoria];
-	        if (!casilla.getTieneMina()) {
-	            casilla.setTieneMina(true);
-	            minasAsignadas++;
-	            actualizarNumerosAdyacentes(filaAleatoria, columnaAleatoria);
-	        }
-	    }
+	public void recorrerTablero(int f, int numeroMinas) {
+		int minasAsignadas = 0; // Contador de minas asignadas
+
+		while (minasAsignadas < numeroMinas) {
+			int filaAleatoria = obtenerFilaAleatoria(f);
+			int columnaAleatoria = obtenerColumnaAleatoria(f);
+			Casilla casilla = tableroCasillas[filaAleatoria][columnaAleatoria];
+			if (!casilla.getTieneMina()) {
+				casilla.setTieneMina(true);
+				minasAsignadas++;
+				actualizarNumerosAdyacentes(filaAleatoria, columnaAleatoria);
+			}
+		}
 	}
 
 	private void actualizarNumerosAdyacentes(int fila, int columna) {
-	    for (int i = fila - 1; i <= fila + 1; i++) {
-	        for (int j = columna - 1; j <= columna + 1; j++) {
-	            if (i >= 0 && i < tableroCasillas.length && j >= 0 && j < tableroCasillas[0].length) {
-	                Casilla casilla = tableroCasillas[i][j];
-	                if (!casilla.getTieneMina()) {
+		for (int i = fila - 1; i <= fila + 1; i++) {
+			for (int j = columna - 1; j <= columna + 1; j++) {
+				if (i >= 0 && i < tableroCasillas.length && j >= 0 && j < tableroCasillas[0].length) {
+					Casilla casilla = tableroCasillas[i][j];
+					if (!casilla.getTieneMina()) {
 //	                    casilla.setFont(new Font("Dialog", Font.BOLD, 20));
 //	                    casilla.setForeground(Color.red);
-	                    casilla.setMinasAdyacentes(casilla.getMinasAdyacentes() + 1);
-	                }
-	            }
-	        }
-	    }
+						casilla.setMinasAdyacentes(casilla.getMinasAdyacentes() + 1);
+					}
+				}
+			}
+		}
 	}
-	
+
 	private int obtenerFilaAleatoria(int f) {
 		return random.nextInt(f);
 	}
@@ -329,8 +402,6 @@ public class BuscaMinas extends JFrame {
 	private int obtenerColumnaAleatoria(int f) {
 		return random.nextInt(f);
 	}
-
-
 
 	private void BotonesDescartaryGuardar() {
 		JPanel BotonesJuego = new JPanel(new GridBagLayout());
