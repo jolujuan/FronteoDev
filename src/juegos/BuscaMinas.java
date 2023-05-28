@@ -272,7 +272,6 @@ public class BuscaMinas extends JFrame {
 				setText("");
 			}
 		}
-
 	}
 
 	private void crearTablero(int f, int numeroMinas) {
