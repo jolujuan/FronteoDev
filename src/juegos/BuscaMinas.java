@@ -328,25 +328,34 @@ public class BuscaMinas extends JFrame {
 										mostrarBandera(casilla, 10);
 
 									} else {
-//											casilla.setTieneBandera(false);
 										quitarBandera(casilla, 10);
 									}
-
 									break;
 								}
 								case "mediano": {
-									mostrarBandera(casilla, 40);
+
+									if (!casilla.getTieneBandera()) {
+										mostrarBandera(casilla, 40);
+
+									} else {
+										quitarBandera(casilla, 40);
+									}
 									break;
 								}
 								case "grande": {
-									mostrarBandera(casilla, 80);
+
+									if (!casilla.getTieneBandera()) {
+										mostrarBandera(casilla, 80);
+
+									} else {
+										quitarBandera(casilla, 80);
+									}
 									break;
 								}
 								default:
 									throw new IllegalArgumentException("Unexpected value: " + nombreTablero);
 								}
 							}
-
 						}
 					}
 				});
@@ -363,10 +372,6 @@ public class BuscaMinas extends JFrame {
 	}
 
 	private void manejarClick(Casilla casilla, int fila, int columna) {
-		// Si tiene mina y bandera, no hacer nada
-//		if (casilla.getTieneBandera()) {
-//			return;
-//		}
 
 		// Si tiene mina, revelar el contenido, mostrar mensaje, terminar juego y
 		// desactivar al hacer click en casillas
@@ -381,20 +386,16 @@ public class BuscaMinas extends JFrame {
 					JOptionPane.showMessageDialog(null, "Has encontrado una mina");
 					juegoTerminado = true;
 					desactivarTablero();
-					
-					
+
 					revelarContenido();
 				} else {
 					mostrarMina(casilla, "mina");
 				}
 			}
 		} else {
-			// Sino revelar las numeros y las casillas blancas
-//			if (casilla.getIcon() == null) {
 			mostrarNumero(casilla);
 			if (casilla.getMinasAdyacentes() == 0) {
 				revelarCasilla(fila, columna);
-//				}
 			}
 		}
 	}
@@ -403,7 +404,6 @@ public class BuscaMinas extends JFrame {
 		// Configuramos los numeros y los colores
 		int minasAdyacentes = casilla.getMinasAdyacentes();
 		// No añadir número si la casilla contiene una bandera
-//		if (minasAdyacentes > 0 && !casilla.getTieneBandera()) {
 		if (minasAdyacentes > 0) {
 
 			casilla.setFont(new Font("Dialog", Font.BOLD, 20));
@@ -411,7 +411,6 @@ public class BuscaMinas extends JFrame {
 			casilla.setForeground(getColorNumero(minasAdyacentes));
 			// Configurar para mostrar el texto
 			casilla.setText(String.valueOf(minasAdyacentes));
-
 			casilla.esRevelada = true;
 		}
 	}
@@ -438,33 +437,22 @@ public class BuscaMinas extends JFrame {
 	}
 
 	private void quitarBandera(Casilla casilla, int numeroBanderas) {
-//		if (casilla.esRevelada == true ) {
-//			return;
-//		}			
-		
+
 		if (contadorBanderas < numeroBanderas) {
-				//			casilla.setEsRevelada(true); // Marcar la casilla como revelada
-				casilla.setTieneBandera(false);
-
-
-//				casilla.setBackground(null);
-				casilla.setIcon(null);
-				contadorBanderas++;
-				labelMinasRestantes.setText(Integer.toString(contadorBanderas));
-			} 
-		
-
-//		repaint();
-//		revalidate();
-
+			
+			casilla.setTieneBandera(false);
+			casilla.setIcon(null);
+			contadorBanderas++;
+			labelMinasRestantes.setText(Integer.toString(contadorBanderas));
+		}
 	}
 
 	private void mostrarBandera(Casilla casilla, int numeroBanderas) {
 
-		//Si contiene numero o casilla blanca, no agregar bandera
-		if (casilla.esRevelada == true ) {
-		return;
-	}	
+		// Si contiene numero o casilla blanca, no agregar bandera
+		if (casilla.esRevelada == true) {
+			return;
+		}
 		// Verificamos si podemos poner más banderas.
 		if (contadorBanderas > 0) {
 			casilla.setEsRevelada(true); // Marcar la casilla como revelada
@@ -502,8 +490,9 @@ public class BuscaMinas extends JFrame {
 		// Revelar todas las minas y los números
 		for (Casilla[] filaCasillas : tableroCasillas) {
 			for (Casilla casilla : filaCasillas) {
+				//Eliminar el icono de la bandera para todas las casillas
+				casilla.setIcon(null);
 
-//				if (!casilla.getTieneBandera() && !casilla.esRevelada) {
 				if (!casilla.esRevelada) {
 
 					int minasAdyacentes = casilla.getMinasAdyacentes();
@@ -517,7 +506,6 @@ public class BuscaMinas extends JFrame {
 								mostrarMina(casilla, "mina");
 								casilla.setPrimeraMinaRevelada(true);
 							}
-							
 						}
 					}
 				}
@@ -554,10 +542,6 @@ public class BuscaMinas extends JFrame {
 		if (casilla.esRevelada == true || casilla.getTieneBandera() == true) {
 			return;
 		}
-
-//		if (casilla.esRevelada == true) {
-//			return;
-//		}
 
 		// Marcar la casilla como revelada y mostrar su contenido
 		casilla.esRevelada = true;
