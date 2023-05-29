@@ -45,6 +45,8 @@ public class BuscaMinas extends JFrame {
 	private int contadorBanderas = 0;
 	private String nombreTablero;
 	private JLabel labelMinasRestantes = new JLabel("");
+	private JLabel labelCasillasaRevelar= new JLabel("");
+	private int ContadorCasillasinrevelar=0;
 
 	/**
 	 * Launch the application.
@@ -167,7 +169,8 @@ public class BuscaMinas extends JFrame {
 
 				// Declaramos las banderas que contendra
 				contadorBanderas = 10;
-
+				labelCasillasaRevelar.setText(Integer.toString(54));
+				ContadorCasillasinrevelar=54;
 				// Inicialmente mostrarara las banderas que tiene
 				labelMinasRestantes.setText(Integer.toString(10));
 			}
@@ -181,10 +184,11 @@ public class BuscaMinas extends JFrame {
 				centrarInterficiePantalla();
 				crearTablero(16, 40);
 				recorrerTablero(16, 40);
+				labelCasillasaRevelar.setText(Integer.toString(216));
 				nombreTablero = "mediano";
 
 				contadorBanderas = 40;
-
+				ContadorCasillasinrevelar=216;
 				labelMinasRestantes.setText(Integer.toString(40));
 			}
 		});
@@ -201,7 +205,8 @@ public class BuscaMinas extends JFrame {
 				nombreTablero = "grande";
 
 				contadorBanderas = 80;
-
+				labelCasillasaRevelar.setText(Integer.toString(545));
+				ContadorCasillasinrevelar=545;
 				labelMinasRestantes.setText(Integer.toString(80));
 			}
 		});
@@ -276,9 +281,6 @@ public class BuscaMinas extends JFrame {
 					setText(String.valueOf(minasAdyacentes));
 					setBackground(new Color(128, 128, 128, 50));
 				}
-			} else {
-
-				setText("");
 			}
 		}
 	}
@@ -312,7 +314,7 @@ public class BuscaMinas extends JFrame {
 					public void mousePressed(MouseEvent e) {
 						// Mientras no encuentres mina seguir
 						if (!juegoTerminado) {
-							if (e.getButton() == MouseEvent.BUTTON1) {
+							if (SwingUtilities.isLeftMouseButton(e)) {
 
 								if (!casilla.getTieneBandera()) {
 									manejarClick(casilla, filaFinal, columnaFinal);
@@ -393,6 +395,7 @@ public class BuscaMinas extends JFrame {
 				}
 			}
 		} else {
+			
 			mostrarNumero(casilla);
 			if (casilla.getMinasAdyacentes() == 0) {
 				revelarCasilla(fila, columna);
@@ -516,7 +519,7 @@ public class BuscaMinas extends JFrame {
 	private Color getColorNumero(int numeroMinas) {
 		switch (numeroMinas) {
 		case 0:
-			return new Color(128, 128, 128, 0);// zaqui pongo que el numero cero se ponga totalmente transparente
+			return new Color(128, 128, 128, 0);// aqui pongo que el numero cero se ponga totalmente transparente
 		case 1:
 			return Color.decode("#0000FF");
 		case 2:
@@ -655,7 +658,21 @@ public class BuscaMinas extends JFrame {
 		PanelContador.setBorder(new EmptyBorder(10, 0, 10, 0));
 		contentPane.add(PanelContador, BorderLayout.NORTH);
 		PanelContador.setLayout(new GridBagLayout());
+		
+		JPanel CasillasaReveladas=new JPanel();
+		GridBagConstraints gbcCasillas = new GridBagConstraints();
+		gbcCasillas.weightx = 3; // Absorbe el espacio extra
+		gbcCasillas.insets = new Insets(0, 20, 0, 20);
+		gbcCasillas.gridx = 2;
+		gbcCasillas.gridy = 0;
+		PanelContador.add(CasillasaReveladas, gbcCasillas);
+		
+		labelCasillasaRevelar.setBorder(
+				BorderFactory.createCompoundBorder(new LineBorder(Color.GRAY, 2, true), new EmptyBorder(5, 20, 5, 20)));
+		labelCasillasaRevelar.setFont(new Font("Dialog", Font.BOLD, 22));
 
+		CasillasaReveladas.add(labelCasillasaRevelar);
+		
 		JPanel MinasRestantes = new JPanel();
 		GridBagConstraints gbcMinasRestantes = new GridBagConstraints();
 		gbcMinasRestantes.weightx = 3; // Absorbe el espacio extra
@@ -674,7 +691,7 @@ public class BuscaMinas extends JFrame {
 		GridBagConstraints gbcReiniciar = new GridBagConstraints();
 		gbcReiniciar.insets = new Insets(0, 13, 0, 13);
 		gbcReiniciar.weightx = 3; // Absorbe el espacio extra
-		gbcReiniciar.gridx = 2;
+		gbcReiniciar.gridx = 3;
 		gbcReiniciar.gridy = 0;
 		PanelContador.add(Reiniciar, gbcReiniciar);
 
@@ -738,7 +755,7 @@ public class BuscaMinas extends JFrame {
 		GridBagConstraints gbcTiempoRestante = new GridBagConstraints();
 		gbcTiempoRestante.insets = new Insets(0, 13, 0, 13);
 		gbcTiempoRestante.weightx = 3; // Absorbe el espacio extra
-		gbcTiempoRestante.gridx = 3;
+		gbcTiempoRestante.gridx = 4;
 		gbcTiempoRestante.gridy = 0;
 		PanelContador.add(Tiempo, gbcTiempoRestante);
 
