@@ -1,6 +1,9 @@
 package menuJuegos;
 
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -17,13 +20,10 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import juegos.BuscaMinas;
+import juegos.JuegoVida;
 import juegos.PixelArt;
 import panel_inicio.Panel_inicio;
 import perfil.Perfil;
-import java.awt.Font;
-import java.awt.Dimension;
-import java.awt.Cursor;
-import javax.swing.border.EmptyBorder;
 
 public class Menu extends JPanel {
 
@@ -32,8 +32,9 @@ public class Menu extends JPanel {
 	private JButton botonJugarBuscaminas = new JButton("Jugar Buscaminas");
 	private JButton botonJugarJuegoDeLaVida = new JButton("Jugar JuegoDeLaVida");
 	private JButton botonLogout = new JButton("Logout");
-	private int botonJugar = 0;
 	private boolean pixelArtAbierto = false;
+	private boolean buscMinasAbierto = false;
+	private boolean juegoVidaAbierto = false;
 
 	public Menu(String correo) {
 		setLayout(new GridBagLayout());
@@ -141,14 +142,20 @@ public class Menu extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (botonJugar == 0) {
+				if (!buscMinasAbierto) {
+					buscMinasAbierto=true;
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
 								BuscaMinas frame = new BuscaMinas();
 								frame.setSize(500, 500);
 								frame.setVisible(true);
-								botonJugar++;
+								frame.addWindowListener(new WindowAdapter() {
+									@Override
+									public void windowClosed(WindowEvent e) {
+										buscMinasAbierto=false; // Restablecer como cerrado
+									}
+								});
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -157,7 +164,32 @@ public class Menu extends JPanel {
 				}
 			}
 		});
+		botonJugarJuegoDeLaVida.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!juegoVidaAbierto) {
+					juegoVidaAbierto=true;
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							try {
+								JuegoVida frame = new JuegoVida();
+								frame.setSize(500, 500);
+								frame.setVisible(true);
+								frame.addWindowListener(new WindowAdapter() {
+									@Override
+									public void windowClosed(WindowEvent e) {
+										buscMinasAbierto=false; // Restablecer como cerrado
+									}
+								});
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
+			}
+		});
 		boton_ver_perfil.addActionListener(new ActionListener() {
 
 			@Override
