@@ -40,6 +40,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.FlowLayout;
+import java.awt.Dimension;
+import java.awt.Cursor;
 
 public class Registro extends JPanel {
 
@@ -51,27 +53,27 @@ public class Registro extends JPanel {
 
 	// private JPanel contentPanel = new JPanel();
 	private JLabel etiqueta_Vacia = new JLabel("");
-	private JLabel etiquetaTitulo = new JLabel("Formulario Registro",SwingConstants.CENTER);
+	private JLabel etiquetaTitulo = new JLabel("Formulario Registro", SwingConstants.CENTER);
 
 	private JLabel mensajeGeneral = new JLabel();
 	private JPanel panel_titulo = new JPanel();
 
-	private JLabel etiqueta_Nombre = new JLabel("Nombre:",SwingConstants.CENTER);
+	private JLabel etiqueta_Nombre = new JLabel("Nombre:", SwingConstants.CENTER);
 	private JTextField campoNombre = new JTextField(20);
 	private JLabel errorNombre = new JLabel();
 	private JPanel panel_nombre = new JPanel();
 
-	private JLabel etiqueta_Apellido = new JLabel("Apellidos:",SwingConstants.CENTER);
+	private JLabel etiqueta_Apellido = new JLabel("Apellidos:", SwingConstants.CENTER);
 	private JTextField campoApellido = new JTextField(20);
 	private JLabel errorApellido = new JLabel();
 	private JPanel panel_apellido = new JPanel();
 
-	private JLabel etiqueta_Correo = new JLabel("Correo:",SwingConstants.CENTER);
+	private JLabel etiqueta_Correo = new JLabel("Correo:", SwingConstants.CENTER);
 	private JTextField campoCorreo = new JTextField(20);
 	private JLabel errorCorreo = new JLabel();
 	private JPanel panel_correo = new JPanel();
 
-	private JLabel etiqueta_Poblacion = new JLabel("Poblacion:",SwingConstants.CENTER);
+	private JLabel etiqueta_Poblacion = new JLabel("Poblacion:", SwingConstants.CENTER);
 	private JTextField campoPoblacion = new JTextField(20);
 	private JLabel errorPoblacion = new JLabel();
 	private JPanel panel_poblacion = new JPanel();
@@ -81,12 +83,12 @@ public class Registro extends JPanel {
 	private JLabel errorImagen = new JLabel();
 	private JPanel panel_imagen = new JPanel();
 
-	private JLabel etiqueta_password = new JLabel("Contraseña:",SwingConstants.CENTER);
+	private JLabel etiqueta_password = new JLabel("Contraseña:", SwingConstants.CENTER);
 	private JPasswordField campoPassword = new JPasswordField(20);
 	private JLabel errorPassword = new JLabel();
 	private JPanel panel_password = new JPanel();
 
-	private JLabel etiqueta_password_repetida = new JLabel("Repetir contraseña:",SwingConstants.CENTER);
+	private JLabel etiqueta_password_repetida = new JLabel("Repetir contraseña:", SwingConstants.CENTER);
 	private JPasswordField campoPasswordRepetida = new JPasswordField(20);
 	private JLabel errorPasswordRepetida = new JLabel();
 	private JPanel panel_password_repetida = new JPanel();
@@ -98,82 +100,100 @@ public class Registro extends JPanel {
 
 	public Registro() {
 		setBorder(new EmptyBorder(10, 10, 10, 10));
-
+		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		panel_titulo.setBorder(new EmptyBorder(15, 15, 15, 15));
-		
+
 		panel_titulo.setLayout(new GridLayout(0, 3));
 		panel_titulo.add(etiqueta_Vacia);
-		etiquetaTitulo.setFont(new Font("Dialog", Font.BOLD, 14));
+		etiquetaTitulo.setFont(new Font("Dialog", Font.BOLD, 16));
 		panel_titulo.add(etiquetaTitulo);
 		panel_titulo.add(mensajeGeneral);
 		add(panel_titulo);
 
 		panel_nombre.setLayout(new GridLayout(0, 3));
-		etiqueta_Nombre.setFont(new Font("Dialog", Font.PLAIN, 13));
-		panel_nombre.add(etiqueta_Nombre);
+		etiqueta_Nombre.setFont(new Font("Dialog", Font.PLAIN, 14));
+		panel_nombre.add(etiqueta_Nombre);		
+		campoNombre.setHorizontalAlignment(SwingConstants.CENTER);
+		campoNombre.setFont(new Font("Dialog", Font.PLAIN, 13));
 		panel_nombre.add(campoNombre);
 		panel_nombre.add(errorNombre);
 		add(panel_nombre);
 		panel_nombre.setBorder(new EmptyBorder(4, 4, 4, 4));
 
-
 		panel_apellido.setLayout(new GridLayout(0, 3));
-		etiqueta_Apellido.setFont(new Font("Dialog", Font.PLAIN, 13));
+		etiqueta_Apellido.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panel_apellido.add(etiqueta_Apellido);
+		campoApellido.setHorizontalAlignment(SwingConstants.CENTER);
+		campoApellido.setFont(new Font("Dialog", Font.PLAIN, 13));
 		panel_apellido.add(campoApellido);
 		panel_apellido.add(errorApellido);
 		add(panel_apellido);
 		panel_apellido.setBorder(new EmptyBorder(4, 4, 4, 4));
 
 		panel_correo.setLayout(new GridLayout(0, 3));
-		etiqueta_Correo.setFont(new Font("Dialog", Font.PLAIN, 13));
+		etiqueta_Correo.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panel_correo.add(etiqueta_Correo);
+		campoCorreo.setHorizontalAlignment(SwingConstants.CENTER);
+		campoCorreo.setFont(new Font("Dialog", Font.PLAIN, 13));
 		panel_correo.add(campoCorreo);
 		panel_correo.add(errorCorreo);
 		add(panel_correo);
 		panel_correo.setBorder(new EmptyBorder(4, 4, 4, 4));
 
 		panel_poblacion.setLayout(new GridLayout(0, 3));
-		etiqueta_Poblacion.setFont(new Font("Dialog", Font.PLAIN, 13));
+		etiqueta_Poblacion.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panel_poblacion.add(etiqueta_Poblacion);
+		campoPoblacion.setHorizontalAlignment(SwingConstants.CENTER);
+		campoPoblacion.setFont(new Font("Dialog", Font.PLAIN, 13));
 		panel_poblacion.add(campoPoblacion);
 		panel_poblacion.add(errorPoblacion);
 		add(panel_poblacion);
 		panel_poblacion.setBorder(new EmptyBorder(4, 4, 4, 4));
 
-
 		panel_imagen.setLayout(new GridLayout(0, 3));
-		botonSeleccionarImagen.setFont(new Font("Dialog", Font.PLAIN, 13));
+		botonSeleccionarImagen.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		botonSeleccionarImagen.setMargin(new Insets(0, 0, 0, 0));
+		botonSeleccionarImagen.setPreferredSize(new Dimension(20, botonSeleccionarImagen.getPreferredSize().height));
+
 		panel_imagen.add(botonSeleccionarImagen);
+		
+		campoImagen.setHorizontalAlignment(SwingConstants.CENTER);
+		campoImagen.setFont(new Font("Dialog", Font.PLAIN, 13));
 		panel_imagen.add(campoImagen);
 		panel_imagen.add(errorImagen);
 		add(panel_imagen);
 		panel_imagen.setBorder(new EmptyBorder(4, 4, 4, 4));
 
-
 		panel_password.setLayout(new GridLayout(0, 3));
-		etiqueta_password.setFont(new Font("Dialog", Font.PLAIN, 13));
+		etiqueta_password.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panel_password.add(etiqueta_password);
+		campoPassword.setHorizontalAlignment(SwingConstants.CENTER);
+		campoPassword.setFont(new Font("Dialog", Font.PLAIN, 13));
 		panel_password.add(campoPassword);
 		panel_password.add(errorPassword);
 		add(panel_password);
 		panel_password.setBorder(new EmptyBorder(4, 4, 4, 4));
 
-
 		panel_password_repetida.setLayout(new GridLayout(0, 3));
-		etiqueta_password_repetida.setFont(new Font("Dialog", Font.PLAIN, 13));
+		etiqueta_password_repetida.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panel_password_repetida.add(etiqueta_password_repetida);
+		campoPasswordRepetida.setHorizontalAlignment(SwingConstants.CENTER);
+		campoPasswordRepetida.setFont(new Font("Dialog", Font.PLAIN, 13));
 		panel_password_repetida.add(campoPasswordRepetida);
 		panel_password_repetida.add(errorPasswordRepetida);
 		add(panel_password_repetida);
 		panel_password_repetida.setBorder(new EmptyBorder(4, 4, 4, 4));
+		
 		panel_botones.setLayout(new GridLayout(0, 3, 15, 0));
-		botonVolver.setFont(new Font("Dialog", Font.PLAIN, 12));
+		botonVolver.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		botonVolver.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panel_botones.add(botonVolver);
-		botonResetear.setFont(new Font("Dialog", Font.PLAIN, 12));
+		botonResetear.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		botonResetear.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panel_botones.add(botonResetear);
-		botonRetgistrar.setFont(new Font("Dialog", Font.PLAIN, 12));
+		botonRetgistrar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		botonRetgistrar.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panel_botones.add(botonRetgistrar);
 		add(panel_botones);
 		panel_botones.setBorder(new EmptyBorder(20, 10, 10, 10));
@@ -187,13 +207,20 @@ public class Registro extends JPanel {
 				if (result == JFileChooser.APPROVE_OPTION) {
 					File selectedFile = fileChooser.getSelectedFile();
 
-					arrayBits = convertirImagen(selectedFile);
-					// etiqueta_imagen.setText(selectedFile.getName());
-					campoImagen.setText(selectedFile.getName());
+					// Comprobar que la imagen seleccionada sea del tamaño correcto
+					if (selectedFile.length() <= 64 * 1024) {
+						errorImagen.setText("");
+						arrayBits = convertirImagen(selectedFile);
+						campoImagen.setText(selectedFile.getName());
+					} else {
+						errorImagen.setText("Imagen grande < 64KB.");
+						campoImagen.setText("");
+						errorImagen.setHorizontalAlignment(SwingConstants.CENTER);
+						errorImagen.setForeground(Color.red);
+					}
 				} else {
 					System.out.println("Ningún archivo seleccionado");
 				}
-
 			}
 		});
 
@@ -210,7 +237,7 @@ public class Registro extends JPanel {
 
 			}
 		});
-		
+
 		botonResetear.addActionListener(new ActionListener() {
 
 			@Override
@@ -267,33 +294,37 @@ public class Registro extends JPanel {
 					errorCorreo.setText("El campo no puede estar vacio.");
 					errorCorreo.setForeground(Color.red);
 					errorCorreo.setHorizontalAlignment(SwingConstants.CENTER);
+
 				} else if (!Pattern.compile("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$").matcher(campoCorreo.getText())
 						.find()) {
 					errorCorreo.setText("El correo introducido no es correcto.");
 					errorCorreo.setForeground(Color.red);
 					errorCorreo.setHorizontalAlignment(SwingConstants.CENTER);
-				} else {					
-					
+
+				} else {
 					Connection c = Conexion.obtenerConexion();
 
 					try {
-						//Obtener los correos de la base de datos
+						// Obtener los correos de la base de datos
 						String correosListados = "SELECT email FROM usuarios";
 						PreparedStatement comprobarCorreos = c.prepareStatement(correosListados);
 						ResultSet resultado = comprobarCorreos.executeQuery();
-						boolean comproba=false;
-						
+						boolean comproba = false;
+
 						while (resultado.next()) {
-							//Comprobar que no exista coincidencia con el campo introducido
-							//Si es asi cambiar el semaforo ha acertado					
+							// Comprobar que no exista coincidencia con el campo introducido
+							// Si es asi cambiar el semaforo ha acertado
 							if (resultado.getString("email").equals(campoCorreo.getText())) {
 								errorCorreo.setText("El correo introducido ya existe.");
 								errorCorreo.setForeground(Color.red);
 								errorCorreo.setHorizontalAlignment(SwingConstants.CENTER);
-								comproba=true;
-							}					
+								comproba = true;
+							}
 						}
-						
+
+						comprobarCorreos.close();
+						resultado.close();
+
 						if (!comproba) {
 							email = campoCorreo.getText();
 							errorCorreo.setText("");
@@ -302,7 +333,13 @@ public class Registro extends JPanel {
 
 					} catch (Exception e2) {
 						System.out.println(e2);
-					}										
+					} finally {
+						try {
+							c.close();
+						} catch (Exception e3) {
+							System.out.println("Error tancant connexió comproba correu " + e3);
+						}
+					}
 				}
 
 				if (campoPoblacion.getText().isEmpty()) {
@@ -337,7 +374,7 @@ public class Registro extends JPanel {
 					errorPassword.setText("El campo no puede estar vacio.");
 					errorPassword.setHorizontalAlignment(SwingConstants.CENTER);
 					errorPassword.setForeground(Color.red);
-					
+
 					errorPasswordRepetida.setText("El campo no puede estar vacio.");
 					errorPasswordRepetida.setHorizontalAlignment(SwingConstants.CENTER);
 					errorPasswordRepetida.setForeground(Color.red);
@@ -347,19 +384,32 @@ public class Registro extends JPanel {
 					passwordRepetida = campoPasswordRepetida.getText();
 					errorPasswordRepetida.setText("");
 					camposCompletados++;
-					if (password.equals(passwordRepetida)) {
-						camposCompletados++;
-						errorPassword.setText("");
-						errorPasswordRepetida.setText("");
-					} else {
-						errorPassword.setText("La contraseña debe ser la misma");
+
+					if (password.length() < 5 || passwordRepetida.length() < 5) {
+
+						errorPassword.setText("Minimo 5 caracteres");
 						errorPassword.setForeground(Color.red);
 						errorPassword.setHorizontalAlignment(SwingConstants.CENTER);
-						
-						errorPasswordRepetida.setText("La contraseña debe ser la misma");
+
+						errorPasswordRepetida.setText("Minimo 5 caracteres");
 						errorPasswordRepetida.setForeground(Color.red);
 						errorPasswordRepetida.setHorizontalAlignment(SwingConstants.CENTER);
+					} else {
+						if (password.equals(passwordRepetida)) {
+							camposCompletados++;
+							errorPassword.setText("");
+							errorPasswordRepetida.setText("");
+						} else {
+							errorPassword.setText("La contraseña debe ser la misma");
+							errorPassword.setForeground(Color.red);
+							errorPassword.setHorizontalAlignment(SwingConstants.CENTER);
+
+							errorPasswordRepetida.setText("La contraseña debe ser la misma");
+							errorPasswordRepetida.setForeground(Color.red);
+							errorPasswordRepetida.setHorizontalAlignment(SwingConstants.CENTER);
+						}
 					}
+
 				}
 
 				if (camposCompletados == 7) {
@@ -370,7 +420,7 @@ public class Registro extends JPanel {
 							+ "nombre VARCHAR(50), " + "apellidos VARCHAR(50), " + "imagen BLOB, "
 							+ "poblacion VARCHAR(50), " + "email VARCHAR(50))";
 					String sentenciaCrearTablaPassword = "CREATE TABLE IF NOT EXISTS passwords (id INT AUTO_INCREMENT PRIMARY KEY, "
-							+ "idUsuario INT, " + "password VARCHAR(200), " + "salto VARCHAR(200),"  
+							+ "idUsuario INT, " + "password VARCHAR(200), " + "salto VARCHAR(200),"
 							+ "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
 
 					try {
@@ -394,13 +444,18 @@ public class Registro extends JPanel {
 							errorPasswordRepetida.setForeground(Color.red);
 						}
 					}
-
 					try {
 						registrarUsuario(nombre, apellido, poblacion, arrayBits, email, password, c);
 						mensajeGeneral.setText("Datos Guardados");
 						mensajeGeneral.setForeground(Color.green);
 					} catch (Exception e2) {
 						System.out.println("Error: " + e2);
+					} finally {
+						try {
+							c.close();
+						} catch (Exception e3) {
+							System.out.println("Error tancant connexió crear taules " + e3);
+						}
 					}
 				} else {
 					mensajeGeneral.setText("Error Datos/Conexion");
@@ -411,6 +466,7 @@ public class Registro extends JPanel {
 				}
 			}
 		});
+
 		setVisible(true);
 	}
 
@@ -439,23 +495,18 @@ public class Registro extends JPanel {
 			preparandoInsert.executeUpdate();
 
 			System.out.println("Usuario de prueba registrado");
-			
 
-//			removeAll();
-//			//add(menuJuegos);
-//			revalidate();
-//			repaint();
-			
+			preparandoInsert.close();
+
 			Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Registro.this);
-			
-			Menu menuJuegos = new Menu();
+
+			Menu menuJuegos = new Menu(usuario.getEmail());
 			p.getContentPane().removeAll();
-			p.getContentPane().setLayout(new BorderLayout()); 
+			p.getContentPane().setLayout(new BorderLayout());
 
 			p.getContentPane().add(menuJuegos);
 			p.revalidate();
 			p.repaint();
-
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -476,6 +527,9 @@ public class Registro extends JPanel {
 			while (consultaSelect.next()) {
 				id = consultaSelect.getInt("id");
 			}
+
+			preparandoConsultaSelect.close();
+			consultaSelect.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -483,10 +537,10 @@ public class Registro extends JPanel {
 	}
 
 	public String[] encriptarPassword(String passWord) {
-		String[] datosPasswords = new String[2]; 
+		String[] datosPasswords = new String[2];
 		byte[] salto = null;
 		String passwordEncriptada = "", saltoPassword = "";
-		
+
 		try {
 			SecureRandom random = new SecureRandom();
 			salto = new byte[LONGITUD_SALTO];
@@ -497,10 +551,10 @@ public class Registro extends JPanel {
 
 			byte[] hash = factory.generateSecret(spec).getEncoded();
 			passWord = Base64.getEncoder().encodeToString(hash);
-			
+
 			saltoPassword = conversionSalto(salto);
 			passwordEncriptada = FORTALEZA + saltoPassword + LONGITUD_HASH + passWord;
-			
+
 			datosPasswords[0] = passwordEncriptada;
 			datosPasswords[1] = saltoPassword;
 		} catch (Exception e) {
@@ -521,17 +575,6 @@ public class Registro extends JPanel {
 
 	public byte[] convertirImagen(File imagen) {
 		byte[] fileBytes = new byte[(int) imagen.length()];
-		try {
-			FileInputStream fis = new FileInputStream(imagen);
-
-			fis.read(fileBytes);
-			fis.close();
-		} catch (IOException e) {
-			System.out.println("Error: " + e);
-		}
 		return fileBytes;
 	}
-	
-
-
 }

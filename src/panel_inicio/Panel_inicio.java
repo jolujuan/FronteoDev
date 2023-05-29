@@ -3,6 +3,7 @@ package panel_inicio;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -46,19 +47,23 @@ public class Panel_inicio extends JFrame {
 		panel_superior.setLayout(new FlowLayout());
 
 		etiqueta_superior.setText("¡BIENVENIDO!");
-		etiqueta_superior.setFont(new Font("Arial", Font.BOLD, 20));
+		etiqueta_superior.setFont(new Font("Dialog", Font.BOLD, 25));
 		etiqueta_superior.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel_superior.add(etiqueta_superior);
 		
 		etiqueta_registro.setText("Registrarse");
-		boton_registro.add(etiqueta_registro);
+		etiqueta_registro.setFont(new Font("Dialog", Font.BOLD, 18));
 		etiqueta_registro.setAlignmentX(Component.CENTER_ALIGNMENT);
-		etiqueta_registro.setPreferredSize(new Dimension(130, 45)); 
+		etiqueta_registro.setPreferredSize(new Dimension(160, 55)); 
+		boton_registro.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		boton_registro.add(etiqueta_registro);
 
 		etiqueta_login.setText("Iniciar Sesión");
-		boton_login.add(etiqueta_login);
+		etiqueta_login.setFont(new Font("Dialog", Font.BOLD, 18));
 		etiqueta_login.setAlignmentX(Component.CENTER_ALIGNMENT);
-		etiqueta_login.setPreferredSize(new Dimension(130, 45)); 
+		etiqueta_login.setPreferredSize(new Dimension(160, 55)); 
+		boton_login.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		boton_login.add(etiqueta_login);
 
 
 		panel_principal.setLayout(new FlowLayout());
@@ -94,8 +99,8 @@ public class Panel_inicio extends JFrame {
 				 mostrarLogin();
 			}
 		});
-
-		this.setSize(600, 500);
+ 
+		this.setSize(650, 550);
 		this.setVisible(true);
 		centrarInterficiePantalla();
 	}
