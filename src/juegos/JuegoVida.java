@@ -107,7 +107,7 @@ public class JuegoVida extends JFrame{
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						int nCelules=random.nextInt(5,30);
+						int nCelules=random.nextInt(5,15);
 						setSize(370, 490);
 						// Centramos pantalla
 						centrarInterficiePantalla();
@@ -121,7 +121,7 @@ public class JuegoVida extends JFrame{
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						int nCelules=random.nextInt(90,129);
+						int nCelules=random.nextInt(60,90);
 						setSize(570, 690);
 						// Centramos pantalla
 						centrarInterficiePantalla();
@@ -134,7 +134,7 @@ public class JuegoVida extends JFrame{
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						int nCelules=random.nextInt(120,313);
+						int nCelules=random.nextInt(90,200);
 						setSize(770, 890);
 						// Centramos pantalla
 						centrarInterficiePantalla();
@@ -241,11 +241,11 @@ public class JuegoVida extends JFrame{
 			int filaAleatoria = random.nextInt(f);
 			int columnaAleatoria = random.nextInt(f);
 			Casilla casilla = tableroCasillas[filaAleatoria][columnaAleatoria];
-			if (!casilla.getTieneMina()) {
-				casilla.setTieneMina(true);
+			if (!casilla.getCelulaViva()) {
+				casilla.setCelulaViva(true);
 				minasAsignadas++;
-//				actualizarNumerosAdyacentes(filaAleatoria, columnaAleatoria);
 			}
+			casilla.actualizarApariencia();
 		}
 	}
 	private void centrarInterficiePantalla() {
@@ -262,72 +262,26 @@ public class JuegoVida extends JFrame{
 	}
 	public class Casilla extends JButton {
 
-		private boolean tieneMina = false;
-		private boolean primeraMinaRevelada = false;
-		private boolean tieneBandera = false;
-		private int minasAdyacentes;
-		private boolean esRevelada = false;
-		private boolean quitarBandera = false;
+		private boolean celulaViva = false;
 
 		public Casilla() {
-			super(" ");
-			this.minasAdyacentes = 0;
-
+			super("");
 		}
 
-		public void setTieneMina(boolean tieneMina) {
-			this.tieneMina = tieneMina;
+		public void setCelulaViva(boolean tieneMina) {
+			this.celulaViva = tieneMina;
 		}
 
-		public boolean getTieneMina() {
-			return this.tieneMina;
-		}
-
-		public boolean getPrimeraMinaRevelada() {
-			return primeraMinaRevelada;
-		}
-
-		public void setPrimeraMinaRevelada(boolean primeraMinaRevelada) {
-			this.primeraMinaRevelada = primeraMinaRevelada;
-		}
-
-		public boolean getQuitarBandera() {
-			return this.quitarBandera;
-		}
-
-		public void setQuitarBandera(boolean quitarBandera) {
-			this.quitarBandera = quitarBandera;
-		}
-
-		public boolean getTieneBandera() {
-			return tieneBandera;
-		}
-
-		public void setTieneBandera(boolean tieneBandera) {
-			this.tieneBandera = tieneBandera;
-		}
-
-		public void setMinasAdyacentes(int minasAdyacentes) {
-			this.minasAdyacentes = minasAdyacentes;
-		}
-
-		public int getMinasAdyacentes() {
-			return this.minasAdyacentes;
-		}
-
-		public boolean setEsRevelada(boolean esRevelada) {
-			return this.esRevelada;
+		public boolean getCelulaViva() {
+			return this.celulaViva;
 		}
 
 		private void actualizarApariencia() {
-			if (esRevelada) {
-				if (esRevelada && !tieneMina) {
-					setFont(new Font("Dialog", Font.BOLD, 20));
-					setBackground(new Color(128, 128, 128, 50));
-				}
+			if (celulaViva) {
+				setBackground(new Color(250, 250, 0, 100));
+				
 			} else {
-
-				setText("");
+				setBackground(new Color(128, 128, 128, 50));
 			}
 		}
 	}
