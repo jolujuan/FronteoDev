@@ -179,7 +179,7 @@ public class Menu extends JPanel {
 								frame.addWindowListener(new WindowAdapter() {
 									@Override
 									public void windowClosed(WindowEvent e) {
-										buscMinasAbierto=false; // Restablecer como cerrado
+										juegoVidaAbierto=false; // Restablecer como cerrado
 									}
 								});
 							} catch (Exception e) {
