@@ -1,7 +1,6 @@
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-
 import panel_inicio.Panel_inicio;
 
 public class MainPrincipal {

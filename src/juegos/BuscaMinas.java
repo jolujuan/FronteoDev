@@ -66,30 +66,6 @@ public class BuscaMinas extends JFrame {
 			}
 		});
 	}
-	public JPanel creaJoc(String dificultat) {
-		JPanel tauler=new JPanel();
-		switch(dificultat) {
-		case "facil":
-			tauler=creaMapa(8,8,10);
-			break;
-		case "normal":
-			tauler=creaMapa(16,16,40);
-			break;
-		case "dificil":
-			tauler=creaMapa(30,16,99);
-			break;
-		}
-		return tauler;
-	}
-	public JPanel creaMapa(int files, int columnes, int mines) {
-		JPanel mapaJoc=new JPanel();
-		mapaJoc.setLayout(new GridLayout(files, columnes));
-		
-		for (int y = 0; y < files; y++) {
-			for (int x = 0; x < columnes; x++) {
-				JPanel casilla=new JPanel();
-				casilla.setBackground(Color.red);
-				casilla.setBorder(BorderFactory.createLineBorder(new Color(128, 128, 128, 50), 1));
 
 	/**
 	 * Create the frame.
@@ -114,7 +90,7 @@ public class BuscaMinas extends JFrame {
 	}
 
 	public void IniciodeJuego() {
-
+		//Iniciamos contador de tiempo
 		JPanel inicio = new JPanel();
 		inicio.setFont(new Font("Verdana", Font.BOLD, 13));
 		// Siempre tendra el mismo tamaño
