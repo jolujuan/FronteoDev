@@ -1,6 +1,9 @@
 package menuJuegos;
 
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -9,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -20,10 +24,6 @@ import juegos.BuscaMinas;
 import juegos.PixelArt;
 import panel_inicio.Panel_inicio;
 import perfil.Perfil;
-import java.awt.Font;
-import java.awt.Dimension;
-import java.awt.Cursor;
-import javax.swing.border.EmptyBorder;
 
 public class Menu extends JPanel {
 
@@ -107,7 +107,7 @@ public class Menu extends JPanel {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
-								PixelArt frame1 = new PixelArt();
+								PixelArt frame1 = new PixelArt(correo);
 								frame1.setSize(500, 500);
 								frame1.setVisible(true);
 								frame1.addWindowListener(new WindowAdapter() {
@@ -130,6 +130,8 @@ public class Menu extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				File archivoCargaDatosPixelArt = new File("partidaCargada.txt");
+				archivoCargaDatosPixelArt.delete();
 				SwingUtilities.getWindowAncestor(Menu.this).dispose();
 
 				Panel_inicio ventanaInicio = new Panel_inicio();
