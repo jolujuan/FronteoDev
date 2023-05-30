@@ -36,6 +36,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -45,13 +46,13 @@ public class BuscaMinasGuardar extends JFrame {
 	private Casilla[][] tableroCasillas;
 	private JPanel contentPane;
 	private JPanel tablero = new JPanel();
+	private JButton reinicio = new JButton();
 
 	// Variables comprobaciones juego
 	private boolean juegoTerminado = false;
 	private int contadorBanderas = 0;
 	private String nombreTablero;
 	private boolean esReveladaGlobal = false;
-
 
 	// Mostrar mensajes de banderas
 	private JLabel labelMinasRestantes = new JLabel("");
@@ -178,7 +179,7 @@ public class BuscaMinasGuardar extends JFrame {
 							String[] parts = line.substring(1).split(":");
 							contadorBanderas = Integer.parseInt(parts[0]);
 							segons = Integer.parseInt(parts[1]);
-							ContadorCasillasinrevelar=Integer.parseInt(parts[2]);
+							ContadorCasillasinrevelar = Integer.parseInt(parts[2]);
 						}
 						// llegim l'objecte que hi ha al fitxer (1 sol array List)
 						tableroCasillas = (Casilla[][]) reader.readObject();
@@ -194,23 +195,21 @@ public class BuscaMinasGuardar extends JFrame {
 					System.err.println("Error en llegir usuaris.dades " + ex);
 				}
 
+				//Dependiendo el tamaño creamos el tipo de tablero
 				if (tableroCasillas.length == 8) {
+
+					contentPane.removeAll();
 					tablero.removeAll();
 
-					setSize(370, 490);
+					setSize(370, 575);
 					// Centramos pantalla
 					centrarInterficiePantalla();
-
 					crearTablero(8, 10);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
-					recorrerTablero(8, 10);
 
 					// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
 					nombreTablero = "pequeño";
 
-					// Declaramos las banderas que contendra
-					// contadorBanderas = 10;
-
-					//ContadorCasillasinrevelar = 54;
+					// ContadorCasillasinrevelar = 54;
 					labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
 					CasillasRevelarReset = ContadorCasillasinrevelar;
 
@@ -221,8 +220,47 @@ public class BuscaMinasGuardar extends JFrame {
 					labelTemps.setText(Integer.toString(segons));
 
 				} else if (tableroCasillas.length == 16) {
+					contentPane.removeAll();
+					tablero.removeAll();
+
+					setSize(570, 775);
+					// Centramos pantalla
+					centrarInterficiePantalla();
+					crearTablero(25, 40);
+
+					nombreTablero = "mediano";
+
+					labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
+					CasillasRevelarReset = ContadorCasillasinrevelar;
+
+					// Inicialmente mostrarara las banderas que tiene
+					labelMinasRestantes.setText(Integer.toString(contadorBanderas));
+
+					// Mostrar los segundos donde se quedo la partida
+					labelTemps.setText(Integer.toString(segons));
 
 				} else if (tableroCasillas.length == 25) {
+					contentPane.removeAll();
+					tablero.removeAll();
+
+					setSize(770, 975);
+					// Centramos pantalla
+					centrarInterficiePantalla();
+
+					crearTablero(25, 80);
+
+					// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
+					nombreTablero = "grande";
+
+					// ContadorCasillasinrevelar = 54;
+					labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
+					CasillasRevelarReset = ContadorCasillasinrevelar;
+
+					// Inicialmente mostrarara las banderas que tiene
+					labelMinasRestantes.setText(Integer.toString(contadorBanderas));
+
+					// Mostrar los segundos donde se quedo la partida
+					labelTemps.setText(Integer.toString(segons));
 
 				}
 
@@ -244,11 +282,12 @@ public class BuscaMinasGuardar extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSize(370, 490);
+//490
+				setSize(370, 575);
 				// Centramos pantalla
 				centrarInterficiePantalla();
 				crearTablero(8, 10);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
-				recorrerTablero(8, 10);
+				generarMinas(8, 10);
 
 				// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
 				nombreTablero = "pequeño";
@@ -268,11 +307,11 @@ public class BuscaMinasGuardar extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSize(570, 690);
+				setSize(570, 775);
 				// Centramos pantalla
 				centrarInterficiePantalla();
 				crearTablero(16, 40);
-				recorrerTablero(16, 40);
+				generarMinas(16, 40);
 				nombreTablero = "mediano";
 
 				contadorBanderas = 40;
@@ -288,11 +327,11 @@ public class BuscaMinasGuardar extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSize(770, 890);
+				setSize(770, 975);
 				// Centramos pantalla
 				centrarInterficiePantalla();
 				crearTablero(25, 80);
-				recorrerTablero(25, 80);
+				generarMinas(25, 80);
 
 				nombreTablero = "grande";
 
@@ -315,7 +354,7 @@ public class BuscaMinasGuardar extends JFrame {
 		private boolean tieneBandera = false;
 		private int minasAdyacentes;
 		private boolean quitarBandera = false;
-		private boolean esRevelada=false;
+		private boolean esRevelada = false;
 
 		public Casilla() {
 			super(" ");
@@ -361,9 +400,9 @@ public class BuscaMinasGuardar extends JFrame {
 		public int getMinasAdyacentes() {
 			return this.minasAdyacentes;
 		}
-		
+
 		public boolean setEsRevelada(boolean esRevelada) {
-			esReveladaGlobal=esRevelada;
+			esReveladaGlobal = esRevelada;
 
 			return this.esRevelada;
 
@@ -472,6 +511,8 @@ public class BuscaMinasGuardar extends JFrame {
 			BotonesDescartaryGuardar();
 
 		} else {
+			// Marcar para reiniciar partida cargada
+			esReveladaGlobal = true;
 			tablero.setLayout(new GridLayout(f, f));
 
 			for (int fila = 0; fila < f; fila++) {
@@ -544,6 +585,7 @@ public class BuscaMinasGuardar extends JFrame {
 			contentPane.add(tablero, BorderLayout.CENTER);
 
 			BotonesDescartaryGuardar();
+
 		}
 	}
 
@@ -559,15 +601,17 @@ public class BuscaMinasGuardar extends JFrame {
 
 					// Parar el contador
 					paraComptador();
-					
 
 					mostrarMina(casilla, "minaRoja");
 					casilla.setPrimeraMinaRevelada(true);
 					JOptionPane.showMessageDialog(null, "Has encontrado una mina");
 					juegoTerminado = true;
 					desactivarTablero();
-
 					revelarContenido();
+					
+					//Cambiar el emoticono
+					Image cara = new ImageIcon("src/imagenes/caraTriste.png").getImage().getScaledInstance(38, 38, Image.SCALE_SMOOTH);
+					reinicio.setIcon(new ImageIcon(cara));
 				} else {
 					mostrarMina(casilla, "mina");
 				}
@@ -579,7 +623,11 @@ public class BuscaMinasGuardar extends JFrame {
 				juegoTerminado = true;
 				desactivarTablero();
 			}
-			ContadorCasillasinrevelar--;
+
+			// Solo restar cuando no contenga un número
+			if (casilla.esRevelada == false) {
+				ContadorCasillasinrevelar--;
+			}
 
 			labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
 
@@ -591,6 +639,7 @@ public class BuscaMinasGuardar extends JFrame {
 	}
 
 	private void mostrarNumero(Casilla casilla) {
+
 		casilla.setEsRevelada(true); // Marcar la casilla como revelada
 
 		// Configuramos los numeros y los colores
@@ -610,10 +659,10 @@ public class BuscaMinasGuardar extends JFrame {
 	private void mostrarMina(Casilla casilla, String nom) {
 
 		casilla.setEsRevelada(true); // Marcar la casilla como revelada
+
 		// Segun la mina roja inicial o las demás obtendremos la ruta y
 		// redimensionaremos
 		Image imagenRedimensionada = null;
-
 		if (nom.equals("mina")) {
 			imagenRedimensionada = new ImageIcon("src/imagenes/mina.png").getImage().getScaledInstance(25, 25,
 					Image.SCALE_SMOOTH);
@@ -626,7 +675,6 @@ public class BuscaMinasGuardar extends JFrame {
 		// Agregar la mina
 		casilla.setIcon(new ImageIcon(imagenRedimensionada));
 		casilla.setText("");
-
 	}
 
 	private void quitarBandera(Casilla casilla, int numeroBanderas) {
@@ -681,27 +729,25 @@ public class BuscaMinasGuardar extends JFrame {
 	}
 
 	private void revelarContenido() {
-		
+
 		// Revelar todas las minas y los números
 		for (Casilla[] filaCasillas : tableroCasillas) {
 			for (Casilla casilla : filaCasillas) {
 				// Eliminar el icono de la bandera para todas las casillas
 				casilla.setIcon(null);
 
-				if (!casilla.esRevelada) {
+				int minasAdyacentes = casilla.getMinasAdyacentes();
+				if (minasAdyacentes > 0 || casilla.getTieneMina()) {
 
-					int minasAdyacentes = casilla.getMinasAdyacentes();
-					if (minasAdyacentes > 0 || casilla.getTieneMina()) {
-						// No revelar donde se encuentran los numeros
-						// mostrarNumero(casilla);
-						if (casilla.getTieneMina()) {
-							// Aqui mantenemos el color de la primera mina
-							if (casilla.getPrimeraMinaRevelada()) {
-								mostrarMina(casilla, "minaRoja");
-							} else {
-								mostrarMina(casilla, "mina");
-								casilla.setPrimeraMinaRevelada(true);
-							}
+					// No revelar donde se encuentran los numeros
+					// mostrarNumero(casilla);
+					if (casilla.getTieneMina()) {
+						// Aqui mantenemos el color de la primera mina
+						if (casilla.getPrimeraMinaRevelada()) {
+							mostrarMina(casilla, "minaRoja");
+						} else {
+							mostrarMina(casilla, "mina");
+							casilla.setPrimeraMinaRevelada(true);
 						}
 					}
 				}
@@ -763,18 +809,20 @@ public class BuscaMinasGuardar extends JFrame {
 		}
 	}
 
-	public void recorrerTablero(int f, int numeroMinas) {
+	public void generarMinas(int f, int numeroMinas) {
 		int minasAsignadas = 0; // Contador de minas asignadas
 
 		while (minasAsignadas < numeroMinas) {
 			int filaAleatoria = obtenerFilaAleatoria(f);
 			int columnaAleatoria = obtenerColumnaAleatoria(f);
 			Casilla casilla = tableroCasillas[filaAleatoria][columnaAleatoria];
+
 			if (!casilla.getTieneMina()) {
 				casilla.setTieneMina(true);
 				minasAsignadas++;
 				actualizarNumerosAdyacentes(filaAleatoria, columnaAleatoria);
 			}
+
 		}
 	}
 
@@ -923,7 +971,6 @@ public class BuscaMinasGuardar extends JFrame {
 		gbcMinasRestantes.gridx = 1;
 		gbcMinasRestantes.gridy = 0;
 		PanelContador.add(MinasRestantes, gbcMinasRestantes);
-
 		labelMinasRestantes.setBorder(
 				BorderFactory.createCompoundBorder(new LineBorder(Color.GRAY, 2, true), new EmptyBorder(5, 20, 5, 20)));
 		labelMinasRestantes.setFont(new Font("Dialog", Font.BOLD, 22));
@@ -938,69 +985,69 @@ public class BuscaMinasGuardar extends JFrame {
 		gbcReiniciar.gridy = 0;
 		PanelContador.add(Reiniciar, gbcReiniciar);
 
-		Image cara = new ImageIcon("src/imagenes/cara.png").getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-
-		JButton reinicio = new JButton(new ImageIcon(cara));
-
+		Image cara = new ImageIcon("src/imagenes/cara.png").getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
+		reinicio.setIcon(new ImageIcon(cara));
+		
 		Reiniciar.add(reinicio);
-		reinicio.setMinimumSize(new Dimension(40, 40));
-		reinicio.setMaximumSize(new Dimension(40, 40));
-		reinicio.setPreferredSize(new Dimension(40, 40));
-		//reinicio.setFont(new Font("Unispace", Font.BOLD, 12));
-
+		reinicio.setBorderPainted(false);
+		reinicio.setBackground(Color.decode("#c0c0c0"));
+		reinicio.setMinimumSize(new Dimension(45, 45));
+		reinicio.setMaximumSize(new Dimension(45, 45));
+		reinicio.setPreferredSize(new Dimension(45, 45));
+		
 		reinicio.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				if (esReveladaGlobal){
+				if (esReveladaGlobal) {
 					// Resetear contador para volver a empezar
 					paraComptador();
 					tableroCasillas = null;
 					// Eliminar todo lo anterior, creamos nueva instancia y reiniciamos contadores
+					contentPane.removeAll();
 					tablero.removeAll();
-					Casilla casilla = new Casilla();
-					casilla.setTieneMina(false);
-					casilla.setEsRevelada(false);
-				    esReveladaGlobal = false;
 
+					esReveladaGlobal = false;
 					juegoTerminado = false;
+
 					ContadorCasillasinrevelar = CasillasRevelarReset; // para resetear el contador al numero inicial de
-					repaint();
-					revalidate();
+
 					// Dependiendo el tamaño del tablero, volver a inicializar todo
 					switch (nombreTablero) {
 					case "pequeño": {
 						crearTablero(8, 10);
-						recorrerTablero(8, 10);
+						generarMinas(8, 10);
 						contadorBanderas = 10;
 						labelMinasRestantes.setText(Integer.toString(10));
 
 						ContadorCasillasinrevelar = 54;
 						labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
-
+						repaint();
+						revalidate();
 						break;
 					}
 					case "mediano": {
 						crearTablero(16, 40);
-						recorrerTablero(16, 40);
+						generarMinas(16, 40);
 						contadorBanderas = 40;
 						labelMinasRestantes.setText(Integer.toString(40));
 
 						ContadorCasillasinrevelar = 216;
 						labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
-
+						repaint();
+						revalidate();
 						break;
 					}
 					case "grande": {
 						crearTablero(25, 80);
-						recorrerTablero(25, 80);
+						generarMinas(25, 80);
 						contadorBanderas = 80;
 						labelMinasRestantes.setText(Integer.toString(80));
 
 						ContadorCasillasinrevelar = 545;
 						labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
-
+						repaint();
+						revalidate();
 						break;
 					}
 					default:
