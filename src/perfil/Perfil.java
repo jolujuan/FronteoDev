@@ -185,6 +185,8 @@ public class Perfil extends JPanel {
 	}
 
 	public void eleminarUsuario(int id) {
+		String sentenciaTablaPixelArt = "DELETE FROM pixelart WHERE idUsuario = ?";
+		String sentenciaTablaBuscaminas = "DELETE FROM buscaminas WHERE idUsuario = ?";
 		String sentenciaTablaPasswords = "DELETE FROM passwords WHERE idUsuario = ?";
 		String sentenciaTablaUsuarios = "DELETE FROM usuarios WHERE id = ?";
 		Connection c = Conexion.obtenerConexion();
@@ -194,10 +196,19 @@ public class Perfil extends JPanel {
 
 		if (opcion == JOptionPane.YES_OPTION) {
 			try {
+				// ELIMANAR EL USER DE PASSWORDS
 				PreparedStatement consulta = c.prepareStatement(sentenciaTablaPasswords);
 				consulta.setInt(1, id);
 				consulta.executeUpdate();
-
+				// ELIMANAR EL USER DE PIXELART
+				consulta = c.prepareStatement(sentenciaTablaPixelArt);
+				consulta.setInt(1, id);
+				consulta.executeUpdate();
+				// ELIMANAR EL USER DE BUSCAMINAS
+				consulta = c.prepareStatement(sentenciaTablaBuscaminas);
+				consulta.setInt(1, id);
+				consulta.executeUpdate();
+				// ELIMANAR EL USER DE USUARIOS
 				consulta = c.prepareStatement(sentenciaTablaUsuarios);
 				consulta.setInt(1, id);
 				consulta.executeUpdate();
