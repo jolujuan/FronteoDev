@@ -962,6 +962,8 @@ public class BuscaMinasGuardar extends JFrame {
 					Casilla casilla = new Casilla();
 					casilla.setTieneMina(false);
 					casilla.setEsRevelada(false);
+				    esReveladaGlobal = false;
+
 					juegoTerminado = false;
 					ContadorCasillasinrevelar = CasillasRevelarReset; // para resetear el contador al numero inicial de
 					repaint();
