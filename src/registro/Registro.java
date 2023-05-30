@@ -212,7 +212,7 @@ public class Registro extends JPanel {
 						arrayBits = converitirImagenByte(selectedFile);
 						campoImagen.setText(selectedFile.getName());
 					} else {
-						errorImagen.setText("Tamaño imagen maximo 64KB.");
+						errorImagen.setText("Tamaño máximo 64KB.");
 						campoImagen.setText("");
 						errorImagen.setHorizontalAlignment(SwingConstants.CENTER);
 						errorImagen.setForeground(Color.red);
