@@ -219,7 +219,7 @@ public class BuscaMinas extends JFrame {
 					setSize(570, 775);
 					// Centramos pantalla
 					centrarInterficiePantalla();
-					crearTablero(25, 40);
+					crearTablero(16, 40);
 					repaint();
 					revalidate();
 					nombreTablero = "mediano";
