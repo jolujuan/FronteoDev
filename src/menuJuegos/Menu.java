@@ -34,6 +34,7 @@ public class Menu extends JPanel {
 	private JButton botonLogout = new JButton("Logout");
 	private int botonJugar = 0;
 	private boolean pixelArtAbierto = false;
+	private boolean buscaAbierto=false;
 
 	public Menu(String correo) {
 		setLayout(new GridBagLayout());
@@ -143,14 +144,20 @@ public class Menu extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (botonJugar == 0) {
+				if (!buscaAbierto) { // Verificar si PixelArt está abierto
+					buscaAbierto=true;
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
 								BuscaMinas frame = new BuscaMinas();
 								frame.setSize(500, 500);
 								frame.setVisible(true);
-								botonJugar++;
+								frame.addWindowListener(new WindowAdapter() {
+									@Override
+									public void windowClosed(WindowEvent e) {
+										buscaAbierto = false; // Restablecer como cerrado
+									}
+								});
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
