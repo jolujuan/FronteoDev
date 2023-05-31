@@ -216,7 +216,7 @@ public class Login extends JPanel {
 					"SELECT usuarios.email, passwords.password, passwords.salto FROM usuarios JOIN passwords ON usuarios.id=passwords.idUsuario");
 			try {
 				boolean userTrobat = false;
-				if (r.next()) {
+				
 					while (r.next() && !userTrobat) {
 						String nom = r.getString("email");
 						String pwd = r.getString("password");
@@ -231,10 +231,7 @@ public class Login extends JPanel {
 							}
 						}
 					} 
-				}else {
-					JOptionPane.showMessageDialog(panel, "No s'ha trobat aquest usuari");
-					usrValidat=false;
-				}
+				
 				if (!userTrobat) {
 					JOptionPane.showMessageDialog(panel, "No s'ha trobat aquest usuari");
 					usrValidat=false;

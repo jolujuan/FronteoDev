@@ -71,16 +71,7 @@ public class Conexion {
 
 			String usuari = "1daw04_pro";
 			String contrasenya = "V8o1wKVgqV";
-			Connection c = DriverManager.getConnection(urlBaseDades, usuari, contrasenya);
-
-			// Enviar una sentència SQL per recuperar els clients
-			Statement s = c.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-			ResultSet r = s.executeQuery("SELECT * FROM alumne");
-			// mentre hi haja alguna fila en el resultat
-			while (r.next()) {
-				// mostra els camps seleccionats
-				System.out.println("Nom: " + r.getString("nom") + ", Cognoms: " + r.getString("cognoms"));
-			}
+			Connection c = DriverManager.getConnection(urlBaseDades, usuari, contrasenya);			
 
 			// Tancar la connexió
 			c.close();
