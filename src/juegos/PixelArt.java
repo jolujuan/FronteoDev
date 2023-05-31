@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -47,6 +48,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -58,22 +60,22 @@ public class PixelArt extends JFrame {
 	private JPanel tablero = new JPanel();
 	public static String tamanio = "";
 	// Para trabajar directamente eliminaremos desmarcaremos el main
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					PixelArt frame = new PixelArt();
-//					frame.setSize(500, 500);
-//					frame.setVisible(true);
-//					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-//
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
+	/*public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					PixelArt frame = new PixelArt(tamanio);
+					frame.setSize(500, 500);
+					frame.setVisible(true);
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}*/
+ 
 	/**
 	 * Create the frame.
 	 */
@@ -186,7 +188,7 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSize(470, 470);
+				setSize(450, 540);
 				// Centramos pantalla
 				centrarInterficiePantalla();
 				crearTablero(20, correo);
@@ -197,7 +199,7 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSize(670, 670);
+				setSize(670, 740);
 				// Centramos pantalla
 				centrarInterficiePantalla();
 				crearTablero(50, correo);
@@ -208,7 +210,7 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSize(870, 870);
+				setSize(870, 940);
 				// Centramos pantalla
 				centrarInterficiePantalla();
 				crearTablero(100, correo);
@@ -452,14 +454,17 @@ public class PixelArt extends JFrame {
 										// adjuntos , y con el la raiz cuadrada sacamos el tamaño el tablero
 				}
 				if (Math.sqrt(contadorLinieas) == 20) {
+					centrarInterficiePantalla();
 					setSize(470, 470);
 					crearTablero(20, correo);
 
 				} else if (Math.sqrt(contadorLinieas) == 50) {
+					centrarInterficiePantalla();
 					setSize(670, 670);
 					crearTablero(50, correo);
 
 				} else if (Math.sqrt(contadorLinieas) == 100) {
+					centrarInterficiePantalla();
 					setSize(870, 870);
 					crearTablero(100, correo);
 
@@ -568,17 +573,17 @@ public class PixelArt extends JFrame {
 	private void BotonesDescartaryGuardar(String correo) {
 		JPanel BotonesJuego = new JPanel(new GridBagLayout());
 
-		JButton Borrar = new JButton("Borrar");
-		Borrar.setPreferredSize(new Dimension(120, 40));
-		Borrar.setFont(new Font("Unispace", Font.BOLD, 12));
+		JButton botonVolver = new JButton("Volver");
+		botonVolver.setPreferredSize(new Dimension(120, 40));
+		botonVolver.setFont(new Font("Unispace", Font.BOLD, 12));
 		GridBagConstraints gbcBorrar = new GridBagConstraints();
 		gbcBorrar.anchor = GridBagConstraints.CENTER;
 		gbcBorrar.insets = new Insets(5, 10, 10, 10); // Añade espacio inferior
 		gbcBorrar.gridx = 0;
 		gbcBorrar.gridy = 0;
-		BotonesJuego.add(Borrar, gbcBorrar);
+		BotonesJuego.add(botonVolver, gbcBorrar);
 
-		Borrar.addActionListener(new ActionListener() {
+		botonVolver.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
