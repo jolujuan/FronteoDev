@@ -76,6 +76,8 @@ public class Registro extends JPanel {
 	private JLabel errorPoblacion = new JLabel();
 	private JPanel panel_poblacion = new JPanel();
 
+	private JFileChooser fileChooser = new JFileChooser();
+	private File selectedFile = fileChooser.getSelectedFile();
 	private JTextField campoImagen = new JTextField(20);
 	private JButton botonSeleccionarImagen = new JButton("Imagen perfil:");
 	private JLabel errorImagen = new JLabel();
@@ -158,6 +160,7 @@ public class Registro extends JPanel {
 
 		campoImagen.setHorizontalAlignment(SwingConstants.CENTER);
 		campoImagen.setFont(new Font("Dialog", Font.PLAIN, 13));
+		campoImagen.setEnabled(false);
 		panel_imagen.add(campoImagen);
 		panel_imagen.add(errorImagen);
 		add(panel_imagen);
@@ -200,23 +203,32 @@ public class Registro extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
+				//JFileChooser fileChooser = new JFileChooser();
 				int result = fileChooser.showOpenDialog(null);
 				if (result == JFileChooser.APPROVE_OPTION) {
-					File selectedFile = fileChooser.getSelectedFile();
+					selectedFile = fileChooser.getSelectedFile();
+					System.out.println(selectedFile.exists());
 
-					// Comprobar que la imagen seleccionada sea del tamaño correcto
-					if (selectedFile.length() <= 64 * 1024) {
-						errorImagen.setText("");
-						// arrayBits = convertirImagen(selectedFile);
-						arrayBits = converitirImagenByte(selectedFile);
-						campoImagen.setText(selectedFile.getName());
-					} else {
-						errorImagen.setText("Tamaño máximo 64KB.");
-						campoImagen.setText("");
+					if (!selectedFile.exists()) {
+						errorImagen.setText("Archivo no existente");
 						errorImagen.setHorizontalAlignment(SwingConstants.CENTER);
 						errorImagen.setForeground(Color.red);
+					} else {
+						if (selectedFile.length() <= 64 * 1024) {
+							errorImagen.setText("");
+							// arrayBits = convertirImagen(selectedFile);
+							arrayBits = converitirImagenByte(selectedFile);
+							campoImagen.setText(selectedFile.getName());
+							
+						} else {
+							errorImagen.setText("Tamaño máximo 64KB.");
+							campoImagen.setText("");
+							errorImagen.setHorizontalAlignment(SwingConstants.CENTER);
+							errorImagen.setForeground(Color.red);
+						}
 					}
+					// Comprobar que la imagen seleccionada sea del tamaño correcto
+
 				} else {
 					System.out.println("Ningún archivo seleccionado");
 				}
@@ -249,6 +261,7 @@ public class Registro extends JPanel {
 
 				campoPassword.setText(null);
 				campoPasswordRepetida.setText(null);
+				selectedFile = null;
 
 				errorNombre.setText(null);
 				errorApellido.setText(null);
@@ -301,12 +314,12 @@ public class Registro extends JPanel {
 					errorCorreo.setHorizontalAlignment(SwingConstants.CENTER);
 
 				} else {
-					
+
 					Connection c = Conexion.obtenerConexion();
 					if (!existeTabla("usuarios")) {
 						crearTablas();
 					}
-					
+
 					try {
 						// Obtener los correos de la base de datos
 						String correosListados = "SELECT email FROM usuarios";
@@ -332,7 +345,7 @@ public class Registro extends JPanel {
 							email = campoCorreo.getText();
 							errorCorreo.setText("");
 							camposCompletados++;// 3
-							
+
 						}
 
 					} catch (Exception e2) {
@@ -355,7 +368,7 @@ public class Registro extends JPanel {
 					poblacion = campoPoblacion.getText();
 					errorPoblacion.setText("");
 					camposCompletados++;// 4
-					
+
 				}
 
 				if (campoImagen.getText().isEmpty()) {
@@ -364,14 +377,18 @@ public class Registro extends JPanel {
 					errorImagen.setHorizontalAlignment(SwingConstants.CENTER);
 
 				} else {
-					errorImagen.setText("");
-					if (!campoImagen.getText().contains(".jpg")) {
-						errorImagen.setText("Solo archivos .jpg");
-						errorImagen.setForeground(Color.red);
-					} else {
+					imagen = campoImagen.getText();
+					System.out.println("regex "+imagen.matches("^.+\\.(jpg|png)$"));
+					if (imagen.matches("^.+\\.(jpg|png)$")) {
 						imagen = campoImagen.getText();
 						errorImagen.setText("");
 						camposCompletados++;// 5
+						System.out.println("Cumple el regex");
+					} else {
+						imagen = "";
+						
+						errorImagen.setText("Archivo imagen incorrecto");
+						errorImagen.setForeground(Color.red);
 						
 					}
 				}
@@ -390,7 +407,6 @@ public class Registro extends JPanel {
 					passwordRepetida = campoPasswordRepetida.getText();
 					errorPasswordRepetida.setText("");
 					camposCompletados++;// 6
-					
 
 					if (password.length() < 5 || passwordRepetida.length() < 5) {
 
@@ -419,11 +435,10 @@ public class Registro extends JPanel {
 
 				}
 
-				
 				// SI AUN NO HAY TABLAS CREADAS PONER -> if(camposCompletados == 6) y comentar
 				// las lineas de comprobacion del correo
 				if (camposCompletados == 7) {
-					//crearTablas();
+					// crearTablas();
 //					Connection c = Conexion.obtenerConexion();
 //
 //					String sentenciaCrearTablaUsuario = "CREATE TABLE IF NOT EXISTS usuarios (id INT AUTO_INCREMENT PRIMARY KEY, "

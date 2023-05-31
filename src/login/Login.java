@@ -151,7 +151,7 @@ public class Login extends JPanel {
 		botoTorna.setPreferredSize(new Dimension(110, 35));
 		botoTorna.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panelBotones.add(botoTorna);
-		
+
 		botoTorna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
@@ -177,20 +177,20 @@ public class Login extends JPanel {
 					errorUsr.setText("Error. Introduce un nombre.");
 				} else if (fieldPwd.getPassword().length == 0) {
 					errorPwd.setText("Error. Introduce una contraseña.");
-				} else if(consultaSql()){
+				} else if (consultaSql()) {
 					System.out.println("Login exitoso");
-					Menu menu= new Menu(fieldUsr.getText());
+					Menu menu = new Menu(fieldUsr.getText());
 					Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
 					p.getContentPane().removeAll();
 					p.getContentPane().add(menu);
 					p.revalidate();
 					p.repaint();
-					
+
 				}
 
 			}
 		});
-		
+
 		botoTorna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
@@ -208,7 +208,7 @@ public class Login extends JPanel {
 		Connection c = Conexion.obtenerConexion();
 //		Connection c = Conexion.obtenerConexionLocal();
 		ResultSet r = null;
-		boolean usrValidat=true;
+		boolean usrValidat = false;
 		try {
 			// Enviar una sentència SQL per recuperar els clients
 			Statement cerca = c.createStatement();
@@ -216,6 +216,7 @@ public class Login extends JPanel {
 					"SELECT usuarios.email, passwords.password, passwords.salto FROM usuarios JOIN passwords ON usuarios.id=passwords.idUsuario");
 			try {
 				boolean userTrobat = false;
+
 				while (r.next() && !userTrobat) {
 					String nom = r.getString("email");
 					String pwd = r.getString("password");
@@ -224,15 +225,17 @@ public class Login extends JPanel {
 					if (fieldUsr.getText().equals(nom)) {
 						userTrobat = true;
 						if (!encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
-							JOptionPane.showMessageDialog(panel, "Contrasenya incorrecta per a l'usuari "+nom);
-							usrValidat=false;
-							
+							JOptionPane.showMessageDialog(panel, "Contrasenya incorrecta per a l'usuari " + nom);
+							usrValidat = false;
+						}else {
+							usrValidat=true;
 						}
 					}
 				}
+
 				if (!userTrobat) {
 					JOptionPane.showMessageDialog(panel, "No s'ha trobat aquest usuari");
-					usrValidat=false;
+					usrValidat = false;
 				}
 			} catch (SQLException e1) {
 				System.err.println("Error al recorrer la consulta.");
@@ -242,7 +245,7 @@ public class Login extends JPanel {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return usrValidat;
 	}
 

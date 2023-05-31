@@ -67,23 +67,17 @@ public class BuscaMinas extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-/*	public static void main(String[] args) {
-
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-
-					BuscaMinasGuardar frame = new BuscaMinasGuardar();
-					frame.setSize(500, 500);
-					frame.setVisible(true);
-					UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
+	/*
+	 * public static void main(String[] args) {
+	 * 
+	 * EventQueue.invokeLater(new Runnable() { public void run() { try {
+	 * 
+	 * BuscaMinasGuardar frame = new BuscaMinasGuardar(); frame.setSize(500, 500);
+	 * frame.setVisible(true);
+	 * UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); } } }); }
+	 */
 
 	/**
 	 * Create the frame.
@@ -180,7 +174,7 @@ public class BuscaMinas extends JFrame {
 						}
 						// llegim l'objecte que hi ha al fitxer (1 sol array List)
 						tableroCasillas = (Casilla[][]) reader.readObject();
-
+						System.out.println(tableroCasillas.length);
 					} catch (Exception ex) {
 						System.err.println("Final del fitxer");
 					}
@@ -192,7 +186,7 @@ public class BuscaMinas extends JFrame {
 					System.err.println("Error en llegir usuaris.dades " + ex);
 				}
 
-				//Dependiendo el tamaño creamos el tipo de tablero
+				// Dependiendo el tamaño creamos el tipo de tablero
 				if (tableroCasillas.length == 8) {
 
 					contentPane.removeAll();
@@ -202,7 +196,8 @@ public class BuscaMinas extends JFrame {
 					// Centramos pantalla
 					centrarInterficiePantalla();
 					crearTablero(8, 10);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
-
+					repaint();
+					revalidate();
 					// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
 					nombreTablero = "pequeño";
 
@@ -215,6 +210,7 @@ public class BuscaMinas extends JFrame {
 
 					// Mostrar los segundos donde se quedo la partida
 					labelTemps.setText(Integer.toString(segons));
+//					System.out.println(tableroCasillas.length);
 
 				} else if (tableroCasillas.length == 16) {
 					contentPane.removeAll();
@@ -223,8 +219,9 @@ public class BuscaMinas extends JFrame {
 					setSize(570, 775);
 					// Centramos pantalla
 					centrarInterficiePantalla();
-					crearTablero(25, 40);
-
+					crearTablero(16, 40);
+					repaint();
+					revalidate();
 					nombreTablero = "mediano";
 
 					labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
@@ -245,7 +242,8 @@ public class BuscaMinas extends JFrame {
 					centrarInterficiePantalla();
 
 					crearTablero(25, 80);
-
+					repaint();
+					revalidate();
 					// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
 					nombreTablero = "grande";
 
@@ -604,9 +602,10 @@ public class BuscaMinas extends JFrame {
 					juegoTerminado = true;
 					desactivarTablero();
 					revelarContenido();
-					
-					//Cambiar el emoticono
-					Image cara = new ImageIcon("src/imagenes/caraTriste.png").getImage().getScaledInstance(38, 38, Image.SCALE_SMOOTH);
+
+					// Cambiar el emoticono
+					Image cara = new ImageIcon("src/imagenes/caraTriste.png").getImage().getScaledInstance(38, 38,
+							Image.SCALE_SMOOTH);
 					reinicio.setIcon(new ImageIcon(cara));
 				} else {
 					mostrarMina(casilla, "mina");
@@ -614,7 +613,8 @@ public class BuscaMinas extends JFrame {
 			}
 		} else {
 
-			if (ContadorCasillasinrevelar == 1) {
+			if (ContadorCasillasinrevelar <= 1) {
+				paraComptador();
 				JOptionPane.showMessageDialog(null, "Has Ganado, Felicidades");
 				juegoTerminado = true;
 				desactivarTablero();
@@ -786,6 +786,11 @@ public class BuscaMinas extends JFrame {
 		// Marcar la casilla como revelada y mostrar su contenido
 		casilla.esRevelada = true;
 
+		if (ContadorCasillasinrevelar <= 1) {
+			JOptionPane.showMessageDialog(null, "Has Ganado, Felicidades");
+			juegoTerminado = true;
+			desactivarTablero();
+		}
 		ContadorCasillasinrevelar--;
 		labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
 
@@ -906,7 +911,7 @@ public class BuscaMinas extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				if (juegoTerminado) {
-					JOptionPane.showMessageDialog(Guardar, "NO PUEDES GUARDAR UNA PARTIDA TERMINADA");
+					JOptionPane.showMessageDialog(null, "NO PUEDES GUARDAR UNA PARTIDA TERMINADA");
 				} else {
 					// serialització
 					ObjectOutputStream oos = null;
@@ -923,7 +928,7 @@ public class BuscaMinas extends JFrame {
 						oos.writeObject(tableroCasillas);
 						oos.flush();
 						oos.close();
-						JOptionPane.showMessageDialog(Guardar, "Se ha guardado correctamente");
+						JOptionPane.showMessageDialog(null, "Se ha guardado correctamente");
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					} finally {
@@ -983,14 +988,14 @@ public class BuscaMinas extends JFrame {
 
 		Image cara = new ImageIcon("src/imagenes/cara.png").getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
 		reinicio.setIcon(new ImageIcon(cara));
-		
+
 		Reiniciar.add(reinicio);
 		reinicio.setBorderPainted(false);
 		reinicio.setBackground(Color.decode("#c0c0c0"));
 		reinicio.setMinimumSize(new Dimension(45, 45));
 		reinicio.setMaximumSize(new Dimension(45, 45));
 		reinicio.setPreferredSize(new Dimension(45, 45));
-		
+
 		reinicio.addActionListener(new ActionListener() {
 
 			@Override
