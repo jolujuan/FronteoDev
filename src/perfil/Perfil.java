@@ -1,31 +1,36 @@
 package perfil;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
 import conexionBaseDatos.Conexion;
 import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Dimension;
-import javax.swing.border.EmptyBorder;
-import javax.swing.SwingConstants;
 
 public class Perfil extends JPanel {
-
+	private static byte[] arrayBits;
 	JPanel panel_titulo = new JPanel();
 	JPanel panel_nombre = new JPanel();
 	JPanel panel_apellido = new JPanel();
@@ -45,6 +50,10 @@ public class Perfil extends JPanel {
 
 	JLabel etiquetaCorreo = new JLabel("Correo:");
 	JLabel datosCorreo = new JLabel("Datos Correo");
+
+	JLabel etiquetaImagenPerfil = new JLabel();
+	JLabel etiquetaVacia1 = new JLabel();
+
 	JLabel etiquetaVacia2 = new JLabel();
 	JLabel etiquetaVacia3 = new JLabel();
 	JLabel etiquetaVacia4 = new JLabel();
@@ -61,11 +70,18 @@ public class Perfil extends JPanel {
 		datosCorreo.setText(datosUsuario[5]);
 
 		setLayout(new GridLayout(6, 3));
-		panel_titulo.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel_titulo.setLayout(new GridLayout(0, 3, 0, 0));
+		etiquetaImagenPerfil.setFont(new Font("Dialog", Font.PLAIN, 12));
+		panel_titulo.add(etiquetaImagenPerfil);
+
+		panel_titulo.setLayout(new GridLayout(0, 3));
+		panel_titulo.setBorder(new EmptyBorder(0, 20, 0, 0));
+
 		etiquetaTitulo.setHorizontalTextPosition(SwingConstants.CENTER);
 		etiquetaTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-		etiquetaTitulo.setBorder(new EmptyBorder(10, 0, 0, 0));
+		etiquetaTitulo.setBorder(new EmptyBorder(0, 0, 0, 0));
 		etiquetaTitulo.setFont(new Font("Dialog", Font.BOLD, 16));
+
 		panel_titulo.add(etiquetaTitulo);
 
 		add(panel_titulo);
@@ -129,7 +145,7 @@ public class Perfil extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 
 				eleminarUsuario(Integer.parseInt(datosUsuario[0]));
-				
+
 			}
 		});
 	}
@@ -149,50 +165,78 @@ public class Perfil extends JPanel {
 
 				datos[1] = resultado.getString("nombre");
 				datos[2] = resultado.getString("apellidos");
-				System.out.println("Imagen:" + resultado.getBytes("imagen"));
+				arrayBits = resultado.getBytes("imagen");
+//				System.out.println("Array de bits " + arrayBits);
+//				System.out.println("Consulta " + resultado.getBytes("imagen"));
+//				System.out.println("Longitud: " + arrayBits.length);
+
 				datos[4] = resultado.getString("poblacion");
 				datos[5] = resultado.getString("email");
-			}
 
+			}
+			// adaptarImagen(arrayBits);
+			// etiquetaImagenPerfil.setIcon(obtenerImagenDesdeBytes(arrayBits));
+			adaptarImagen(arrayBits);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error: " + e);
 		}
 
 		return datos;
 	}
 
 	public void eleminarUsuario(int id) {
+		String sentenciaTablaPixelArt = "DELETE FROM pixelart WHERE idUsuario = ?";
+		String sentenciaTablaBuscaminas = "DELETE FROM buscaminas WHERE idUsuario = ?";
 		String sentenciaTablaPasswords = "DELETE FROM passwords WHERE idUsuario = ?";
 		String sentenciaTablaUsuarios = "DELETE FROM usuarios WHERE id = ?";
 		Connection c = Conexion.obtenerConexion();
-		
-		int opcion = JOptionPane.showConfirmDialog(null, "¿Esta seguro que desea eliminar su cuenta?", "Eliminar cuenta", JOptionPane.YES_NO_OPTION);
-		
-		
-		if(opcion == JOptionPane.YES_OPTION) {
+
+		int opcion = JOptionPane.showConfirmDialog(null, "¿Esta seguro que desea eliminar su cuenta?",
+				"Eliminar cuenta", JOptionPane.YES_NO_OPTION);
+
+		if (opcion == JOptionPane.YES_OPTION) {
 			try {
+				// ELIMANAR EL USER DE PASSWORDS
 				PreparedStatement consulta = c.prepareStatement(sentenciaTablaPasswords);
 				consulta.setInt(1, id);
 				consulta.executeUpdate();
-				
+				// ELIMANAR EL USER DE PIXELART
+				consulta = c.prepareStatement(sentenciaTablaPixelArt);
+				consulta.setInt(1, id);
+				consulta.executeUpdate();
+				// ELIMANAR EL USER DE BUSCAMINAS
+				consulta = c.prepareStatement(sentenciaTablaBuscaminas);
+				consulta.setInt(1, id);
+				consulta.executeUpdate();
+				// ELIMANAR EL USER DE USUARIOS
 				consulta = c.prepareStatement(sentenciaTablaUsuarios);
 				consulta.setInt(1, id);
 				consulta.executeUpdate();
-				
-				JOptionPane.showMessageDialog(null, "La cuenta ha sido eliminada");
+
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Perfil.this);
 				p.getContentPane().removeAll();
 				p.getContentPane().add(p.getContenedor());
 				p.revalidate();
 				p.repaint();
-				
+				JOptionPane.showMessageDialog(null, "La cuenta ha sido eliminada");
 			} catch (Exception e) {
 				System.out.println("Error: " + e);
 			}
 		}
-		
-		
+	}
+
+	public void adaptarImagen(byte[] arrayBits) {
+
+		ImageIcon icono = new ImageIcon(arrayBits);
+		System.out.println("Metodo");
+		Image imagenPerfil = icono.getImage();
+		int anchoImagen = icono.getIconWidth();
+		int altoImagen = icono.getIconHeight();
+		int nuevaResolucion = (altoImagen * 100) / anchoImagen;
+		Image nuevaImagen = imagenPerfil.getScaledInstance(100, nuevaResolucion, java.awt.Image.SCALE_SMOOTH);
+		ImageIcon nuevoIcono = new ImageIcon(nuevaImagen);
+		etiquetaImagenPerfil.setIcon(nuevoIcono);
+
 	}
 
 }

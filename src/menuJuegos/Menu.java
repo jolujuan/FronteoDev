@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -108,7 +109,7 @@ public class Menu extends JPanel {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
-								PixelArt frame1 = new PixelArt();
+								PixelArt frame1 = new PixelArt(correo);
 								frame1.setSize(500, 500);
 								frame1.setVisible(true);
 								frame1.addWindowListener(new WindowAdapter() {
@@ -131,6 +132,8 @@ public class Menu extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				File archivoCargaDatosPixelArt = new File("partidaCargada.txt");
+				archivoCargaDatosPixelArt.delete();
 				SwingUtilities.getWindowAncestor(Menu.this).dispose();
 
 				Panel_inicio ventanaInicio = new Panel_inicio();
@@ -153,7 +156,7 @@ public class Menu extends JPanel {
 								frame.addWindowListener(new WindowAdapter() {
 									@Override
 									public void windowClosed(WindowEvent e) {
-										buscMinasAbierto=false; // Restablecer como cerrado
+										buscaAbierto = false; // Restablecer como cerrado
 									}
 								});
 							} catch (Exception e) {
@@ -207,7 +210,7 @@ public class Menu extends JPanel {
 
 	private void addImageLabel(String imagePath, int x, int y) {
 		ImageIcon imagen = new ImageIcon(
-				new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT));
+				new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH));
 		JLabel etiqueta = new JLabel(imagen);
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(10, 10, 10, 10);
