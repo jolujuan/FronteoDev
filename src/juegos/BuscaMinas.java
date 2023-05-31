@@ -282,8 +282,8 @@ public class BuscaMinas extends JFrame {
 				setSize(370, 575);
 				// Centramos pantalla
 				centrarInterficiePantalla();
-				crearTablero(8, 2);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
-				generarMinas(8, 2);
+				crearTablero(8, 54);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
+				generarMinas(8, 54);
 
 				// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
 				nombreTablero = "pequeño";
@@ -291,7 +291,7 @@ public class BuscaMinas extends JFrame {
 				// Declaramos las banderas que contendra
 				contadorBanderas = 10;
 
-				ContadorCasillasinrevelar = 63;
+				ContadorCasillasinrevelar = 54;
 				labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
 				CasillasRevelarReset = ContadorCasillasinrevelar;
 
@@ -615,6 +615,7 @@ public class BuscaMinas extends JFrame {
 		} else {
 
 			if (ContadorCasillasinrevelar<= 1) {
+				paraComptador();
 				JOptionPane.showMessageDialog(null, "Has Ganado, Felicidades");
 				juegoTerminado = true;
 				desactivarTablero();
