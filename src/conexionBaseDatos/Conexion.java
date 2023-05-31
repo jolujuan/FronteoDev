@@ -39,7 +39,7 @@ public class Conexion {
 		try {
 			conexion = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 
-			try {
+			/*try {
 				e = NetworkInterface.getNetworkInterfaces();
 				while (e.hasMoreElements()) {
 					NetworkInterface n = (NetworkInterface) e.nextElement();
@@ -75,7 +75,8 @@ public class Conexion {
 
 			// Tancar la connexió
 			c.close();
-		} catch (ClassNotFoundException | SQLException e2) {
+			*/
+		} catch ( SQLException e2) {
 			e2.printStackTrace();
 		}
 

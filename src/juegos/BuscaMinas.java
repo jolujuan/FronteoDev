@@ -911,7 +911,7 @@ public class BuscaMinas extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				if (juegoTerminado) {
-					JOptionPane.showMessageDialog(Guardar, "NO PUEDES GUARDAR UNA PARTIDA TERMINADA");
+					JOptionPane.showMessageDialog(null, "NO PUEDES GUARDAR UNA PARTIDA TERMINADA");
 				} else {
 					// serialització
 					ObjectOutputStream oos = null;
@@ -928,7 +928,7 @@ public class BuscaMinas extends JFrame {
 						oos.writeObject(tableroCasillas);
 						oos.flush();
 						oos.close();
-						JOptionPane.showMessageDialog(Guardar, "Se ha guardado correctamente");
+						JOptionPane.showMessageDialog(null, "Se ha guardado correctamente");
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					} finally {

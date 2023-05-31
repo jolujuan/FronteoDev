@@ -364,9 +364,16 @@ public class Registro extends JPanel {
 					errorImagen.setHorizontalAlignment(SwingConstants.CENTER);
 
 				} else {
+					
+
 					errorImagen.setText("");
-					if (!campoImagen.getText().contains(".jpg")) {
-						errorImagen.setText("Solo archivos .jpg");
+					imagen = campoImagen.getText();
+					File rutaImagen = new File(imagen);
+					String rutaCompletaImagen = rutaImagen.getAbsolutePath();
+					File rutaParaComprobar = new File(rutaCompletaImagen);
+					System.out.println(rutaCompletaImagen);
+					if (!rutaParaComprobar.exists()) {
+						errorImagen.setText("Archivo imagen incorrecto");
 						errorImagen.setForeground(Color.red);
 					} else {
 						imagen = campoImagen.getText();
