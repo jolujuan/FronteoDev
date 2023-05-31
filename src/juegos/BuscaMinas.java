@@ -282,8 +282,8 @@ public class BuscaMinas extends JFrame {
 				setSize(370, 575);
 				// Centramos pantalla
 				centrarInterficiePantalla();
-				crearTablero(8, 10);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
-				generarMinas(8, 10);
+				crearTablero(8, 2);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
+				generarMinas(8, 2);
 
 				// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
 				nombreTablero = "pequeño";
@@ -291,7 +291,7 @@ public class BuscaMinas extends JFrame {
 				// Declaramos las banderas que contendra
 				contadorBanderas = 10;
 
-				ContadorCasillasinrevelar = 54;
+				ContadorCasillasinrevelar = 63;
 				labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
 				CasillasRevelarReset = ContadorCasillasinrevelar;
 
@@ -614,7 +614,7 @@ public class BuscaMinas extends JFrame {
 			}
 		} else {
 
-			if (ContadorCasillasinrevelar == 1) {
+			if (ContadorCasillasinrevelar<= 1) {
 				JOptionPane.showMessageDialog(null, "Has Ganado, Felicidades");
 				juegoTerminado = true;
 				desactivarTablero();
@@ -786,6 +786,11 @@ public class BuscaMinas extends JFrame {
 		// Marcar la casilla como revelada y mostrar su contenido
 		casilla.esRevelada = true;
 
+		if (ContadorCasillasinrevelar<= 1) {
+			JOptionPane.showMessageDialog(null, "Has Ganado, Felicidades");
+			juegoTerminado = true;
+			desactivarTablero();
+		}
 		ContadorCasillasinrevelar--;
 		labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
 
