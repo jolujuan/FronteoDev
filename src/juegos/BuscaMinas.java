@@ -280,8 +280,8 @@ public class BuscaMinas extends JFrame {
 				setSize(370, 575);
 				// Centramos pantalla
 				centrarInterficiePantalla();
-				crearTablero(8, 54);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
-				generarMinas(8, 54);
+				crearTablero(8, 10);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
+				generarMinas(8, 10);
 
 				// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
 				nombreTablero = "pequeño";
