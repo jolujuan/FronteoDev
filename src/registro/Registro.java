@@ -528,8 +528,9 @@ public class Registro extends JPanel {
 				+ "idUsuario INT, " + "tablero VARCHAR(50), " + "ficheroPartida MEDIUMBLOB, " + "fecha DATE, "
 				+ "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
 		String sentenciaCrearTablaBuscaMinas = "CREATE TABLE IF NOT EXISTS buscaminas (idBuscaminas INT AUTO_INCREMENT PRIMARY KEY, "
-				+ "idUsuario INT, " + "tablero VARCHAR(50), " + "nivel VARCHAR(50), " + "ficheroPartida MEDIUMBLOB, "
-				+ "tiempo INT, " + "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
+				+ "idUsuario INT, " + "tablero VARCHAR(50), " + "ficheroPartida MEDIUMBLOB, "
+				+ "fecha DATE, " + "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
+
 		String sentenciaCrearTablaRankingBuscaminas = "CREATE TABLE IF NOT EXISTS ranking (idRanking INT AUTO_INCREMENT PRIMARY KEY,"
 				+ "idUsuario INT, "
 				+ "dificultad VARCHAR(50), "
@@ -556,6 +557,11 @@ public class Registro extends JPanel {
 			consulta.execute(sentenciaCrearTablaBuscaMinas);
 			consulta.close();
 			System.out.println("Tabla buscaminas creada");
+			
+			consulta = c.createStatement();
+			consulta.execute(sentenciaCrearTablaRankingBuscaminas);
+			consulta.close();
+			System.out.println("Tabla ranking creada");
 
 		} catch (SQLException e1) {
 			System.out.println("Error: " + e1);
