@@ -28,11 +28,6 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -53,33 +48,36 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import conexionBaseDatos.Conexion;
+import guardarCargar.GuardarCargar;
 
 public class PixelArt extends JFrame {
 	private Color colorSeleccionado = Color.BLACK;
 	private JPanel contentPane;
 	private JPanel tablero = new JPanel();
 	public static String tamanio = "";
-	// Para trabajar directamente eliminaremos desmarcaremos el main
-	/*public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					PixelArt frame = new PixelArt(tamanio);
-					frame.setSize(500, 500);
-					frame.setVisible(true);
-					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
- 
+	// variable para controlar cómo se cierra la ventana
+	private boolean botonPresionado = false;
+	public boolean cargar = false;
+	private PixelArt pixelArtFrame;
+
+	// Para trabajar directamente eliminaremos desmarcaremos el main
+	/*
+	 * public static void main(String[] args) { EventQueue.invokeLater(new
+	 * Runnable() { public void run() { try { PixelArt frame = new
+	 * PixelArt(tamanio); frame.setSize(500, 500); frame.setVisible(true);
+	 * UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"
+	 * );
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); } } }); }
+	 */
+
 	/**
 	 * Create the frame.
 	 */
 	public PixelArt(String correo) {
+		pixelArtFrame = this;
+
 		String[] datosUsuario = datosUsuarioPerfil(correo);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("PixelArt");
@@ -178,9 +176,41 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				// cargarPartidaDesdeArchivo("PixelArt.txt", correo);
-				cargarPartidaDesdeBD(correo);
+
+				botonPresionado = true; // se ha presionado el botón
+
+				if (!cargar) { // Verificar si cargar está abierto
+					cargar = true;
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							try {
+								pixelArtFrame.setVisible(false);
+
+								GuardarCargar frame = new GuardarCargar(PixelArt.this, correo);
+								frame.setSize(500, 500);
+								centrarInterficiePantalla();
+								frame.setVisible(true);
+
+								frame.addWindowListener(new WindowAdapter() {
+									@Override
+									public void windowClosed(WindowEvent e) {
+										// Una vez cerrado la ventana de cargar, iniciar el juego que hayas
+										// seleccionado
+										String archivoDescarga = "partidaCargada.txt";
+										cargarPartidaDesdeArchivo(archivoDescarga, correo);
+
+										cargar = false; // Restablecer como cerrado
+										frame.dispose();
+										pixelArtFrame.setVisible(true);
+									}
+
+								});
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
 			}
 		});
 		// Llamada al método para crear el tablero
@@ -400,51 +430,16 @@ public class PixelArt extends JFrame {
 		}
 	}
 
-	// LINEA 178
-	public void cargarPartidaDesdeBD(String correo) {
-		String selectPartida = "SELECT pixelart.* FROM usuarios, pixelart WHERE usuarios.id = pixelart.idUsuario AND email = ?";
-		Connection conexion = Conexion.obtenerConexion();
-		String archivoDescarga = "partidaCargada.txt";
-
-		try {
-			PreparedStatement preparandoConsulta = conexion.prepareStatement(selectPartida);
-
-			preparandoConsulta.setString(1, correo);
-
-			ResultSet resultado = preparandoConsulta.executeQuery();
-
-			while (resultado.next()) {
-				System.out.println(
-						"idPixelArt: " + resultado.getInt("idPixelart") + " idUsuario: " + resultado.getInt("idUsuario")
-								+ " tablero: " + resultado.getString("tablero") + " ficheroPartida: "
-								+ resultado.getBlob("ficheroPartida") + " Fecha:  " + resultado.getDate("fecha"));
-
-				// OBTENER EL BLOB DEL RESULTADO
-				Blob archivoBlob = resultado.getBlob("ficheroPartida");
-				// OBTENER EL INPUTSTREAM DEL BLOB
-				InputStream obtenerInputStream = archivoBlob.getBinaryStream();
-				// CREAR EL ARCHIVO DONDE SE ESCRIBIRA EL CONTENIDO DEL BLOB
-				Path nuevoArchivo = Path.of(archivoDescarga);
-				Files.copy(obtenerInputStream, nuevoArchivo, StandardCopyOption.REPLACE_EXISTING);
-
-			}
-			cargarPartidaDesdeArchivo(archivoDescarga, correo);
-			System.out.println("Partida cargada correctamente");
-		} catch (SQLException | IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Error: cargarpartidaDesdeBD()" + e);
-		}
-
-	}
-
-	private void cargarPartidaDesdeArchivo(String nombreArchivo, String correo) {
+	public void cargarPartidaDesdeArchivo(String nombreArchivo, String correo) {
 		File file = new File(nombreArchivo);
 		Color color = null;
 		int contadorLinieas = 0;
 		String lineaString = null;
 
 		if (!file.exists()) {
-			JOptionPane.showMessageDialog(null, "Todavia no tienes niguna partida guardada.");
+			//La comprobación la haremos en el guardar 
+			// JOptionPane.showMessageDialog(null, "Todavia no tienes niguna partida
+			// guardada.");
 		} else {
 			try {
 				BufferedReader leerCasilla = new BufferedReader(new FileReader(file));
@@ -453,25 +448,22 @@ public class PixelArt extends JFrame {
 					contadorLinieas++; // guarda en el numero de lineas que equivalen a las casillas y sus colores
 										// adjuntos , y con el la raiz cuadrada sacamos el tamaño el tablero
 				}
+
 				if (Math.sqrt(contadorLinieas) == 20) {
 					centrarInterficiePantalla();
-					setSize(470, 470);
+					setSize(450, 540);
 					crearTablero(20, correo);
 
 				} else if (Math.sqrt(contadorLinieas) == 50) {
 					centrarInterficiePantalla();
-					setSize(670, 670);
+					setSize(670, 740);
 					crearTablero(50, correo);
 
 				} else if (Math.sqrt(contadorLinieas) == 100) {
 					centrarInterficiePantalla();
-					setSize(870, 870);
+					setSize(870, 940);
 					crearTablero(100, correo);
 
-				} else {
-					// ESTO DEBERIA SALIR CUANDO AUN NO HEMOS GUARDADO NINGUNA PARTIDA DEL USUARIO
-					// EN CONCRETO QUE HAYA INICIADO SESION
-					System.err.println("No creo tablero");
 				}
 
 				if (file.exists()) {
@@ -507,6 +499,7 @@ public class PixelArt extends JFrame {
 					}
 					leerCasilla.close();
 					contarcasillas.close();
+					file.delete();
 				}
 			} catch (Exception e) {
 				System.out.println("Error cargar partida: " + e);
@@ -516,6 +509,7 @@ public class PixelArt extends JFrame {
 	}
 
 	public void guardarDatosBD(String correo) {
+//		correo="edu@gmail.com";
 		String insertarDatosPartida = "INSERT INTO pixelart (idUsuario, tablero, ficheroPartida, fecha) VALUES (?,?,?,?)";
 		Connection conexion = Conexion.obtenerConexion();
 		String[] idUsuario = datosUsuarioPerfil(correo);
@@ -537,7 +531,6 @@ public class PixelArt extends JFrame {
 			preparandoInsert.executeUpdate();
 			preparandoInsert.close();
 			System.out.println("Partida pixelArt guardada en BD");
-			archivo.delete();
 
 		} catch (Exception e) {
 			System.out.println("Error: " + e);
@@ -556,7 +549,6 @@ public class PixelArt extends JFrame {
 
 			while (resultado.next()) {
 				datos[0] = "" + resultado.getInt("id");
-
 				datos[1] = resultado.getString("nombre");
 				datos[2] = resultado.getString("apellidos");
 				datos[4] = resultado.getString("poblacion");

@@ -29,7 +29,8 @@ public class Temps extends JPanel {
 		add(labelTemps);
 
 	}
-	public void iniciaComptador() {
+	public void iniciaComptador(int segonsIni) {
+		segons=segonsIni;
 		timer = new Timer();
         TimerTask tarea = new TimerTask() {
         	public void run() {
