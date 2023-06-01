@@ -597,7 +597,7 @@ public class Registro extends JPanel {
 			preparandoInsert.executeUpdate();
 
 			System.out.println("Usuario de prueba registrado");
-
+ 
 			preparandoInsert.close();
 
 			Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Registro.this);

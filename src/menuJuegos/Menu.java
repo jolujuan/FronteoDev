@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import juegos.BuscaMinas;
+import juegos.JuegoVida;
 import juegos.PixelArt;
 import panel_inicio.Panel_inicio;
 import perfil.Perfil;
@@ -150,6 +151,33 @@ public class Menu extends JPanel {
 						public void run() {
 							try {
 								BuscaMinas frame = new BuscaMinas();
+								frame.setSize(500, 500);
+								frame.setVisible(true);
+								frame.addWindowListener(new WindowAdapter() {
+									@Override
+									public void windowClosed(WindowEvent e) {
+										buscaAbierto = false; // Restablecer como cerrado
+									}
+								});
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
+			}
+		});
+		
+		botonJugarJuegoDeLaVida.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!buscaAbierto) { // Verificar si PixelArt está abierto
+					buscaAbierto=true;
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							try {
+								JuegoVida frame = new JuegoVida();
 								frame.setSize(500, 500);
 								frame.setVisible(true);
 								frame.addWindowListener(new WindowAdapter() {
