@@ -530,7 +530,12 @@ public class Registro extends JPanel {
 		String sentenciaCrearTablaBuscaMinas = "CREATE TABLE IF NOT EXISTS buscaminas (idBuscaminas INT AUTO_INCREMENT PRIMARY KEY, "
 				+ "idUsuario INT, " + "tablero VARCHAR(50), " + "nivel VARCHAR(50), " + "ficheroPartida MEDIUMBLOB, "
 				+ "tiempo INT, " + "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
-
+		String sentenciaCrearTablaRankingBuscaminas = "CREATE TABLE IF NOT EXISTS ranking (idRanking INT AUTO_INCREMENT PRIMARY KEY,"
+				+ "idUsuario INT, "
+				+ "dificultad VARCHAR(50), "
+				+ "tiempo INT, FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
+		
+		
 		try {
 			Statement consulta = c.createStatement();
 			consulta.execute(sentenciaCrearTablaUsuario);
