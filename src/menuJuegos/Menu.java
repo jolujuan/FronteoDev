@@ -167,6 +167,7 @@ public class Menu extends JPanel {
 				}
 			}
 		});
+		
 		botonJugarJuegoDeLaVida.addActionListener(new ActionListener() {
 
 			@Override
