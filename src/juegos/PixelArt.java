@@ -53,8 +53,19 @@ import guardarCargar.GuardarCargar;
 public class PixelArt extends JFrame {
 	private Color colorSeleccionado = Color.BLACK;
 	private JPanel contentPane;
-	private  JPanel tablero = new JPanel();
+	private static JPanel tablero = new JPanel();
 	public static String tamanio = "";
+
+	// VARIABLE PARA SABER SI SE A GUARDADO EL ARCHIVO
+	public static boolean guardado = false;
+
+	public static boolean isGuardado() {
+		return guardado;
+	}
+
+	public static void setGuardado(boolean guardado) {
+		PixelArt.guardado = guardado;
+	}
 
 	// variable para controlar cómo se cierra la ventana
 	private boolean botonPresionado = false;
@@ -67,7 +78,7 @@ public class PixelArt extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					String correo="joselu@gmail.com";
+					String correo = "joselu@gmail.com";
 
 					PixelArt frame = new PixelArt(correo);
 					frame.setSize(500, 500);
@@ -189,7 +200,7 @@ public class PixelArt extends JFrame {
 						public void run() {
 							try {
 								pixelArtFrame.setVisible(false);
-								
+
 								GuardarCargar frame = new GuardarCargar(PixelArt.this, correo);
 								frame.setSize(500, 500);
 								centrarInterficiePantalla();
@@ -390,7 +401,17 @@ public class PixelArt extends JFrame {
 					}
 				});
 				tablero.add(casilla);
-				}
+
+				//// ESTO NOSE PORQUE NO VA
+//				tablero.addComponentListener(new ComponentAdapter() {
+//				
+//					@Override
+//					public void componentHidden(ComponentEvent e) {
+//						int opcion = JOptionPane.showConfirmDialog(tablero, "¿Desea guardar partida antes de salir de PixelArt?", "Guardar Datos", JOptionPane.YES_NO_CANCEL_OPTION);
+//						
+//					}
+//				});
+			}
 		}
 		PaletaColores paleta = new PaletaColores(); // Pasa la instancia de Casilla
 		contentPane.removeAll();
@@ -401,7 +422,7 @@ public class PixelArt extends JFrame {
 		revalidate();
 	}
 
-	private void guardarEstadoTablero(String filePath) {
+	public static void guardarEstadoTablero(String filePath) {
 		File file = new File(filePath);
 		try (FileWriter escribe = new FileWriter(file)) {
 			// Verificar si el archivo no existe y crearlo
@@ -506,7 +527,7 @@ public class PixelArt extends JFrame {
 
 	}
 
-	public void guardarDatosBD(String correo, String filePath) {
+	public static void guardarDatosBD(String correo, String filePath) {
 
 		String insertarDatosPartida = "INSERT INTO pixelart (idUsuario, tablero, ficheroPartida, fecha) VALUES (?,?,?,?)";
 		Connection conexion = Conexion.obtenerConexion();
@@ -524,7 +545,7 @@ public class PixelArt extends JFrame {
 			preparandoInsert.setString(2, tamanio);
 			preparandoInsert.setBlob(3, archivoInputStream);
 			preparandoInsert.setDate(4, java.sql.Date.valueOf(fechaActual));
-			
+
 			preparandoInsert.executeUpdate();
 			preparandoInsert.close();
 			System.out.println("Partida pixelArt guardada en BD");
@@ -534,7 +555,7 @@ public class PixelArt extends JFrame {
 		}
 	}
 
-	public String[] datosUsuarioPerfil(String correo) {
+	public static String[] datosUsuarioPerfil(String correo) {
 		String[] datos = new String[6];
 		String sentencia = "SELECT * FROM usuarios WHERE email = ?";
 		Connection c = Conexion.obtenerConexion();

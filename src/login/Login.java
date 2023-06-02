@@ -55,7 +55,7 @@ public class Login extends JPanel {
 		JPanel panel_1 = new JPanel();
 		add(panel_1);
 
-		text = new JLabel("Login");
+		text = new JLabel("Login"); 
 		panel_1.add(text);
 		text.setFont(new Font("Dialog", Font.BOLD, 30));
 		text.setHorizontalAlignment(SwingConstants.CENTER);

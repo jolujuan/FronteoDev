@@ -147,7 +147,7 @@ public class Menu extends JPanel {
 						///////////
 						// FUNCION DE GUARDAR PARTIDA
 						PixelArt.guardarEstadoTablero("PixelArt.txt");
-						PixelArt.guardarDatosBD(correo);
+						PixelArt.guardarDatosBD(correo,"PixelArt.txt");
 						//////////
 
 						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
@@ -216,7 +216,7 @@ public class Menu extends JPanel {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
-								BuscaMinas frame = new BuscaMinas();
+								BuscaMinas frame = new BuscaMinas(correo);
 								frame.setSize(500, 500);
 								frame.setVisible(true);
 								frame.addWindowListener(new WindowAdapter() {
