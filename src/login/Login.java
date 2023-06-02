@@ -162,6 +162,8 @@ public class Login extends JPanel {
 				p.repaint();
 			}
 		});
+		setVisible(true);
+
 
 		JButton botoLogin = new JButton("Entra");
 		botoLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -194,17 +196,6 @@ public class Login extends JPanel {
 
 			}
 		});
-
-		botoTorna.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
-				p.getContentPane().removeAll();
-				p.getContentPane().add(p.getContenedor());
-				p.revalidate();
-				p.repaint();
-			}
-		});
-		setVisible(true);
 	}
 
 	public boolean consultaSql() {

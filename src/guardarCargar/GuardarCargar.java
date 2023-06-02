@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -13,6 +14,8 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -30,14 +33,13 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
 import conexionBaseDatos.Conexion;
-import juegos.BuscaMinas;
+import juegos.PixelArt;
 
 public class GuardarCargar extends JFrame {
 
@@ -56,21 +58,34 @@ public class GuardarCargar extends JFrame {
 	private JFrame frame;
 	private Path nuevoArchivo = null;
 
-	/*
-	 * public static void main(String[] args) { EventQueue.invokeLater(new
-	 * Runnable() { public void run() { try { String correo = "edu@gmail.com";
-	 * GuardarCargar frame = new GuardarCargar(correo); frame.setVisible(true); }
-	 * catch (Exception e) { e.printStackTrace(); } } }); }
-	 */
+	// VARIABLE PARA SABER SI A CERRADO CON LA X
+	public static boolean guardado = false;
 
-	private void obtenerNombreVentana() {
-		String nombreVentana = ventanaJuego.getTitle();
-		System.out.println("Nombre de la ventana: " + nombreVentana);
+	public static boolean getGuardado() {
+		return guardado;
 	}
 
+	public static void setGuardado(boolean guardado) {
+		GuardarCargar.guardado = guardado;
+	}
+
+//	  public static void main(String[] args) { EventQueue.invokeLater(new
+//	  Runnable() { public void run() { try { String correo = "edu@gmail.com";
+//	  GuardarCargar frame = new GuardarCargar(new PixelArt(correo), correo); frame.setVisible(true); }
+//	  catch (Exception e) { e.printStackTrace(); } } }); }
+
+	// Pasar la variable para no mostrarla en las clases
 	public GuardarCargar(JFrame ventana, String correo) {
 		this.ventanaJuego = ventana;
 		this.frame = this;
+
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// TODO Esbozo de método generado automáticamente
+				GuardarCargar.setGuardado(true);
+			};
+		});
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 500, 500);
@@ -106,7 +121,7 @@ public class GuardarCargar extends JFrame {
 		gbc_tituloPequeño.gridy = 0;
 		panelPequeño.add(tituloPequeño, gbc_tituloPequeño);
 
-		JLabel labelPequeño = new JLabel("PEQUEÑO");
+		JLabel labelPequeño = new JLabel("FÁCIL");
 		labelPequeño.setFont(new Font("Dialog", Font.BOLD, 18));
 		tituloPequeño.add(labelPequeño);
 
@@ -140,7 +155,7 @@ public class GuardarCargar extends JFrame {
 		gbc_tituloMediano.gridy = 0;
 		panelMediano.add(tituloMediano, gbc_tituloMediano);
 
-		JLabel labelMediano = new JLabel("MEDIANO");
+		JLabel labelMediano = new JLabel("NORMAL");
 		labelMediano.setFont(new Font("Dialog", Font.BOLD, 18));
 		tituloMediano.add(labelMediano);
 
@@ -174,7 +189,7 @@ public class GuardarCargar extends JFrame {
 		gbc_tituloGrande.gridy = 0;
 		panelGrande.add(tituloGrande, gbc_tituloGrande);
 
-		JLabel labelGrande = new JLabel("GRANDE");
+		JLabel labelGrande = new JLabel("DIFÍCIL");
 		labelGrande.setFont(new Font("Dialog", Font.BOLD, 18));
 		tituloGrande.add(labelGrande);
 
@@ -213,146 +228,138 @@ public class GuardarCargar extends JFrame {
 			preparandoConsulta.setString(1, correo);
 			ResultSet resultado = preparandoConsulta.executeQuery();
 
-			if (!resultado.next()) {
-				Object[] options = { "Aceptar" };
-
-				int option = JOptionPane.showOptionDialog(null, "No hay partida a cargar", "Información",
-						JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-
-				if (option==JOptionPane.OK_OPTION||option==JOptionPane.CLOSED_OPTION) {
-					System.out.println("hola");
-
-		
-				}
-					
-			
-			} else {
+			while (resultado.next()) {
 				// Resto del código cuando hay resultados
-				do {
-					// Guardamos el resultado para recorrerlo
-					tablero = resultado.getString("tablero");
-					fecha = resultado.getDate("fecha");
-					Blob archivoBlob = resultado.getBlob("ficheroPartida");
+				// Guardamos el resultado para recorrerlo
+				tablero = resultado.getString("tablero");
+				fecha = resultado.getDate("fecha");
+				Blob archivoBlob = resultado.getBlob("ficheroPartida");
 
-					switch (tablero) {
-					case "pequeño": {
+				switch (tablero) {
+				case "pequeño": {
 
-						botonTableroPequeño = new JButton("" + fecha);
-						// Obtenemos un atributo oculto para obtener el archivo del boton presionado
-						botonTableroPequeño.putClientProperty("nombreArchivo", archivoBlob);
+					botonTableroPequeño = new JButton("" + fecha);
+					// Obtenemos un atributo oculto para obtener el archivo del boton presionado
+					botonTableroPequeño.putClientProperty("nombreArchivo", archivoBlob);
 
-						contenidoPequeño.add(botonTableroPequeño);
-						contenidoPequeño.add(Box.createVerticalStrut(10));
+					contenidoPequeño.add(botonTableroPequeño);
+					contenidoPequeño.add(Box.createVerticalStrut(10));
 
-						botonTableroPequeño.addActionListener(new ActionListener() {
+					botonTableroPequeño.addActionListener(new ActionListener() {
 
-							@Override
-							public void actionPerformed(ActionEvent e) {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							
+							//Seguir adelante, si no ha seleccionado "X" en la ventana
+							GuardarCargar.setGuardado(false);
 
-								JButton botonPulsado = (JButton) e.getSource();
-								// Recuperamos el valor del archivo del boton
-								Blob archivoBlobBoton = (Blob) botonPulsado.getClientProperty("nombreArchivo");
+							JButton botonPulsado = (JButton) e.getSource();
+							// Recuperamos el valor del archivo del boton
+							Blob archivoBlobBoton = (Blob) botonPulsado.getClientProperty("nombreArchivo");
 
-								InputStream obtenerInputStream;
-								try {
-									obtenerInputStream = archivoBlobBoton.getBinaryStream();
-									nuevoArchivo = Path.of(archivoDescarga);
+							InputStream obtenerInputStream;
+							try {
+								obtenerInputStream = archivoBlobBoton.getBinaryStream();
+								nuevoArchivo = Path.of(archivoDescarga);
 
-									Files.copy(obtenerInputStream, nuevoArchivo, StandardCopyOption.REPLACE_EXISTING);
+								Files.copy(obtenerInputStream, nuevoArchivo, StandardCopyOption.REPLACE_EXISTING);
 
-									// Obtiene la referencia al JFrame que contiene el botón y lo cierra
-									Component component = (Component) e.getSource();
-									JFrame frame = (JFrame) SwingUtilities.getRoot(component);
-									frame.dispose();
+								// Obtiene la referencia al JFrame que contiene el botón y lo cierra
+								Component component = (Component) e.getSource();
+								JFrame frame = (JFrame) SwingUtilities.getRoot(component);
+								frame.dispose();
 
-								} catch (SQLException | IOException e1) {
-									System.out.println("Error recuperando blob boton " + e1);
-								}
+							} catch (SQLException | IOException e1) {
+								System.out.println("Error recuperando blob boton " + e1);
 							}
-						});
+						}
+					});
 
-						break;
-					}
-					case "mediano": {
+					break;
+				}
+				case "mediano": {
 
-						botonTableroMediano = new JButton("" + fecha);
-						// Obtenemos un atributo oculto para obtener el archivo del boton presionado
-						botonTableroMediano.putClientProperty("nombreArchivo", archivoBlob);
+					botonTableroMediano = new JButton("" + fecha);
+					// Obtenemos un atributo oculto para obtener el archivo del boton presionado
+					botonTableroMediano.putClientProperty("nombreArchivo", archivoBlob);
 
-						contenidoMediano.add(botonTableroMediano);
-						contenidoMediano.add(Box.createVerticalStrut(10));
+					contenidoMediano.add(botonTableroMediano);
+					contenidoMediano.add(Box.createVerticalStrut(10));
 
-						botonTableroMediano.addActionListener(new ActionListener() {
+					botonTableroMediano.addActionListener(new ActionListener() {
 
-							@Override
-							public void actionPerformed(ActionEvent e) {
+						@Override
+						public void actionPerformed(ActionEvent e) {
 
-								JButton botonPulsado = (JButton) e.getSource();
-								// Recuperamos el valor del archivo del boton
-								Blob archivoBlobBoton = (Blob) botonPulsado.getClientProperty("nombreArchivo");
+							GuardarCargar.setGuardado(false);
+							
+							JButton botonPulsado = (JButton) e.getSource();
+							// Recuperamos el valor del archivo del boton
+							Blob archivoBlobBoton = (Blob) botonPulsado.getClientProperty("nombreArchivo");
 
-								InputStream obtenerInputStream;
-								try {
-									obtenerInputStream = archivoBlobBoton.getBinaryStream();
-									nuevoArchivo = Path.of(archivoDescarga);
+							InputStream obtenerInputStream;
+							try {
+								obtenerInputStream = archivoBlobBoton.getBinaryStream();
+								nuevoArchivo = Path.of(archivoDescarga);
 
-									Files.copy(obtenerInputStream, nuevoArchivo, StandardCopyOption.REPLACE_EXISTING);
+								Files.copy(obtenerInputStream, nuevoArchivo, StandardCopyOption.REPLACE_EXISTING);
 
-									// Obtiene la referencia al JFrame que contiene el botón y lo cierra
-									Component component = (Component) e.getSource();
-									JFrame frame = (JFrame) SwingUtilities.getRoot(component);
-									frame.dispose();
+								// Obtiene la referencia al JFrame que contiene el botón y lo cierra
+								Component component = (Component) e.getSource();
+								JFrame frame = (JFrame) SwingUtilities.getRoot(component);
+								frame.dispose();
 
-								} catch (SQLException | IOException e1) {
-									System.out.println("Error recuperando blob boton " + e1);
-								}
+							} catch (SQLException | IOException e1) {
+								System.out.println("Error recuperando blob boton " + e1);
 							}
-						});
+						}
+					});
 
-						break;
-					}
-					case "grande": {
+					break;
+				}
+				case "grande": {
 
-						botonTableroGrande = new JButton("" + fecha);
-						// Obtenemos un atributo oculto para obtener el archivo del boton presionado
-						botonTableroGrande.putClientProperty("nombreArchivo", archivoBlob);
+					botonTableroGrande = new JButton("" + fecha);
+					// Obtenemos un atributo oculto para obtener el archivo del boton presionado
+					botonTableroGrande.putClientProperty("nombreArchivo", archivoBlob);
 
-						contenidoGrande.add(botonTableroGrande);
-						contenidoGrande.add(Box.createVerticalStrut(10));
+					contenidoGrande.add(botonTableroGrande);
+					contenidoGrande.add(Box.createVerticalStrut(10));
 
-						botonTableroGrande.addActionListener(new ActionListener() {
+					botonTableroGrande.addActionListener(new ActionListener() {
 
-							@Override
-							public void actionPerformed(ActionEvent e) {
+						@Override
+						public void actionPerformed(ActionEvent e) {
 
-								JButton botonPulsado = (JButton) e.getSource();
-								// Recuperamos el valor del archivo del boton
-								Blob archivoBlobBoton = (Blob) botonPulsado.getClientProperty("nombreArchivo");
+							GuardarCargar.setGuardado(false);
+							
+							JButton botonPulsado = (JButton) e.getSource();
+							// Recuperamos el valor del archivo del boton
+							Blob archivoBlobBoton = (Blob) botonPulsado.getClientProperty("nombreArchivo");
 
-								InputStream obtenerInputStream;
-								try {
-									obtenerInputStream = archivoBlobBoton.getBinaryStream();
-									nuevoArchivo = Path.of(archivoDescarga);
+							InputStream obtenerInputStream;
+							try {
+								obtenerInputStream = archivoBlobBoton.getBinaryStream();
+								nuevoArchivo = Path.of(archivoDescarga);
 
-									Files.copy(obtenerInputStream, nuevoArchivo, StandardCopyOption.REPLACE_EXISTING);
+								Files.copy(obtenerInputStream, nuevoArchivo, StandardCopyOption.REPLACE_EXISTING);
 
-									// Obtiene la referencia al JFrame que contiene el botón y lo cierra
-									Component component = (Component) e.getSource();
-									JFrame frame = (JFrame) SwingUtilities.getRoot(component);
-									frame.dispose();
+								// Obtiene la referencia al JFrame que contiene el botón y lo cierra
+								Component component = (Component) e.getSource();
+								JFrame frame = (JFrame) SwingUtilities.getRoot(component);
+								frame.dispose();
 
-								} catch (SQLException | IOException e1) {
-									System.out.println("Error recuperando blob boton " + e1);
-								}
+							} catch (SQLException | IOException e1) {
+								System.out.println("Error recuperando blob boton " + e1);
 							}
-						});
+						}
+					});
 
-						break;
-					}
-					default:
-						throw new IllegalArgumentException("Unexpected value: " + tablero);
-					}
-				} while (resultado.next());
+					break;
+				}
+				default:
+					throw new IllegalArgumentException("Unexpected value: " + tablero);
+				}
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

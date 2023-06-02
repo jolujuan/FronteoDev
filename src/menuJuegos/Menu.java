@@ -17,6 +17,7 @@ import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -40,12 +41,27 @@ public class Menu extends JPanel {
 	private boolean buscaAbierto = false;
 
 	public Menu(String correo) {
+
+		System.out.println(this);
+		
+		JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+			
+		System.out.println(frame);
+		
+//		frame.addWindowListener(new WindowAdapter() {
+//			public void windowClosing(WindowEvent e) {
+//				// Realizar acciones cuando se cierra la ventana
+//				// por ejemplo, mostrar un mensaje o ejecutar un método específico
+//				System.out.println("La ventana se está cerrando");
+//			}
+//		});
+
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(10, 10, 30, 10);
 
 		c.gridx = 1;
-		c.gridy = 0; 
+		c.gridy = 0;
 		c.gridwidth = 1;
 		boton_ver_perfil.setPreferredSize(new Dimension(110, 35));
 		boton_ver_perfil.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -101,6 +117,97 @@ public class Menu extends JPanel {
 		botonLogout.setFont(new Font("Dialog", Font.PLAIN, 13));
 		add(botonLogout, c4);
 
+		botonLogout.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				boolean datosGuardados = PixelArt.isGuardado();
+
+				if (datosGuardados == false) {
+					int option = JOptionPane.showConfirmDialog(null, "¿Desea guardar partida antes de cerrar sesión?");
+					if (option == JOptionPane.YES_OPTION) {
+						// Lógica para guardar la partida
+						System.out.println("Partida guardada." + option);
+
+						// Eliminar tanto los archivos locales como temporales
+						eliminarArchivos();
+
+						///////////
+						// FUNCION DE GUARDAR PARTIDA
+						PixelArt.guardarEstadoTablero("PixelArt.txt");
+						PixelArt.guardarDatosBD(correo, "PixelArt.txt");
+						//////////
+
+						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
+						//// algun joc teu tanque (GRACIES CHAT)
+						Window[] ventanasAbiertas = Window.getWindows();
+						for (Window ventana : ventanasAbiertas) {
+							if (ventana != null && ventana.isDisplayable()) {
+								ventana.dispose();
+							}
+						}
+
+						SwingUtilities.getWindowAncestor(Menu.this).dispose();
+						Panel_inicio ventanaInicio = new Panel_inicio();
+
+						ventanaInicio.setVisible(true);
+					} else if (option == JOptionPane.NO_OPTION) {
+						// Lógica para no guardar la partida
+						System.out.println("Partida no guardada." + option);
+						eliminarArchivos();
+
+						///////////
+						// FUNCION DE GUARDAR PARTIDA
+						//////////
+
+						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
+						//// algun joc teu tanque (GRACIES CHAT)
+						Window[] ventanasAbiertas = Window.getWindows();
+						for (Window ventana : ventanasAbiertas) {
+							if (ventana != null && ventana.isDisplayable()) {
+								ventana.dispose();
+							}
+						}
+
+						SwingUtilities.getWindowAncestor(Menu.this).dispose();
+						Panel_inicio ventanaInicio = new Panel_inicio();
+						ventanaInicio.setVisible(true);
+					} else if (option == JOptionPane.CANCEL_OPTION) {
+						System.out.println("Acción cancelada." + option);
+					} else if (option == JOptionPane.CLOSED_OPTION) {
+						System.out.println("Sin opción seleccionada." + option);
+					}
+				} else {
+					eliminarArchivos();
+
+					Window[] ventanasAbiertas = Window.getWindows();
+					for (Window ventana : ventanasAbiertas) {
+						if (ventana != null && ventana.isDisplayable()) {
+							ventana.dispose();
+						}
+					}
+
+					SwingUtilities.getWindowAncestor(Menu.this).dispose();
+					Panel_inicio ventanaInicio = new Panel_inicio();
+					ventanaInicio.setVisible(true);
+				}
+			}
+
+			private void eliminarArchivos() {
+				File archivoCargaDatosPixelArt = new File("partidaCargadaPixelArt.txt");
+				File archivoCargadoDatosBuscaminas = new File("partidaCargadaBuscaMinas.datos");
+				File archivoLocalPixelArt = new File("PixelArt.txt");
+				File archivoLocalBuscaminas = new File("buscaminas.datos");
+
+				archivoCargaDatosPixelArt.delete();
+				archivoCargadoDatosBuscaminas.delete();
+				archivoLocalPixelArt.delete();
+				archivoLocalBuscaminas.delete();
+			}
+
+		});
+
 		botonJugarPixelArt.addActionListener(new ActionListener() {
 
 			@Override
@@ -128,83 +235,6 @@ public class Menu extends JPanel {
 					});
 				}
 			}
-		});
-
-		botonLogout.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				boolean datosGuardados = PixelArt.isGuardado();
-				
-				if (datosGuardados == false) {
-					int option = JOptionPane.showConfirmDialog(null, "¿Desea guardar partida antes de cerrar sesion?");
-					if (option == JOptionPane.YES_OPTION) {
-						// Lógica para guardar la partida
-						System.out.println("Partida guardada." + option);
-						File archivoCargaDatosPixelArt = new File("partidaCargada.txt");
-						archivoCargaDatosPixelArt.delete();
-						///////////
-						// FUNCION DE GUARDAR PARTIDA
-						PixelArt.guardarEstadoTablero("PixelArt.txt");
-						PixelArt.guardarDatosBD(correo,"PixelArt.txt");
-						//////////
-
-						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
-						//// algun joc teu tanque (GRACIES CHAT)
-						Window[] ventanasAbiertas = Window.getWindows();
-						for (Window ventana : ventanasAbiertas) {
-							if (ventana != null && ventana.isDisplayable()) {
-								ventana.dispose();
-							}
-						}
-
-						SwingUtilities.getWindowAncestor(Menu.this).dispose();
-						Panel_inicio ventanaInicio = new Panel_inicio();
-
-						ventanaInicio.setVisible(true);
-					} else if (option == JOptionPane.NO_OPTION) {
-						// Lógica para no guardar la partida
-						System.out.println("Partida no guardada." + option);
-						File archivoCargaDatosPixelArt = new File("partidaCargada.txt");
-						archivoCargaDatosPixelArt.delete();
-						///////////
-						// FUNCION DE GUARDAR PARTIDA
-						//////////
-
-						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
-						//// algun joc teu tanque (GRACIES CHAT)
-						Window[] ventanasAbiertas = Window.getWindows();
-						for (Window ventana : ventanasAbiertas) {
-							if (ventana != null && ventana.isDisplayable()) {
-								ventana.dispose();
-							}
-						}
-
-						SwingUtilities.getWindowAncestor(Menu.this).dispose();
-						Panel_inicio ventanaInicio = new Panel_inicio();
-						ventanaInicio.setVisible(true);
-					} else if (option == JOptionPane.CANCEL_OPTION) {
-						System.out.println("Acción cancelada." + option);
-					} else if (option == JOptionPane.CLOSED_OPTION) {
-						System.out.println("Sin opción seleccionada." + option);
-					}
-				} else {
-					File archivoCargaDatosPixelArt = new File("partidaCargada.txt");
-					archivoCargaDatosPixelArt.delete();
-					Window[] ventanasAbiertas = Window.getWindows();
-					for (Window ventana : ventanasAbiertas) {
-						if (ventana != null && ventana.isDisplayable()) {
-							ventana.dispose();
-						}
-					}
-
-					SwingUtilities.getWindowAncestor(Menu.this).dispose();
-					Panel_inicio ventanaInicio = new Panel_inicio();
-					ventanaInicio.setVisible(true);
-				}
-			}
-
 		});
 
 		botonJugarBuscaminas.addActionListener(new ActionListener() {
@@ -271,7 +301,6 @@ public class Menu extends JPanel {
 				p.getContentPane().add(perfil);
 				p.revalidate();
 				p.repaint();
-
 			}
 		});
 	}

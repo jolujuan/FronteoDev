@@ -75,27 +75,24 @@ public class BuscaMinas extends JFrame {
 	transient Timer timer;
 
 	// variable para controlar cómo se cierra la ventana
-	private boolean botonPresionado = false;
 	public boolean cargar = false;
 	private BuscaMinas buscaMinasFrame;
 
-	public static void main(String[] args) {
-
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-
-					BuscaMinas frame = new BuscaMinas("joselu@gmail.com");
-					frame.setSize(500, 500);
-					frame.setVisible(true);
-					UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					BuscaMinas frame = new BuscaMinas("joselu@gmail.com");
+//					frame.setSize(500, 500);
+//					frame.setVisible(true);
+//					UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
+//
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	public BuscaMinas(String correo) {
 		// Pasar la ventana a una variable global
@@ -134,7 +131,7 @@ public class BuscaMinas extends JFrame {
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.insets = new Insets(10, 0, 10, 0);
 
-		JButton tamañoPequeño = new JButton("Facil");
+		JButton tamañoPequeño = new JButton("Fácil");
 		tamañoPequeño.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		tamañoPequeño.setPreferredSize(new Dimension(130, 40));
 		tamañoPequeño.setFont(new Font("Unispace", Font.BOLD, 12));// FUENTE
@@ -152,7 +149,7 @@ public class BuscaMinas extends JFrame {
 		gbc.gridy = 1;
 		botonesJPanel.add(tamañoMediano, gbc);
 
-		JButton tamañoGrande = new JButton("Dificil");
+		JButton tamañoGrande = new JButton("Difícil");
 		tamañoGrande.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		tamañoGrande.setPreferredSize(new Dimension(130, 40));// TAMAÑO
 		tamañoGrande.setFont(new Font("Unispace", Font.BOLD, 12));// FUENTE
@@ -175,39 +172,47 @@ public class BuscaMinas extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				botonPresionado = true; // se ha presionado el botón
+				// Verificar si hay datos
+				if (comprobarExistenciaDatos(correo)) {
+					if (!cargar) { // Verificar si cargar está abierto
+						cargar = true;
+						EventQueue.invokeLater(new Runnable() {
+							public void run() {
+								try {
 
-				if (!cargar) { // Verificar si cargar está abierto
-					cargar = true;
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							try {
-								// buscaMinasFrame.setVisible(false);
+									GuardarCargar frame = new GuardarCargar(BuscaMinas.this, correo);
+									frame.setSize(500, 500);
+									centrarInterficiePantalla();
+									frame.setVisible(true);
 
-								GuardarCargar frame = new GuardarCargar(BuscaMinas.this, correo);
-								frame.setSize(500, 500);
-								centrarInterficiePantalla();
-								frame.setVisible(true);
+									frame.addWindowListener(new WindowAdapter() {
+										@Override
+										public void windowClosed(WindowEvent e) {
+											if (!GuardarCargar.getGuardado()) {
+												// Una vez cerrado la ventana de cargar, iniciar el juego que hayas
+												// seleccionado
+												String archivoDescarga = "partidaCargadaBuscaMinas.datos";
+												cargarPartidaDesdeArchivo(archivoDescarga, correo);
+												cargar = false; // Restablecer como cerrado
+												frame.dispose();
+												buscaMinasFrame.setVisible(true);
+											}else {
+												JOptionPane.showMessageDialog(cargarPartida,
+														"No se ha seleccionado ninguna partida", "Información",
+														JOptionPane.INFORMATION_MESSAGE);
+												cargar = false; // Restablecer como cerrado
+												frame.dispose();
+												buscaMinasFrame.setVisible(true);
+											}
+										}
 
-								frame.addWindowListener(new WindowAdapter() {
-									@Override
-									public void windowClosed(WindowEvent e) {
-										// Una vez cerrado la ventana de cargar, iniciar el juego que hayas
-										// seleccionado
-										String archivoDescarga = "partidaCargadaBuscaMinas.datos";
-										cargarPartidaDesdeArchivo(archivoDescarga, correo);
-
-										cargar = false; // Restablecer como cerrado
-										frame.dispose();
-										buscaMinasFrame.setVisible(true);
-									}
-
-								});
-							} catch (Exception e) {
-								e.printStackTrace();
+									});
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
 							}
-						}
-					});
+						});
+					}
 				}
 			}
 
@@ -1069,21 +1074,35 @@ public class BuscaMinas extends JFrame {
 		}
 	}
 
-	private void comprobarExistenciaDatos(String correo) {
-		// TODO Esbozo de método generado automáticamente
-		String selectPartida = "SELECT pixelart.* FROM usuarios, pixelart WHERE usuarios.id = pixelart.idUsuario AND email = ?";
+	// Metodo para no mostrar la ventana de cargar si no hay resultados
+	private boolean comprobarExistenciaDatos(String correo) {
 
+		boolean sinDatos = false;
+		String selectPartida = "SELECT buscaminas.* FROM usuarios, buscaminas WHERE usuarios.id = buscaminas.idUsuario AND email = ?";
 		Connection conexion = Conexion.obtenerConexion();
-		
+
 		try {
 			PreparedStatement preparandoConsulta = conexion.prepareStatement(selectPartida);
 			preparandoConsulta.setString(1, correo);
 			ResultSet resultado = preparandoConsulta.executeQuery();
+
+			if (!resultado.next()) {
+				Object[] options = { "Aceptar" };
+
+				int option = JOptionPane.showOptionDialog(null, "No hay partida a cargar", "Información",
+						JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+				if (option == JOptionPane.OK_OPTION || option == JOptionPane.CLOSED_OPTION) {
+					sinDatos = false;
+				}
+			} else {
+				// Hay datos, por tanto entrar en la ventana cargar
+				sinDatos = true;
+			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			System.out.println("Error comprobando existencias " + e);
 		}
-
-
+		return sinDatos;
 	}
 
 	private void cargarPartidaDesdeArchivo(String nombreArchivo, String correo) {
