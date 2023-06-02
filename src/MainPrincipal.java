@@ -1,4 +1,3 @@
-
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -9,15 +8,20 @@ public class MainPrincipal {
 	public static void main(String[] args) {
 
 		// Fase de pruebas, con esto podremos cambiar la aparincia de la interfaz por
-		// una que esta incluida en nuestras bibliotecas
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		// una que está incluida en nuestras bibliotecas
+
+		String lookAndFeel = "com.formdev.flatlaf.FlatLightLaf";
+//        String lookAndFeel = "com.formdev.flatlaf.FlatDarkLaf";
+
+		try {    
+
+			UIManager.setLookAndFeel(lookAndFeel);
 		} catch (Exception e) {
+			System.out.println("Error: " + e);
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 					| UnsupportedLookAndFeelException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
