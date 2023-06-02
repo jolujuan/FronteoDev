@@ -16,6 +16,9 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -24,10 +27,15 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -35,54 +43,73 @@ import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import conexionBaseDatos.Conexion;
+import guardarCargar.GuardarCargar;
+
 public class PixelArt extends JFrame {
 	private Color colorSeleccionado = Color.BLACK;
 	private JPanel contentPane;
-	private JPanel tablero = new JPanel();
+	private static JPanel tablero = new JPanel();
+	public static String tamanio = "";
 
-	//Para trabajar directamente eliminaremos desmarcaremos el main
-	/*public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					PixelArt frame = new PixelArt();
-					frame.setSize(500, 500);
-					frame.setVisible(true);
-					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+	// VARIABLE PARA SABER SI SE A GUARDADO EL ARCHIVO
+	public static boolean guardado = false;
 
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
 	
+	public static boolean isGuardado() {
+		return guardado;
+	}
+
+	public static void setGuardado(boolean guardado) {
+		PixelArt.guardado = guardado;
+	}
+
+	// variable para controlar cómo se cierra la ventana
+	private boolean botonPresionado = false;
+	public boolean cargar = false;
+	private PixelArt pixelArtFrame;
+
+	// Para trabajar directamente eliminaremos desmarcaremos el main
+	/*
+	 * public static void main(String[] args) { EventQueue.invokeLater(new
+	 * Runnable() { public void run() { try { PixelArt frame = new
+	 * PixelArt(tamanio); frame.setSize(500, 500); frame.setVisible(true);
+	 * UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"
+	 * );
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); } } }); }
+	 */
+
 	/**
 	 * Create the frame.
 	 */
-	public PixelArt() {
+	public PixelArt(String correo) {
+		pixelArtFrame = this;
+
+		String[] datosUsuario = datosUsuarioPerfil(correo);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setTitle("PixelArt");
+//		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout());
-		IniciodeJuego();
-		 addWindowListener(new WindowAdapter() {
-         	
-             @Override
-             
-             public void windowClosed(WindowEvent e) {
-             	setVisible(false);
-                
-             }
-         });
+
+		IniciodeJuego(correo);
+		addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+				setVisible(false);
+			}
+		});
 
 	}
 
@@ -93,13 +120,13 @@ public class PixelArt extends JFrame {
 		int height = this.getSize().height;
 		int x = (tamañoPantalla.width - width) / 2; // Centrado horizontalmente
 		int y = (tamañoPantalla.height - height) / 2;
-		 // En la parte superior de la pantalla
+		// En la parte superior de la pantalla
 
 		// Establecer la posición de la ventana
 		this.setLocation(x, y);
 	}
 
-	private void IniciodeJuego() {
+	private void IniciodeJuego(String correo) {
 
 		// Texto de inicio: SELECCION DE TAMAÑO DE TABLERO
 		JPanel inicio = new JPanel();
@@ -109,7 +136,7 @@ public class PixelArt extends JFrame {
 		seleccionaTableroJLabel.setFont(new Font("Dialog", Font.BOLD, 14));
 		inicio.add(seleccionaTableroJLabel);
 		// Siempre tendra el mismo tamaño
-		setSize(600, 600);
+		setSize(500, 500);
 		// Centramos pantalla
 		centrarInterficiePantalla();
 
@@ -163,8 +190,41 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				cargarPartidaDesdeArchivo("PixelArt.txt");
+
+				botonPresionado = true; // se ha presionado el botón
+
+				if (!cargar) { // Verificar si cargar está abierto
+					cargar = true;
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							try {
+								pixelArtFrame.setVisible(false);
+
+								GuardarCargar frame = new GuardarCargar(PixelArt.this, correo);
+								frame.setSize(500, 500);
+								centrarInterficiePantalla();
+								frame.setVisible(true);
+
+								frame.addWindowListener(new WindowAdapter() {
+									@Override
+									public void windowClosed(WindowEvent e) {
+										// Una vez cerrado la ventana de cargar, iniciar el juego que hayas
+										// seleccionado
+										String archivoDescarga = "partidaCargada.txt";
+										cargarPartidaDesdeArchivo(archivoDescarga, correo);
+
+										cargar = false; // Restablecer como cerrado
+										frame.dispose();
+										pixelArtFrame.setVisible(true);
+									}
+
+								});
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
 			}
 		});
 		// Llamada al método para crear el tablero
@@ -172,54 +232,56 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSize(470, 470);
+				setSize(450, 540);
 				// Centramos pantalla
 				centrarInterficiePantalla();
-				crearTablero(20);
+				crearTablero(20, correo);
+				tamanio = "pequeño";
 			}
 		});
 		tamañoMediano.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSize(670, 670);
+				setSize(670, 740);
 				// Centramos pantalla
 				centrarInterficiePantalla();
-				crearTablero(50);
+				crearTablero(50, correo);
+				tamanio = "mediano";
 			}
 		});
 		tamañoGrande.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSize(870, 870);
+				setSize(870, 940);
 				// Centramos pantalla
 				centrarInterficiePantalla();
-				crearTablero(100);
+				crearTablero(100, correo);
+				tamanio = "grande";
 			}
 		});
 		repaint();
 		revalidate();
 
 	}
-	
+
 	public class MyButton extends JButton {
-	    private Color color;
+		private Color color;
 
-	    public MyButton(Color color) {
-	        this.color = color;
-	        setOpaque(true);
-	        setBorderPainted(false);
-	    }
+		public MyButton(Color color) {
+			this.color = color;
+			setOpaque(true);
+			setBorderPainted(false);
+		}
 
-	    @Override
-	    protected void paintComponent(Graphics g) {
-	        g.setColor(color);
-	        g.fillRect(0, 0, getWidth(), getHeight());
-	        super.paintComponent(g);
-	    }
+		@Override
+		protected void paintComponent(Graphics g) {
+			g.setColor(color);
+			g.fillRect(0, 0, getWidth(), getHeight());
+			super.paintComponent(g);
+		}
 	}
-
 
 	public class PaletaColores extends JPanel {
 
@@ -232,20 +294,19 @@ public class PixelArt extends JFrame {
 
 			// Crear el array con los colores que deseamos
 			Color[] colores = { Color.WHITE, Color.BLUE, Color.GREEN, Color.GRAY, Color.ORANGE, Color.RED };
-			
+
 			for (Color color : colores) {
 
 				// Pintar los botones con sus colores
 				JButton buttonColor = new JButton();
-				 //buttonColor.setOpaque(false);
+				// buttonColor.setOpaque(false);
 				buttonColor.setBackground(color);
-				buttonColor.setBorder(new LineBorder(color,15));
-
+				buttonColor.setBorder(new LineBorder(color, 15));
 
 				// Para el color blanco mostrar un mensaje de seleccion color
 				if (color.equals(Color.WHITE)) {
 					buttonColor.setText("Selecciona");
-					buttonColor.setBackground(new Color(230,230,230));
+					buttonColor.setBackground(new Color(230, 230, 230));
 					buttonColor.setBorder(null);
 				}
 
@@ -282,8 +343,9 @@ public class PixelArt extends JFrame {
 		}
 	}
 
-	private void crearTablero(int f) {
-
+	private void crearTablero(int f, String correo) {
+		PixelArt.setGuardado(false);
+		System.out.println("Tablero");
 		tablero.setLayout(new GridLayout(f, f));
 		int anchoVentana = getWidth();
 		int altoVentana = getHeight();
@@ -344,20 +406,34 @@ public class PixelArt extends JFrame {
 				// DISTINGUIR MEJOR EL COLOR
 				// Color colorGris = new Color(217, 217, 217);
 				// casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : colorGris);
+				
+				
+				
+				
+				//// ESTO NOSE PORQUE NO VA
+//				tablero.addComponentListener(new ComponentAdapter() {
+//				
+//					@Override
+//					public void componentHidden(ComponentEvent e) {
+//						int opcion = JOptionPane.showConfirmDialog(tablero, "¿Desea guardar partida antes de salir de PixelArt?", "Guardar Datos", JOptionPane.YES_NO_CANCEL_OPTION);
+//						
+//					}
+//				});
+				
 			}
 		}
 		PaletaColores paleta = new PaletaColores(); // Pasa la instancia de Casilla
 		contentPane.removeAll();
-		BotonesDescartaryGuardar();
+		BotonesDescartaryGuardar(correo);
 		contentPane.add(tablero, BorderLayout.CENTER);
 		contentPane.add(paleta, BorderLayout.SOUTH);
 		repaint();
 		revalidate();
 	}
 
-	private void guardarEstadoTablero(String filePath) {
+	public static void guardarEstadoTablero(String filePath) {
 		File file = new File(filePath);
-		try (FileWriter writer = new FileWriter(file)) {
+		try (FileWriter escribe = new FileWriter(file)) {
 			// Verificar si el archivo no existe y crearlo
 			if (!file.exists()) {
 				file.createNewFile();
@@ -371,97 +447,166 @@ public class PixelArt extends JFrame {
 				if (componente instanceof Casilla) {
 					Color color = componente.getBackground();
 					// Escribir el color en el archivo en formato RGB
-					writer.write(color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "\n");
+					escribe.write(color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "\n");
 
 					// System.out.println("Estado del tablero guardado correctamente en: " +
 					// filePath);
 				}
 			}
+			// System.out.println(tamanio);
 		} catch (IOException e) {
 			System.out.println("Error al guardar el estado del tablero: " + e.getMessage());
 		}
 	}
 
-	private void cargarPartidaDesdeArchivo(String filepath) {
-		File file = new File(filepath);
+	public void cargarPartidaDesdeArchivo(String nombreArchivo, String correo) {
+		File file = new File(nombreArchivo);
 		Color color = null;
 		int contadorLinieas = 0;
 		String lineaString = null;
 
-		try {
-			BufferedReader leerCasilla = new BufferedReader(new FileReader(file));
-			BufferedReader contarcasillas = new BufferedReader(new FileReader(file));
-			while ((lineaString = contarcasillas.readLine()) != null) {
-				contadorLinieas++; // guarda en el numero de lineas que equivalen a las casillas y sus colores adjuntos , y con el la raiz cuadrada sacamos el tamaño el tablero
-			}
-			if (Math.sqrt(contadorLinieas) == 20) {
-				setSize(470, 470);
-				crearTablero(20);
+		if (!file.exists()) {
+			// La comprobación la haremos en el guardar
+			// JOptionPane.showMessageDialog(null, "Todavia no tienes niguna partida
+			// guardada.");
+		} else {
+			try {
+				BufferedReader leerCasilla = new BufferedReader(new FileReader(file));
+				BufferedReader contarcasillas = new BufferedReader(new FileReader(file));
+				while ((lineaString = contarcasillas.readLine()) != null) {
+					contadorLinieas++; // guarda en el numero de lineas que equivalen a las casillas y sus colores
+										// adjuntos , y con el la raiz cuadrada sacamos el tamaño el tablero
+				}
 
-			} else if (Math.sqrt(contadorLinieas) == 50) {
-				setSize(670, 670);
-				crearTablero(50);
+				if (Math.sqrt(contadorLinieas) == 20) {
+					centrarInterficiePantalla();
+					setSize(450, 540);
+					crearTablero(20, correo);
 
-			} else if (Math.sqrt(contadorLinieas) == 100) {
-				setSize(870, 870);
-				crearTablero(100);
+				} else if (Math.sqrt(contadorLinieas) == 50) {
+					centrarInterficiePantalla();
+					setSize(670, 740);
+					crearTablero(50, correo);
 
-			} else {
-				System.err.println("No creo tablero");
-			}
+				} else if (Math.sqrt(contadorLinieas) == 100) {
+					centrarInterficiePantalla();
+					setSize(870, 940);
+					crearTablero(100, correo);
 
-			if (file.exists()) {
-				// Obtenermos todos los paneles del tablero en una matriz
-				Component[] casillas = tablero.getComponents();
+				}
 
-				String line = null;
+				if (file.exists()) {
+					// Obtenermos todos los paneles del tablero en una matriz
+					Component[] casillas = tablero.getComponents();
 
-				int recorrido = 0;
-				while ((line = leerCasilla.readLine()) != null) {
-					// En cada linea del archivo tenemos 3 series de colores (RGB)
-					String[] colores = line.split(",");
-					if (colores.length == 3) {
+					String line = null;
 
-						int red = Integer.parseInt(colores[0]);
-						int green = Integer.parseInt(colores[1]);
-						int blue = Integer.parseInt(colores[2]);
-						// Si la linea no tiene color (255,255,255): es blanco
-						// Entonces crea y guarda el color blanco dentro del array casillas
-						if (red == 255 && blue == 255 && green == 255) {
-							color = new Color(255, 255, 255);
-							casillas[recorrido].setBackground(color);
-							recorrido++;
-						} else {
-							// Sino guardar el color con las propiedades leidas del fichero
-							color = new Color(red ,green , blue);
-							//System.out.println(" " + recorrido + " color " + color);
-							
-							casillas[recorrido].setBackground(color);
-							recorrido++;
+					int recorrido = 0;
+					while ((line = leerCasilla.readLine()) != null) {
+						// En cada linea del archivo tenemos 3 series de colores (RGB)
+						String[] colores = line.split(",");
+						if (colores.length == 3) {
+
+							int red = Integer.parseInt(colores[0]);
+							int green = Integer.parseInt(colores[1]);
+							int blue = Integer.parseInt(colores[2]);
+							// Si la linea no tiene color (255,255,255): es blanco
+							// Entonces crea y guarda el color blanco dentro del array casillas
+							if (red == 255 && blue == 255 && green == 255) {
+								color = new Color(255, 255, 255);
+								casillas[recorrido].setBackground(color);
+								recorrido++;
+							} else {
+								// Sino guardar el color con las propiedades leidas del fichero
+								color = new Color(red, green, blue);
+								// System.out.println(" " + recorrido + " color " + color);
+
+								casillas[recorrido].setBackground(color);
+								recorrido++;
+							}
 						}
 					}
+					leerCasilla.close();
+					contarcasillas.close();
+					file.delete();
 				}
-				leerCasilla.close();
+			} catch (Exception e) {
+				System.out.println("Error cargar partida: " + e);
 			}
+		}
+
+	}
+
+	public static void guardarDatosBD(String correo) {
+//		correo="edu@gmail.com";
+		String insertarDatosPartida = "INSERT INTO pixelart (idUsuario, tablero, ficheroPartida, fecha) VALUES (?,?,?,?)";
+		Connection conexion = Conexion.obtenerConexion();
+		String[] idUsuario = datosUsuarioPerfil(correo);
+
+		String ruta_archivo = "PixelArt.txt";
+		File archivo = new File(ruta_archivo);
+
+		LocalDate fechaActual = LocalDate.now();
+
+		try {
+			FileInputStream archivoInputStream = new FileInputStream(archivo);
+
+			PreparedStatement preparandoInsert = conexion.prepareStatement(insertarDatosPartida);
+			preparandoInsert.setInt(1, Integer.parseInt(idUsuario[0]));
+			preparandoInsert.setString(2, tamanio);
+			preparandoInsert.setBlob(3, archivoInputStream);
+			preparandoInsert.setDate(4, java.sql.Date.valueOf(fechaActual));
+
+			preparandoInsert.executeUpdate();
+			preparandoInsert.close();
+			System.out.println("Partida pixelArt guardada en BD");
+			
+			PixelArt.setGuardado(true);
+			
 		} catch (Exception e) {
-			System.out.println("Error cargar partida: " + e);
+			System.out.println("Error: " + e);
 		}
 	}
 
-	private void BotonesDescartaryGuardar() {
+	public static String[] datosUsuarioPerfil(String correo) {
+		String[] datos = new String[6];
+		String sentencia = "SELECT * FROM usuarios WHERE email = ?";
+		Connection c = Conexion.obtenerConexion();
+
+		try {
+			PreparedStatement consulta = c.prepareStatement(sentencia);
+			consulta.setString(1, correo);
+			ResultSet resultado = consulta.executeQuery();
+
+			while (resultado.next()) {
+				datos[0] = "" + resultado.getInt("id");
+				datos[1] = resultado.getString("nombre");
+				datos[2] = resultado.getString("apellidos");
+				datos[4] = resultado.getString("poblacion");
+				datos[5] = resultado.getString("email");
+
+			}
+		} catch (SQLException e) {
+			System.out.println("Error: " + e);
+		}
+
+		return datos;
+	}
+
+	private void BotonesDescartaryGuardar(String correo) {
 		JPanel BotonesJuego = new JPanel(new GridBagLayout());
 
-		JButton Borrar = new JButton("Borrar");
-		Borrar.setPreferredSize(new Dimension(120, 40));
-		Borrar.setFont(new Font("Unispace", Font.BOLD, 12));
+		JButton botonVolver = new JButton("Volver");
+		botonVolver.setPreferredSize(new Dimension(120, 40));
+		botonVolver.setFont(new Font("Unispace", Font.BOLD, 12));
 		GridBagConstraints gbcBorrar = new GridBagConstraints();
 		gbcBorrar.anchor = GridBagConstraints.CENTER;
 		gbcBorrar.insets = new Insets(5, 10, 10, 10); // Añade espacio inferior
 		gbcBorrar.gridx = 0;
 		gbcBorrar.gridy = 0;
-		BotonesJuego.add(Borrar, gbcBorrar);
+		BotonesJuego.add(botonVolver, gbcBorrar);
 
-		Borrar.addActionListener(new ActionListener() {
+		botonVolver.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -470,7 +615,7 @@ public class PixelArt extends JFrame {
 				tablero.removeAll();
 				// Reininializar el color
 				colorSeleccionado = Color.BLACK;
-				IniciodeJuego();
+				IniciodeJuego(correo);
 
 			}
 		});
@@ -514,16 +659,17 @@ public class PixelArt extends JFrame {
 			}
 		});
 
-		JButton Guardar = new JButton("Guardar");
-		Guardar.setPreferredSize(new Dimension(120, 40));
-		Guardar.setFont(new Font("Unispace", Font.BOLD, 12));
+		JButton botonGuardar = new JButton("Guardar");
+		botonGuardar.setPreferredSize(new Dimension(120, 40));
+		botonGuardar.setFont(new Font("Unispace", Font.BOLD, 12));
 		GridBagConstraints gbcGuardar = new GridBagConstraints();
 		gbcGuardar.anchor = GridBagConstraints.CENTER;
 		gbcGuardar.insets = new Insets(5, 10, 10, 10); // No añade espacio inferior
 		gbcGuardar.gridx = 3;
 		gbcGuardar.gridy = 0;
-		BotonesJuego.add(Guardar, gbcGuardar);
-		Guardar.addActionListener(new ActionListener() {
+		BotonesJuego.add(botonGuardar, gbcGuardar);
+
+		botonGuardar.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -532,7 +678,9 @@ public class PixelArt extends JFrame {
 				// nombre del archivo
 				// Guardar el estado del tablero en el archivo seleccionado
 				String filePath = "PixelArt.txt"; // Aquí debes asignar la ruta del archivo seleccionado
+
 				guardarEstadoTablero(filePath);
+				guardarDatosBD(correo);
 
 			}
 		});

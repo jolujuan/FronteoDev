@@ -1,36 +1,42 @@
 package login;
 
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import conexionBaseDatos.Conexion;
-import menuJuegos.Menu;
-import panel_inicio.Panel_inicio;
-
-import javax.swing.JLabel;
-
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.JTextField;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import javax.swing.JButton;
-import java.sql.*;
-import java.util.Base64;
-import java.awt.GridBagLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.SecureRandom;
 import java.security.spec.KeySpec;
-import java.awt.Font;
-import java.awt.Color;
-import javax.swing.JPasswordField;
-import javax.swing.Box;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Base64;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import java.awt.FlowLayout;
-import java.awt.Component;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+
+import conexionBaseDatos.Conexion;
+import juegos.PixelArt;
+import menuJuegos.Menu;
+import panel_inicio.Panel_inicio;
 
 public class Login extends JPanel {
 
@@ -40,6 +46,7 @@ public class Login extends JPanel {
 	private JTextField fieldUsr;
 	private JPasswordField fieldPwd;
 	private JLabel text;
+	private JPanel panel;
 
 	public Login() {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -48,17 +55,17 @@ public class Login extends JPanel {
 		JPanel panel_1 = new JPanel();
 		add(panel_1);
 
-		text = new JLabel();
+		text = new JLabel("Login");
 		panel_1.add(text);
 		text.setFont(new Font("Dialog", Font.BOLD, 30));
 		text.setHorizontalAlignment(SwingConstants.CENTER);
-		text.setText("Login");
 
 		JPanel panel_2 = new JPanel();
 		add(panel_2);
 		panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
 
-		JPanel panel = new JPanel();
+		panel = new JPanel();
+		panel.setOpaque(false);
 		panel_2.add(panel);
 		panel.setBackground(new Color(238, 238, 238));
 		GridBagLayout gbl_panel = new GridBagLayout();
@@ -68,7 +75,7 @@ public class Login extends JPanel {
 		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JLabel texto1 = new JLabel("Usuario");
+		JLabel texto1 = new JLabel("Email");
 		texto1.setFont(new Font("Dialog", Font.BOLD, 13));
 		texto1.setBackground(new Color(255, 255, 255));
 		GridBagConstraints gbc_texto1 = new GridBagConstraints();
@@ -80,6 +87,10 @@ public class Login extends JPanel {
 
 		fieldUsr = new JTextField();
 		fieldUsr.setFont(new Font("Dialog", Font.PLAIN, 13));
+		Border existingBorder = fieldUsr.getBorder();
+		Border emptyBorder = BorderFactory.createEmptyBorder(5, 8, 5, 8);
+		Border compoundBorder = BorderFactory.createCompoundBorder(existingBorder, emptyBorder);
+		fieldUsr.setBorder(compoundBorder);
 		GridBagConstraints gbc_fieldUsr = new GridBagConstraints();
 		gbc_fieldUsr.anchor = GridBagConstraints.WEST;
 		gbc_fieldUsr.insets = new Insets(0, 0, 5, 0);
@@ -108,6 +119,10 @@ public class Login extends JPanel {
 
 		fieldPwd = new JPasswordField();
 		fieldPwd.setFont(new Font("Dialog", Font.PLAIN, 13));
+		Border existingBorder2 = fieldPwd.getBorder();
+		Border emptyBorder2 = BorderFactory.createEmptyBorder(5, 8, 5, 8);
+		Border compoundBorder2 = BorderFactory.createCompoundBorder(existingBorder2, emptyBorder2);
+		fieldPwd.setBorder(compoundBorder2);
 		GridBagConstraints gbc_fieldPwd = new GridBagConstraints();
 		gbc_fieldPwd.anchor = GridBagConstraints.WEST;
 		gbc_fieldPwd.insets = new Insets(0, 0, 5, 0);
@@ -133,8 +148,11 @@ public class Login extends JPanel {
 		add(panelBotones);
 
 		JButton botoTorna = new JButton("Atrás");
-		botoTorna.setBorder(new EmptyBorder(8, 28, 8, 28));
+		botoTorna.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		botoTorna.setPreferredSize(new Dimension(110, 35));
+		botoTorna.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panelBotones.add(botoTorna);
+
 		botoTorna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
@@ -146,7 +164,9 @@ public class Login extends JPanel {
 		});
 
 		JButton botoLogin = new JButton("Entra");
-		botoLogin.setBorder(new EmptyBorder(8, 28, 8, 28));
+		botoLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		botoLogin.setPreferredSize(new Dimension(110, 35));
+		botoLogin.setFont(new Font("Dialog", Font.PLAIN, 14));
 		panelBotones.add(botoLogin);
 
 		botoLogin.addActionListener(new ActionListener() {
@@ -158,45 +178,23 @@ public class Login extends JPanel {
 					errorUsr.setText("Error. Introduce un nombre.");
 				} else if (fieldPwd.getPassword().length == 0) {
 					errorPwd.setText("Error. Introduce una contraseña.");
-				} else {
-					ResultSet consulta = consultaSql();
-					try {
-						boolean userTrobat = false;
-						while (consulta.next() && !userTrobat) {
-							String nom = consulta.getString("email");
-							String pwd = consulta.getString("password");
-							String salto = consulta.getString("salto");
-							// login correcte
-							if (fieldUsr.getText().equals(nom)) {
-								userTrobat = true;
-								if (encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
-									System.out.println("Login exitoso");
-									Menu menu= new Menu();
-									Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
-									p.getContentPane().removeAll();
-									p.getContentPane().add(menu);
-									p.revalidate();
-									p.repaint();
-									
-								} else {
-//											JOptionPane.showMessageDialog(contentPane, "Contrasenya incorrecta per a l'usuari "+nom);
-									System.out.println("No ha coincidit password");
-									System.out.println(pwd);
-									System.out.println(encriptarPassword(fieldPwd.getPassword(), salto));
-								}
-							}
-						}
-						if (!userTrobat) {
-//									JOptionPane.showMessageDialog(contentPane, "No s'ha trobat aquest usuari");
-						}
-					} catch (SQLException e1) {
-						System.err.println("Error al recorrer la consulta.");
-						e1.printStackTrace();
-					}
+				} else if (consultaSql()) {
+					System.out.println("Login exitoso");
+					
+					/////// 
+					PixelArt.setGuardado(true);
+					Menu menu = new Menu(fieldUsr.getText());
+					Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
+					p.getContentPane().removeAll();
+					p.getContentPane().add(menu);
+					p.revalidate();
+					p.repaint();
+
 				}
 
 			}
 		});
+
 		botoTorna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
@@ -209,20 +207,50 @@ public class Login extends JPanel {
 		setVisible(true);
 	}
 
-	public ResultSet consultaSql() {
+	public boolean consultaSql() {
 
 		Connection c = Conexion.obtenerConexion();
+//		Connection c = Conexion.obtenerConexionLocal();
 		ResultSet r = null;
+		boolean usrValidat = false;
 		try {
 			// Enviar una sentència SQL per recuperar els clients
 			Statement cerca = c.createStatement();
 			r = cerca.executeQuery(
 					"SELECT usuarios.email, passwords.password, passwords.salto FROM usuarios JOIN passwords ON usuarios.id=passwords.idUsuario");
-//			c.close();
+			try {
+				boolean userTrobat = false;
+
+				while (r.next() && !userTrobat) {
+					String nom = r.getString("email");
+					String pwd = r.getString("password");
+					String salto = r.getString("salto");
+					// login correcte
+					if (fieldUsr.getText().equals(nom)) {
+						userTrobat = true;
+						if (!encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
+							JOptionPane.showMessageDialog(panel, "Contrasenya incorrecta per a l'usuari " + nom);
+							usrValidat = false;
+						} else {
+							usrValidat = true;
+						}
+					}
+				}
+
+				if (!userTrobat) {
+					JOptionPane.showMessageDialog(panel, "No s'ha trobat aquest usuari");
+					usrValidat = false;
+				}
+			} catch (SQLException e1) {
+				System.err.println("Error al recorrer la consulta.");
+				e1.printStackTrace();
+			}
+			c.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return r;
+
+		return usrValidat;
 	}
 
 	public String encriptarPassword(char[] passWord, String saltoStr) {
@@ -236,7 +264,6 @@ public class Login extends JPanel {
 			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
 			byte[] hash = factory.generateSecret(spec).getEncoded();
-//			passWord = Base64.getEncoder().encodeToString(hash);
 
 			passwordEncriptada = FORTALEZA + saltoStr + LONGITUD_HASH + Base64.getEncoder().encodeToString(hash);
 
