@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -34,11 +35,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
 import conexionBaseDatos.Conexion;
+import juegos.PixelArt;
 
 public class GuardarCargar extends JFrame {
 
@@ -50,9 +53,6 @@ public class GuardarCargar extends JFrame {
 	JPanel contenidoPequeño = new JPanel();
 	JPanel contenidoMediano = new JPanel();
 	JPanel contenidoGrande = new JPanel();
-	
-	JScrollPane scrollPequeño = new JScrollPane(contenidoPequeño);
-
 
 	// Ventana principal a la que le pasamos ventana pixelArt o buscaminas
 	// Otra ventana interna para obtener y cerrar componenetes
@@ -71,10 +71,19 @@ public class GuardarCargar extends JFrame {
 		GuardarCargar.guardado = guardado;
 	}
 
-//	  public static void main(String[] args) { EventQueue.invokeLater(new
-//	  Runnable() { public void run() { try { String correo = "edu@gmail.com";
-//	  GuardarCargar frame = new GuardarCargar(new PixelArt(correo), correo); frame.setVisible(true); }
-//	  catch (Exception e) { e.printStackTrace(); } } }); }
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					String correo = "joselu@gmail.com";
+//					GuardarCargar frame = new GuardarCargar(new PixelArt(correo), correo);
+//					frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	// Pasar la variable para no mostrarla en las clases
 	public GuardarCargar(JFrame ventana, String correo) {
@@ -105,7 +114,7 @@ public class GuardarCargar extends JFrame {
 		panel.setLayout(new GridLayout(1, 0, 0, 0));
 
 		JPanel panelPequeño = new JPanel();
-		panelPequeño.setBorder(new MatteBorder(0, 0, 0, 4, (Color) new Color(0, 0, 0)));
+		panelPequeño.setBorder(new MatteBorder(0, 0, 0, 3, (Color) new Color(75, 75, 75)));
 		panel.add(panelPequeño);
 		GridBagLayout gbl_panelPequeño = new GridBagLayout();
 		gbl_panelPequeño.columnWidths = new int[] { 146, 0 };
@@ -115,25 +124,33 @@ public class GuardarCargar extends JFrame {
 		panelPequeño.setLayout(gbl_panelPequeño);
 
 		JPanel tituloPequeño = new JPanel();
-		tituloPequeño.setBorder(new EmptyBorder(10, 10, 10, 10));
+		tituloPequeño.setBorder(new EmptyBorder(10, 10, 0, 10));
 		GridBagConstraints gbc_tituloPequeño = new GridBagConstraints();
-		gbc_tituloPequeño.fill = GridBagConstraints.BOTH;
+		gbc_tituloPequeño.fill = GridBagConstraints.CENTER;
 		gbc_tituloPequeño.insets = new Insets(0, 0, 5, 0);
 		gbc_tituloPequeño.gridx = 0;
 		gbc_tituloPequeño.gridy = 0;
 		panelPequeño.add(tituloPequeño, gbc_tituloPequeño);
 
-		JLabel labelPequeño = new JLabel("FÁCIL");
-		labelPequeño.setFont(new Font("Dialog", Font.BOLD, 18));
-		tituloPequeño.add(labelPequeño);
-		contenidoPequeño.setMinimumSize(new Dimension(100, 100));
-
+		JLabel labelPequenio = new JLabel("FÁCIL");
+		labelPequenio.setFont(new Font("Serif", Font.BOLD, 24)); 
+		tituloPequeño.add(labelPequenio);
 		contenidoPequeño.setFont(new Font("Dialog", Font.PLAIN, 12));
+
+		// Creamos el scroll panel
+		JScrollPane scrollPanePequeño = new JScrollPane(contenidoPequeño);
+		scrollPanePequeño.setBorder(null);
+		// Cambiar el comportamiento del scroll para desplazar más lineas
+		scrollPanePequeño.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+		scrollPanePequeño.getVerticalScrollBar().setUnitIncrement(5);
+
 		GridBagConstraints gbc_contenidoPequeño = new GridBagConstraints();
-		gbc_contenidoPequeño.fill = GridBagConstraints.VERTICAL;
+		gbc_contenidoPequeño.fill = GridBagConstraints.BOTH;
 		gbc_contenidoPequeño.gridx = 0;
 		gbc_contenidoPequeño.gridy = 1;
-		panelPequeño.add(scrollPequeño, gbc_contenidoPequeño);
+		// Añadimos el scroll panel aqui
+		panelPequeño.add(scrollPanePequeño, gbc_contenidoPequeño);
+
 		contenidoPequeño.setLayout(new BoxLayout(contenidoPequeño, BoxLayout.Y_AXIS));
 
 		botonTableroPequeño.setAlignmentY(Component.BOTTOM_ALIGNMENT);
@@ -146,11 +163,11 @@ public class GuardarCargar extends JFrame {
 		gbl_panelMediano.columnWidths = new int[] { 146, 0 };
 		gbl_panelMediano.rowHeights = new int[] { 35, 389 };
 		gbl_panelMediano.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-		gbl_panelMediano.rowWeights = new double[] { 0.0, 1.0 };
+		gbl_panelMediano.rowWeights = new double[] { 0.0, 1.0  };
 		panelMediano.setLayout(gbl_panelMediano);
 
 		JPanel tituloMediano = new JPanel();
-		tituloMediano.setBorder(new EmptyBorder(10, 10, 10, 10));
+		tituloMediano.setBorder(new EmptyBorder(10, 10, 0, 10));
 		GridBagConstraints gbc_tituloMediano = new GridBagConstraints();
 		gbc_tituloMediano.fill = GridBagConstraints.BOTH;
 		gbc_tituloMediano.insets = new Insets(0, 0, 5, 0);
@@ -159,32 +176,38 @@ public class GuardarCargar extends JFrame {
 		panelMediano.add(tituloMediano, gbc_tituloMediano);
 
 		JLabel labelMediano = new JLabel("NORMAL");
-		labelMediano.setFont(new Font("Dialog", Font.BOLD, 18));
+		labelMediano.setFont(new Font("Serif", Font.BOLD, 24)); 
 		tituloMediano.add(labelMediano);
+
+		JScrollPane scrollPaneMediano = new JScrollPane(contenidoMediano);
+		scrollPaneMediano.setBorder(null);
+		// Cambiar el comportamiento del scroll para desplazar más lineas
+		scrollPaneMediano.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+		scrollPaneMediano.getVerticalScrollBar().setUnitIncrement(5);
 
 		GridBagConstraints gbc_contenidoMediano = new GridBagConstraints();
 		gbc_contenidoMediano.fill = GridBagConstraints.VERTICAL;
 		gbc_contenidoMediano.gridx = 0;
 		gbc_contenidoMediano.gridy = 1;
-		panelMediano.add(contenidoMediano, gbc_contenidoMediano);
+		panelMediano.add(scrollPaneMediano, gbc_contenidoMediano);
 		contenidoMediano.setLayout(new BoxLayout(contenidoMediano, BoxLayout.Y_AXIS));
 
-		botonTableroMediano.setFont(new Font("Dialog", Font.PLAIN, 14));
 		botonTableroMediano.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		botonTableroMediano.setFont(new Font("Dialog", Font.PLAIN, 14));
 		botonTableroMediano.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
 		JPanel panelGrande = new JPanel();
-		panelGrande.setBorder(new MatteBorder(0, 4, 0, 0, (Color) new Color(0, 0, 0)));
+		panelGrande.setBorder(new MatteBorder(0, 3, 0, 0, (Color) new Color(75, 75, 75)));
 		panel.add(panelGrande);
 		GridBagLayout gbl_panelGrande = new GridBagLayout();
 		gbl_panelGrande.columnWidths = new int[] { 146, 0 };
-		gbl_panelGrande.rowHeights = new int[] { 35, 132, 0 };
+		gbl_panelGrande.rowHeights = new int[] { 35, 389, 0 };
 		gbl_panelGrande.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
 		gbl_panelGrande.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
 		panelGrande.setLayout(gbl_panelGrande);
 
 		JPanel tituloGrande = new JPanel();
-		tituloGrande.setBorder(new EmptyBorder(10, 10, 10, 10));
+		tituloGrande.setBorder(new EmptyBorder(10, 10, 0, 10));
 		GridBagConstraints gbc_tituloGrande = new GridBagConstraints();
 		gbc_tituloGrande.fill = GridBagConstraints.BOTH;
 		gbc_tituloGrande.insets = new Insets(0, 0, 5, 0);
@@ -193,18 +216,23 @@ public class GuardarCargar extends JFrame {
 		panelGrande.add(tituloGrande, gbc_tituloGrande);
 
 		JLabel labelGrande = new JLabel("DIFÍCIL");
-		labelGrande.setFont(new Font("Dialog", Font.BOLD, 18));
+		labelGrande.setFont(new Font("Serif", Font.BOLD, 24)); 
 		tituloGrande.add(labelGrande);
+
+		JScrollPane scrollPaneGrande = new JScrollPane(contenidoGrande);
+		scrollPaneGrande.setBorder(null);
+		// Cambiar el comportamiento del scroll para desplazar más lineas
+		scrollPaneGrande.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+		scrollPaneGrande.getVerticalScrollBar().setUnitIncrement(5);
 
 		GridBagConstraints gbc_contenidoGrande = new GridBagConstraints();
 		gbc_contenidoGrande.fill = GridBagConstraints.VERTICAL;
 		gbc_contenidoGrande.gridx = 0;
 		gbc_contenidoGrande.gridy = 1;
-		panelGrande.add(contenidoGrande, gbc_contenidoGrande);
+		panelGrande.add(scrollPaneGrande, gbc_contenidoGrande);
 		contenidoGrande.setLayout(new BoxLayout(contenidoGrande, BoxLayout.Y_AXIS));
 
-		botonTableroGrande.setFont(new Font("Dialog", Font.PLAIN, 14));
-		botonTableroGrande.setAlignmentY(1.0f);
+		
 
 		leerDatosBD(correo);
 	}
@@ -242,18 +270,20 @@ public class GuardarCargar extends JFrame {
 				case "pequeño": {
 
 					botonTableroPequeño = new JButton("" + fecha);
+					botonTableroPequeño.setMargin(new Insets(7, 15, 7, 15));
 					// Obtenemos un atributo oculto para obtener el archivo del boton presionado
 					botonTableroPequeño.putClientProperty("nombreArchivo", archivoBlob);
 
+					contenidoPequeño.setBorder(new EmptyBorder(10, 18, 10, 10));
 					contenidoPequeño.add(botonTableroPequeño);
-					contenidoPequeño.add(Box.createVerticalStrut(10));
+					contenidoPequeño.add(Box.createVerticalStrut(15));
 
 					botonTableroPequeño.addActionListener(new ActionListener() {
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							
-							//Seguir adelante, si no ha seleccionado "X" en la ventana
+
+							// Seguir adelante, si no ha seleccionado "X" en la ventana
 							GuardarCargar.setGuardado(false);
 
 							JButton botonPulsado = (JButton) e.getSource();
@@ -283,11 +313,14 @@ public class GuardarCargar extends JFrame {
 				case "mediano": {
 
 					botonTableroMediano = new JButton("" + fecha);
+					botonTableroMediano.setMargin(new Insets(7, 15, 7, 15));
+
 					// Obtenemos un atributo oculto para obtener el archivo del boton presionado
 					botonTableroMediano.putClientProperty("nombreArchivo", archivoBlob);
 
+					contenidoMediano.setBorder(new EmptyBorder(10, 18, 10, 10));
 					contenidoMediano.add(botonTableroMediano);
-					contenidoMediano.add(Box.createVerticalStrut(10));
+					contenidoMediano.add(Box.createVerticalStrut(15));
 
 					botonTableroMediano.addActionListener(new ActionListener() {
 
@@ -295,7 +328,7 @@ public class GuardarCargar extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 
 							GuardarCargar.setGuardado(false);
-							
+
 							JButton botonPulsado = (JButton) e.getSource();
 							// Recuperamos el valor del archivo del boton
 							Blob archivoBlobBoton = (Blob) botonPulsado.getClientProperty("nombreArchivo");
@@ -323,11 +356,13 @@ public class GuardarCargar extends JFrame {
 				case "grande": {
 
 					botonTableroGrande = new JButton("" + fecha);
+					botonTableroGrande.setMargin(new Insets(7, 15, 7, 15));
 					// Obtenemos un atributo oculto para obtener el archivo del boton presionado
 					botonTableroGrande.putClientProperty("nombreArchivo", archivoBlob);
 
+					contenidoGrande.setBorder(new EmptyBorder(10, 18, 10, 10));
 					contenidoGrande.add(botonTableroGrande);
-					contenidoGrande.add(Box.createVerticalStrut(10));
+					contenidoGrande.add(Box.createVerticalStrut(15));
 
 					botonTableroGrande.addActionListener(new ActionListener() {
 
@@ -335,7 +370,7 @@ public class GuardarCargar extends JFrame {
 						public void actionPerformed(ActionEvent e) {
 
 							GuardarCargar.setGuardado(false);
-							
+
 							JButton botonPulsado = (JButton) e.getSource();
 							// Recuperamos el valor del archivo del boton
 							Blob archivoBlobBoton = (Blob) botonPulsado.getClientProperty("nombreArchivo");

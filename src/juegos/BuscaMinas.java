@@ -197,9 +197,6 @@ public class BuscaMinas extends JFrame {
 												frame.dispose();
 												buscaMinasFrame.setVisible(true);
 											}else {
-												JOptionPane.showMessageDialog(cargarPartida,
-														"No se ha seleccionado ninguna partida", "Información",
-														JOptionPane.INFORMATION_MESSAGE);
 												cargar = false; // Restablecer como cerrado
 												frame.dispose();
 												buscaMinasFrame.setVisible(true);
@@ -1059,7 +1056,6 @@ public class BuscaMinas extends JFrame {
 				oos.writeObject(tableroCasillas);
 				oos.flush();
 				oos.close();
-				JOptionPane.showMessageDialog(null, "Se ha guardado correctamente");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			} finally {
@@ -1229,6 +1225,7 @@ public class BuscaMinas extends JFrame {
 
 			preparandoInsert.executeUpdate();
 			preparandoInsert.close();
+			JOptionPane.showMessageDialog(null, "Se ha guardado correctamente");
 			System.out.println("Partida buscaMinas guardada en BD");
 
 		} catch (Exception e) {

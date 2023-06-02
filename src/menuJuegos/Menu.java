@@ -195,17 +195,7 @@ public class Menu extends JPanel {
 				}
 			}
 
-			private void eliminarArchivos() {
-				File archivoCargaDatosPixelArt = new File("partidaCargadaPixelArt.txt");
-				File archivoCargadoDatosBuscaminas = new File("partidaCargadaBuscaMinas.datos");
-				File archivoLocalPixelArt = new File("PixelArt.txt");
-				File archivoLocalBuscaminas = new File("buscaminas.datos");
-
-				archivoCargaDatosPixelArt.delete();
-				archivoCargadoDatosBuscaminas.delete();
-				archivoLocalPixelArt.delete();
-				archivoLocalBuscaminas.delete();
-			}
+			
 
 		});
 
@@ -316,6 +306,27 @@ public class Menu extends JPanel {
 		c.gridx = x;
 		c.gridy = y;
 		add(etiqueta, c);
+	}
+
+	public static void eliminarArchivos() {
+		File archivoCargaDatosPixelArt = new File("partidaCargadaPixelArt.txt");
+		File archivoCargadoDatosBuscaminas = new File("partidaCargadaBuscaMinas.datos");
+		File archivoLocalPixelArt = new File("PixelArt.txt");
+		File archivoLocalBuscaminas = new File("buscaminas.datos");
+
+		//Comprobar si existe porque lo llamaremos desde otro metodo
+		if (archivoCargaDatosPixelArt.exists()) {					
+			archivoCargaDatosPixelArt.delete();
+		}
+		if (archivoCargadoDatosBuscaminas.exists()) {					
+			archivoCargadoDatosBuscaminas.delete();
+		}
+		if (archivoLocalPixelArt.exists()) {
+			archivoLocalPixelArt.delete();
+		}
+		if (archivoLocalBuscaminas.exists()) {
+			archivoLocalBuscaminas.delete();					
+		}
 	}
 
 }
