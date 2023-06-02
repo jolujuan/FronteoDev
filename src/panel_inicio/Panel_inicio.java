@@ -10,12 +10,16 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import login.Login;
@@ -34,13 +38,44 @@ public class Panel_inicio extends JFrame {
 	private JPanel panel_principal = new JPanel();
 	private GridBagConstraints gbc = new GridBagConstraints();
 
-	
-	
 	public Panel_inicio() {
-		
+
+		// Ignorarar el cierre, para hacerlo más divertido
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+		String mensaje = "                          ---------------------------------------------------\r\n"
+				+ "                          ¡LOS CREADORES DETRÁS DEL ESCENARIO!\r\n"
+				+ "                          ---------------------------------------------------\r\n" + "\n"
+				+ "¡Prepárense para conocer a los cerebros brillantes detrás de este asombroso espectáculo!\n" + "\n"
+				+ "1.\n" + "\n" + "2.\n" + "\n" + "3.\n" + "\n" + "4.\n" + "\n"
+				+ "¡Estos talentosos magos han creado un espectáculo que desafiará tu imaginación!\n" + "\n"
+				+ "---------------------------------------------------\n" + "\n"
+				+ "¡Un agradecimiento especial a todo el equipo que ha trabajado incansablemente para hacer de este show un éxito rotundo!\n"
+				+ "\n" + "---------------------------------------------------";
+
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				
+				int option = JOptionPane.showConfirmDialog(null, "¿Deseas cerrar el programa?", "Confirmación",
+						JOptionPane.YES_NO_OPTION);
+				if (option == JOptionPane.YES_OPTION) {
+					
+					Window[] ventanasAbiertas = Window.getWindows();
+					for (Window ventana : ventanasAbiertas) {
+						if (ventana != null && ventana.isDisplayable()) {
+							ventana.dispose();
+						}
+					}
+					
+					JOptionPane.showMessageDialog(null, mensaje, "Bye Bye", JOptionPane.INFORMATION_MESSAGE);
+					dispose(); // Cerrar manualmente la ventana
+				}
+			}
+		});
 
 		this.setTitle("Programa Juegos");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		contenedor.setLayout(new BorderLayout());
 
@@ -50,21 +85,20 @@ public class Panel_inicio extends JFrame {
 		etiqueta_superior.setFont(new Font("Dialog", Font.BOLD, 25));
 		etiqueta_superior.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel_superior.add(etiqueta_superior);
-		
+
 		etiqueta_registro.setText("Registrarse");
 		etiqueta_registro.setFont(new Font("Dialog", Font.BOLD, 18));
 		etiqueta_registro.setAlignmentX(Component.CENTER_ALIGNMENT);
-		etiqueta_registro.setPreferredSize(new Dimension(160, 55)); 
+		etiqueta_registro.setPreferredSize(new Dimension(160, 55));
 		boton_registro.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		boton_registro.add(etiqueta_registro);
 
 		etiqueta_login.setText("Iniciar Sesión");
 		etiqueta_login.setFont(new Font("Dialog", Font.BOLD, 18));
 		etiqueta_login.setAlignmentX(Component.CENTER_ALIGNMENT);
-		etiqueta_login.setPreferredSize(new Dimension(160, 55)); 
+		etiqueta_login.setPreferredSize(new Dimension(160, 55));
 		boton_login.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		boton_login.add(etiqueta_login);
-
 
 		panel_principal.setLayout(new FlowLayout());
 
@@ -83,12 +117,12 @@ public class Panel_inicio extends JFrame {
 		gbc.gridy = 1;
 		gbc.weighty = 1.0;
 		contenedor.add(panel_principal, gbc);
-
+		
 		boton_registro.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				 mostrarRegistro();
+				mostrarRegistro();
 			}
 		});
 
@@ -96,10 +130,10 @@ public class Panel_inicio extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				 mostrarLogin();
+				mostrarLogin();
 			}
 		});
- 
+
 		this.setSize(650, 550);
 		this.setVisible(true);
 		centrarInterficiePantalla();
@@ -177,7 +211,6 @@ public class Panel_inicio extends JFrame {
 		this.gbc = gbc;
 	}
 
-	
 	private void mostrarLogin() {
 		// Crear y mostrar el contenido de la ventana de registro
 		Login ventanaLogin = new Login();
@@ -201,7 +234,7 @@ public class Panel_inicio extends JFrame {
 		// Ocultar la ventana actual
 		// setVisible(false);
 	}
-	
+
 	private void centrarInterficiePantalla() {
 		// Calcular la posición de la ventana
 		Dimension tamañoPantalla = Toolkit.getDefaultToolkit().getScreenSize();
@@ -209,7 +242,7 @@ public class Panel_inicio extends JFrame {
 		int height = this.getSize().height;
 		int x = (tamañoPantalla.width - width) / 2; // Centrado horizontalmente
 		int y = (tamañoPantalla.height - height) / 2;
-		 // En la parte superior de la pantalla
+		// En la parte superior de la pantalla
 
 		// Establecer la posición de la ventana
 		this.setLocation(x, y);
