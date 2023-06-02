@@ -406,7 +406,6 @@ public class JuegoVida extends JFrame{
 
 		private boolean celulaViva = false;
 		private int celulasVivasAdyacentes=0;
-		private int celulasMuertasAdyacentes=0;
 
 		public Casilla() {
 			super("");
@@ -427,13 +426,6 @@ public class JuegoVida extends JFrame{
 
 		public int getCelulasVivasAdyacentes() {
 			return this.celulasVivasAdyacentes;
-		}
-		public void setCelulasMuertasAdyacentes(int celulasMuertasAdyacentes) {
-			this.celulasMuertasAdyacentes = celulasMuertasAdyacentes;
-		}
-
-		public int getCelulasMuertasAdyacentes() {
-			return this.celulasMuertasAdyacentes;
 		}
 
 		private void actualizarApariencia() {
