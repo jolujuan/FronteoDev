@@ -289,6 +289,7 @@ public class JuegoVida extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				timer.cancel();
 				timer=new Timer();
 				TimerTask tarea = new TimerTask() {
 		        	public void run() {
