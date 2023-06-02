@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -22,6 +23,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -34,8 +40,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
+import conexionBaseDatos.Conexion;
+import guardarCargar.GuardarCargar;
 
 public class BuscaMinas extends JFrame {
 	// Variables para crear
@@ -64,25 +74,33 @@ public class BuscaMinas extends JFrame {
 	JLabel labelTemps = new JLabel();
 	transient Timer timer;
 
-	/**
-	 * Launch the application.
-	 */
-	/*
-	 * public static void main(String[] args) {
-	 * 
-	 * EventQueue.invokeLater(new Runnable() { public void run() { try {
-	 * 
-	 * BuscaMinasGuardar frame = new BuscaMinasGuardar(); frame.setSize(500, 500);
-	 * frame.setVisible(true);
-	 * UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); } } }); }
-	 */
+	// variable para controlar cómo se cierra la ventana
+	private boolean botonPresionado = false;
+	public boolean cargar = false;
+	private BuscaMinas buscaMinasFrame;
 
-	/**
-	 * Create the frame.
-	 */
-	public BuscaMinas() {
+	public static void main(String[] args) {
+
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+
+					BuscaMinas frame = new BuscaMinas("joselu@gmail.com");
+					frame.setSize(500, 500);
+					frame.setVisible(true);
+					UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	public BuscaMinas(String correo) {
+		// Pasar la ventana a una variable global
+		buscaMinasFrame = this;
+
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("BuscaMinas");
 		contentPane = new JPanel();
@@ -90,7 +108,7 @@ public class BuscaMinas extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout());
 
-		IniciodeJuego();// Inicio del juego,
+		IniciodeJuego(correo);// Inicio del juego,
 		addWindowListener(new WindowAdapter() {
 
 			@Override
@@ -101,7 +119,7 @@ public class BuscaMinas extends JFrame {
 		});
 	}
 
-	public void IniciodeJuego() {
+	public void IniciodeJuego(String correo) {
 
 		JPanel inicio = new JPanel();
 		inicio.setFont(new Font("Verdana", Font.BOLD, 13));
@@ -156,110 +174,43 @@ public class BuscaMinas extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// desserialització
-				try {
-					// obrim fitxer per a lectura
-					FileInputStream file = new FileInputStream("buscaminas.datos");
-					ObjectInputStream reader = new ObjectInputStream(file);
-					try {
-						String line = (String) reader.readObject();
 
-						// Recuperar la linea que contiene la almohadilla
-						// Empezar con uno para no guardar el simbolo
-						if (line.contains("#")) {
-							String[] parts = line.substring(1).split(":");
-							contadorBanderas = Integer.parseInt(parts[0]);
-							segons = Integer.parseInt(parts[1]);
-							ContadorCasillasinrevelar = Integer.parseInt(parts[2]);
+				botonPresionado = true; // se ha presionado el botón
+
+				if (!cargar) { // Verificar si cargar está abierto
+					cargar = true;
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							try {
+								// buscaMinasFrame.setVisible(false);
+
+								GuardarCargar frame = new GuardarCargar(BuscaMinas.this, correo);
+								frame.setSize(500, 500);
+								centrarInterficiePantalla();
+								frame.setVisible(true);
+
+								frame.addWindowListener(new WindowAdapter() {
+									@Override
+									public void windowClosed(WindowEvent e) {
+										// Una vez cerrado la ventana de cargar, iniciar el juego que hayas
+										// seleccionado
+										String archivoDescarga = "partidaCargadaBuscaMinas.datos";
+										cargarPartidaDesdeArchivo(archivoDescarga, correo);
+
+										cargar = false; // Restablecer como cerrado
+										frame.dispose();
+										buscaMinasFrame.setVisible(true);
+									}
+
+								});
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
-						// llegim l'objecte que hi ha al fitxer (1 sol array List)
-						tableroCasillas = (Casilla[][]) reader.readObject();
-						System.out.println(tableroCasillas.length);
-					} catch (Exception ex) {
-						System.err.println("Final del fitxer");
-					}
-
-					reader.close();
-					file.close();
-
-				} catch (Exception ex) {
-					System.err.println("Error en llegir usuaris.dades " + ex);
+					});
 				}
-
-				// Dependiendo el tamaño creamos el tipo de tablero
-				if (tableroCasillas.length == 8) {
-
-					contentPane.removeAll();
-					tablero.removeAll();
-
-					setSize(370, 575);
-					// Centramos pantalla
-					centrarInterficiePantalla();
-					crearTablero(8, 10);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
-					repaint();
-					revalidate();
-					// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
-					nombreTablero = "pequeño";
-
-					// ContadorCasillasinrevelar = 54;
-					labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
-					CasillasRevelarReset = ContadorCasillasinrevelar;
-
-					// Inicialmente mostrarara las banderas que tiene
-					labelMinasRestantes.setText(Integer.toString(contadorBanderas));
-
-					// Mostrar los segundos donde se quedo la partida
-					labelTemps.setText(Integer.toString(segons));
-//					System.out.println(tableroCasillas.length);
-
-				} else if (tableroCasillas.length == 16) {
-					contentPane.removeAll();
-					tablero.removeAll();
-
-					setSize(570, 775);
-					// Centramos pantalla
-					centrarInterficiePantalla();
-					crearTablero(16, 40);
-					repaint();
-					revalidate();
-					nombreTablero = "mediano";
-
-					labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
-					CasillasRevelarReset = ContadorCasillasinrevelar;
-
-					// Inicialmente mostrarara las banderas que tiene
-					labelMinasRestantes.setText(Integer.toString(contadorBanderas));
-
-					// Mostrar los segundos donde se quedo la partida
-					labelTemps.setText(Integer.toString(segons));
-
-				} else if (tableroCasillas.length == 25) {
-					contentPane.removeAll();
-					tablero.removeAll();
-
-					setSize(770, 975);
-					// Centramos pantalla
-					centrarInterficiePantalla();
-
-					crearTablero(25, 80);
-					repaint();
-					revalidate();
-					// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
-					nombreTablero = "grande";
-
-					// ContadorCasillasinrevelar = 54;
-					labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
-					CasillasRevelarReset = ContadorCasillasinrevelar;
-
-					// Inicialmente mostrarara las banderas que tiene
-					labelMinasRestantes.setText(Integer.toString(contadorBanderas));
-
-					// Mostrar los segundos donde se quedo la partida
-					labelTemps.setText(Integer.toString(segons));
-
-				}
-
 			}
+
 		});
 
 		gbc.gridy = 3;
@@ -280,7 +231,7 @@ public class BuscaMinas extends JFrame {
 				setSize(370, 575);
 				// Centramos pantalla
 				centrarInterficiePantalla();
-				crearTablero(8, 10);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
+				crearTablero(8, 10, correo);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
 				generarMinas(8, 10);
 
 				// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
@@ -304,7 +255,7 @@ public class BuscaMinas extends JFrame {
 				setSize(570, 775);
 				// Centramos pantalla
 				centrarInterficiePantalla();
-				crearTablero(16, 40);
+				crearTablero(16, 40, correo);
 				generarMinas(16, 40);
 				nombreTablero = "mediano";
 
@@ -324,7 +275,7 @@ public class BuscaMinas extends JFrame {
 				setSize(770, 975);
 				// Centramos pantalla
 				centrarInterficiePantalla();
-				crearTablero(25, 80);
+				crearTablero(25, 80, correo);
 				generarMinas(25, 80);
 
 				nombreTablero = "grande";
@@ -414,7 +365,7 @@ public class BuscaMinas extends JFrame {
 		}
 	}
 
-	private void crearTablero(int f, int numeroMinas) {
+	private void crearTablero(int f, int numeroMinas, String correo) {
 
 		// Verificar que el número de minas sea válido
 		int totalCasillas = f * f;
@@ -502,7 +453,7 @@ public class BuscaMinas extends JFrame {
 			contentPane.removeAll();
 			contentPane.add(tablero, BorderLayout.CENTER);
 
-			BotonesDescartaryGuardar();
+			BotonesDescartaryGuardar(correo);
 
 		} else {
 			// Marcar para reiniciar partida cargada
@@ -578,7 +529,7 @@ public class BuscaMinas extends JFrame {
 			contentPane.removeAll();
 			contentPane.add(tablero, BorderLayout.CENTER);
 
-			BotonesDescartaryGuardar();
+			BotonesDescartaryGuardar(correo);
 
 		}
 	}
@@ -848,7 +799,7 @@ public class BuscaMinas extends JFrame {
 		return random.nextInt(f);
 	}
 
-	private void BotonesDescartaryGuardar() {
+	private void BotonesDescartaryGuardar(String correo) {
 		JPanel PanelBotones = new JPanel(new GridBagLayout());
 		PanelBotones.setBorder(new EmptyBorder(10, 0, 10, 0));
 		PanelBotones.setLayout(new GridBagLayout());
@@ -878,7 +829,7 @@ public class BuscaMinas extends JFrame {
 				// Reininializar el color
 				juegoTerminado = false;
 				contadorBanderas = 0;
-				IniciodeJuego();
+				IniciodeJuego(correo);
 
 			}
 		});
@@ -910,37 +861,10 @@ public class BuscaMinas extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				if (juegoTerminado) {
-					JOptionPane.showMessageDialog(null, "NO PUEDES GUARDAR UNA PARTIDA TERMINADA");
-				} else {
-					// serialització
-					ObjectOutputStream oos = null;
-					FileOutputStream fout = null;
-					try {
-						// obrim el fitxer per escriure, sense afegir
-						// només tindrem un ArrayList d'objectes
-						fout = new FileOutputStream(new File("buscaminas.datos"), false);
-						oos = new ObjectOutputStream(fout);
+				String filePath = "buscaminas.datos";
 
-						// Guardar en una linea aparte el contadodor de banderas, los segundos y las
-						// casillas a revelar
-						oos.writeObject("#" + contadorBanderas + ":" + segons + ":" + ContadorCasillasinrevelar);
-						oos.writeObject(tableroCasillas);
-						oos.flush();
-						oos.close();
-						JOptionPane.showMessageDialog(null, "Se ha guardado correctamente");
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					} finally {
-						if (oos != null) {
-							try {
-								oos.close();
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
-						}
-					}
-				}
+				guardarEstadoTablero(filePath);
+				guardarDatosBD(correo, filePath);
 			}
 		});
 
@@ -1016,7 +940,7 @@ public class BuscaMinas extends JFrame {
 					// Dependiendo el tamaño del tablero, volver a inicializar todo
 					switch (nombreTablero) {
 					case "pequeño": {
-						crearTablero(8, 10);
+						crearTablero(8, 10, correo);
 						generarMinas(8, 10);
 						contadorBanderas = 10;
 						labelMinasRestantes.setText(Integer.toString(10));
@@ -1028,7 +952,7 @@ public class BuscaMinas extends JFrame {
 						break;
 					}
 					case "mediano": {
-						crearTablero(16, 40);
+						crearTablero(16, 40, correo);
 						generarMinas(16, 40);
 						contadorBanderas = 40;
 						labelMinasRestantes.setText(Integer.toString(40));
@@ -1040,7 +964,7 @@ public class BuscaMinas extends JFrame {
 						break;
 					}
 					case "grande": {
-						crearTablero(25, 80);
+						crearTablero(25, 80, correo);
 						generarMinas(25, 80);
 						contadorBanderas = 80;
 						labelMinasRestantes.setText(Integer.toString(80));
@@ -1108,6 +1032,209 @@ public class BuscaMinas extends JFrame {
 
 		// Establecer la posición de la ventana
 		this.setLocation(x, y);
+	}
+
+	private void guardarEstadoTablero(String filePath) {
+		// TODO Esbozo de método generado automáticamente
+		if (juegoTerminado) {
+			JOptionPane.showMessageDialog(null, "NO PUEDES GUARDAR UNA PARTIDA TERMINADA");
+		} else {
+			// serialització
+			ObjectOutputStream oos = null;
+			FileOutputStream fout = null;
+			try {
+				// obrim el fitxer per escriure, sense afegir
+				// només tindrem un ArrayList d'objectes
+				fout = new FileOutputStream(new File(filePath), false);
+				oos = new ObjectOutputStream(fout);
+
+				// Guardar en una linea aparte el contadodor de banderas, los segundos y las
+				// casillas a revelar
+				oos.writeObject("#" + contadorBanderas + ":" + segons + ":" + ContadorCasillasinrevelar);
+				oos.writeObject(tableroCasillas);
+				oos.flush();
+				oos.close();
+				JOptionPane.showMessageDialog(null, "Se ha guardado correctamente");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			} finally {
+				if (oos != null) {
+					try {
+						oos.close();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	private void comprobarExistenciaDatos(String correo) {
+		// TODO Esbozo de método generado automáticamente
+		String selectPartida = "SELECT pixelart.* FROM usuarios, pixelart WHERE usuarios.id = pixelart.idUsuario AND email = ?";
+
+		Connection conexion = Conexion.obtenerConexion();
+		
+		try {
+			PreparedStatement preparandoConsulta = conexion.prepareStatement(selectPartida);
+			preparandoConsulta.setString(1, correo);
+			ResultSet resultado = preparandoConsulta.executeQuery();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+
+	}
+
+	private void cargarPartidaDesdeArchivo(String nombreArchivo, String correo) {
+		// TODO Esbozo de método generado automáticamente
+		File file = new File(nombreArchivo);
+
+		try {
+			// obrim fitxer per a lectura
+			ObjectInputStream reader = new ObjectInputStream(new FileInputStream(file));
+			try {
+				String line = (String) reader.readObject();
+
+				// Recuperar la linea que contiene la almohadilla
+				// Empezar con uno para no guardar el simbolo
+				if (line.contains("#")) {
+					String[] parts = line.substring(1).split(":");
+					contadorBanderas = Integer.parseInt(parts[0]);
+					segons = Integer.parseInt(parts[1]);
+					ContadorCasillasinrevelar = Integer.parseInt(parts[2]);
+				}
+				// llegim l'objecte que hi ha al fitxer (1 sol array List)
+				tableroCasillas = (Casilla[][]) reader.readObject();
+			} catch (Exception ex) {
+				System.err.println("Final del fitxer");
+			}
+
+			reader.close();
+
+		} catch (Exception ex) {
+			System.err.println("Error en llegir usuaris.dades " + ex);
+		}
+
+		// Dependiendo el tamaño creamos el tipo de tablero
+		if (tableroCasillas.length == 8) {
+
+			contentPane.removeAll();
+			tablero.removeAll();
+
+			setSize(370, 575);
+			// Centramos pantalla
+			centrarInterficiePantalla();
+			crearTablero(8, 10, correo);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
+			repaint();
+			revalidate();
+			// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
+			nombreTablero = "pequeño";
+
+			// ContadorCasillasinrevelar = 54;
+			labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
+			CasillasRevelarReset = ContadorCasillasinrevelar;
+
+			// Inicialmente mostrarara las banderas que tiene
+			labelMinasRestantes.setText(Integer.toString(contadorBanderas));
+
+			// Mostrar los segundos donde se quedo la partida
+			labelTemps.setText(Integer.toString(segons));
+
+		} else if (tableroCasillas.length == 16) {
+			contentPane.removeAll();
+			tablero.removeAll();
+
+			setSize(570, 775);
+			// Centramos pantalla
+			centrarInterficiePantalla();
+			crearTablero(16, 40, correo);
+			repaint();
+			revalidate();
+			nombreTablero = "mediano";
+
+			labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
+			CasillasRevelarReset = ContadorCasillasinrevelar;
+
+			// Inicialmente mostrarara las banderas que tiene
+			labelMinasRestantes.setText(Integer.toString(contadorBanderas));
+
+			// Mostrar los segundos donde se quedo la partida
+			labelTemps.setText(Integer.toString(segons));
+
+		} else if (tableroCasillas.length == 25) {
+			contentPane.removeAll();
+			tablero.removeAll();
+
+			setSize(770, 975);
+			// Centramos pantalla
+			centrarInterficiePantalla();
+
+			crearTablero(25, 80, correo);
+			repaint();
+			revalidate();
+			// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
+			nombreTablero = "grande";
+
+			// ContadorCasillasinrevelar = 54;
+			labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
+			CasillasRevelarReset = ContadorCasillasinrevelar;
+
+			// Inicialmente mostrarara las banderas que tiene
+			labelMinasRestantes.setText(Integer.toString(contadorBanderas));
+
+			// Mostrar los segundos donde se quedo la partida
+			labelTemps.setText(Integer.toString(segons));
+
+		}
+	}
+
+	public void guardarDatosBD(String correo, String path) {
+
+		String insertarDatosPartida = "INSERT INTO buscaminas (idUsuario, tablero, ficheroPartida, fecha) VALUES (?,?,?,?)";
+		Connection conexion = Conexion.obtenerConexion();
+		String[] idUsuario = datosUsuarioPerfil(correo);
+
+		File archivo = new File(path);
+
+		LocalDate fechaActual = LocalDate.now();
+
+		try {
+			FileInputStream archivoInputStream = new FileInputStream(archivo);
+
+			PreparedStatement preparandoInsert = conexion.prepareStatement(insertarDatosPartida);
+			preparandoInsert.setInt(1, Integer.parseInt(idUsuario[0]));
+			preparandoInsert.setString(2, nombreTablero);
+			preparandoInsert.setBlob(3, archivoInputStream);
+			preparandoInsert.setDate(4, java.sql.Date.valueOf(fechaActual));
+
+			preparandoInsert.executeUpdate();
+			preparandoInsert.close();
+			System.out.println("Partida buscaMinas guardada en BD");
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+	}
+
+	public String[] datosUsuarioPerfil(String correo) {
+		String[] datos = new String[6];
+		String sentencia = "SELECT * FROM usuarios WHERE email = ?";
+		Connection c = Conexion.obtenerConexion();
+
+		try {
+			PreparedStatement consulta = c.prepareStatement(sentencia);
+			consulta.setString(1, correo);
+			ResultSet resultado = consulta.executeQuery();
+
+			while (resultado.next()) {
+				datos[0] = "" + resultado.getInt("id");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error: " + e);
+		}
+
+		return datos;
 	}
 
 }
