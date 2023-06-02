@@ -14,7 +14,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -29,7 +34,7 @@ public class JuegoVida extends JFrame{
 	Random random = new Random();
 	private Casilla[][] tableroCasillas;
 	private JPanel contentPane;
-	private int contadorBanderas;
+	private Timer timer=new Timer();
 	public JuegoVida() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("Juego de la Vida");
@@ -112,7 +117,7 @@ public class JuegoVida extends JFrame{
 						// Centramos pantalla
 						centrarInterficiePantalla();
 						crearTablero(8, nCelules);// NUMERO DE FILAS 8x8 | NUMERO DE CELULAS
-						recorrerTablero(8, nCelules);
+						pintarTablero(8, nCelules);
 						
 
 					}
@@ -126,7 +131,7 @@ public class JuegoVida extends JFrame{
 						// Centramos pantalla
 						centrarInterficiePantalla();
 						crearTablero(16, nCelules);
-						recorrerTablero(16, nCelules);
+						pintarTablero(16, nCelules);
 
 					}
 				});
@@ -139,25 +144,29 @@ public class JuegoVida extends JFrame{
 						// Centramos pantalla
 						centrarInterficiePantalla();
 						crearTablero(25, nCelules);
-						recorrerTablero(25, nCelules);
+						pintarTablero(25, nCelules);
 					}
 				});
 				repaint();
 				revalidate();
 
 	}
-	private void crearTablero(int f, int numeroMinas) {
+	private void crearTablero(int f, int numeroCelulas) {
 
 		// Verificar que el número de minas sea válido
 		int totalCasillas = f * f;
 
-		if (numeroMinas > totalCasillas) {
+		if (numeroCelulas > totalCasillas) {
 			throw new IllegalArgumentException("El número de minas excede el tamaño del tablero.");
 		}
 
+		JPanel tablero=new JPanel();
+		tablero.setLayout(new BorderLayout(0, 0));
+		
 		tableroCasillas = new Casilla[f][f];
-		JPanel tablero = new JPanel();
-		tablero.setLayout(new GridLayout(f, f));
+		
+		JPanel partida = new JPanel();
+		partida.setLayout(new GridLayout(f, f));
 
 		// con esto sacamos el tamaño para q las casillas sean iguales
 		int size = Math.min(getWidth() / f, getHeight() / f);
@@ -224,28 +233,124 @@ public class JuegoVida extends JFrame{
 //					}
 //				});
 				tableroCasillas[fila][columna] = casilla;
-				tablero.add(casilla);
+				partida.add(casilla);
 			}
 		}
-
+		tablero.add(partida,BorderLayout.CENTER);
+		JPanel botons = new JPanel();
+		tablero.add(botons, BorderLayout.SOUTH);
+		GridBagLayout gbl_botons = new GridBagLayout();
+		gbl_botons.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
+		gbl_botons.rowHeights = new int[]{0, 0};
+		gbl_botons.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_botons.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		botons.setLayout(gbl_botons);
+		
+		JButton pausa = new JButton("||");
+		GridBagConstraints gbc_lento = new GridBagConstraints();
+		gbc_lento.insets = new Insets(0, 0, 0, 5);
+		gbc_lento.gridx = 1;
+		gbc_lento.gridy = 0;
+		botons.add(pausa, gbc_lento);
+		
+		JButton lento = new JButton(">");
+		GridBagConstraints gbc_pausa = new GridBagConstraints();
+		gbc_pausa.insets = new Insets(0, 0, 0, 5);
+		gbc_pausa.gridx = 2;
+		gbc_pausa.gridy = 0;
+		botons.add(lento, gbc_pausa);
+		
+		JButton start = new JButton(">>");
+		GridBagConstraints gbc_start = new GridBagConstraints();
+		gbc_start.insets = new Insets(0, 0, 0, 5);
+		gbc_start.gridx = 3;
+		gbc_start.gridy = 0;
+		botons.add(start, gbc_start);
+		
+		JButton rapido = new JButton(">>>");
+		GridBagConstraints gbc_rapido = new GridBagConstraints();
+		gbc_rapido.insets = new Insets(0, 0, 0, 5);
+		gbc_rapido.gridx = 4;
+		gbc_rapido.gridy = 0;
+		botons.add(rapido, gbc_rapido);
 		contentPane.removeAll();
 		contentPane.add(tablero, BorderLayout.CENTER);
-
+		
+		//FUNCIONS DELS BOTONS
+		pausa.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+					timer.cancel();
+			}
+		});
+		
+		lento.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timer=new Timer();
+				TimerTask tarea = new TimerTask() {
+		        	public void run() {
+		        		jugada();
+		        		contentPane.revalidate();
+		        		contentPane.repaint();
+		        		
+		        	}
+		        };
+		        timer.scheduleAtFixedRate(tarea, 0, 2000);
+			}
+		});
+		start.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timer.cancel();
+				timer=new Timer();
+				TimerTask tarea = new TimerTask() {
+		        	public void run() {
+		        		jugada();
+		        		contentPane.revalidate();
+		        		contentPane.repaint();
+		        	}
+		        };
+		        timer.scheduleAtFixedRate(tarea, 0, 1000);
+			}
+		});
+		rapido.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timer.cancel();
+				timer=new Timer();
+				TimerTask tarea = new TimerTask() {
+		        	public void run() {
+		        		jugada();
+		        		contentPane.revalidate();
+		        		contentPane.repaint();
+		        	}
+		        };
+		        timer.scheduleAtFixedRate(tarea, 0, 250);
+			}
+		});
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				timer.cancel();
+			}
+		});
 //		BotonesDescartaryGuardar();
 
 	}
-	public void recorrerTablero(int f, int numeroMinas) {
-		int minasAsignadas = 0; // Contador de minas asignadas
+	public void pintarTablero(int f, int numeroCelulasVivas) {
+		int celulasAsig = 0; // Contador de celulas asignadas
 
-		while (minasAsignadas < numeroMinas) {
+		while (celulasAsig < numeroCelulasVivas) {
 			int filaAleatoria = random.nextInt(f);
 			int columnaAleatoria = random.nextInt(f);
 			Casilla casilla = tableroCasillas[filaAleatoria][columnaAleatoria];
 			if (!casilla.getCelulaViva()) {
 				casilla.setCelulaViva(true);
-				minasAsignadas++;
+				celulasAsig++;
 			}
-			casilla.actualizarApariencia();
 		}
 	}
 	private void centrarInterficiePantalla() {
@@ -260,29 +365,85 @@ public class JuegoVida extends JFrame{
 		// Establecer la posición de la ventana
 		this.setLocation(x, y);
 	}
+	
+	private void jugada() {
+		Casilla[][] copiaTableroCasillas=tableroCasillas.clone();
+		for(int i=0;i<copiaTableroCasillas.length;i++) {
+			for(int j=0;j<copiaTableroCasillas[i].length;j++) {
+				Casilla casilla = copiaTableroCasillas[i][j];
+				boolean celViva=casilla.getCelulaViva();
+				int celsVives=contarCelulasVivas(i, j);
+				if(celViva && (celsVives<2 || celsVives>3)) {
+					casilla.setCelulaViva(false);
+				}else  if (!celViva && celsVives==3){
+					casilla.setCelulaViva(true);
+				}
+			}
+		}
+		tableroCasillas=copiaTableroCasillas.clone();
+	}
+	private int contarCelulasVivas(int fila, int columna) {
+		int celVives=0;
+		for (int i = - 1; i <= 1; i++) {
+			for (int j =  - 1; j <=1; j++) {
+				if (i != 0 || j != 0) {
+					int nextFila=fila+i;
+					int nextColumna=columna+j;
+					if(nextFila >= 0 && nextFila < tableroCasillas.length && nextColumna >= 0 && nextColumna < tableroCasillas[0].length) {
+						Casilla casilla = tableroCasillas[nextFila][nextColumna];
+						if (casilla.getCelulaViva()) {
+							celVives++;
+						}
+					}
+					
+				}
+			}
+		}
+		return celVives;
+	}
 	public class Casilla extends JButton {
 
 		private boolean celulaViva = false;
+		private int celulasVivasAdyacentes=0;
+		private int celulasMuertasAdyacentes=0;
 
 		public Casilla() {
 			super("");
 		}
 
-		public void setCelulaViva(boolean tieneMina) {
-			this.celulaViva = tieneMina;
+		public void setCelulaViva(boolean celulaViva) {
+			this.celulaViva = celulaViva;
+			actualizarApariencia();
 		}
 
 		public boolean getCelulaViva() {
 			return this.celulaViva;
 		}
+		
+		public void setCelulasVivasAdyacentes(int celulasVivasAdyacentes) {
+			this.celulasVivasAdyacentes = celulasVivasAdyacentes;
+		}
+
+		public int getCelulasVivasAdyacentes() {
+			return this.celulasVivasAdyacentes;
+		}
+		public void setCelulasMuertasAdyacentes(int celulasMuertasAdyacentes) {
+			this.celulasMuertasAdyacentes = celulasMuertasAdyacentes;
+		}
+
+		public int getCelulasMuertasAdyacentes() {
+			return this.celulasMuertasAdyacentes;
+		}
 
 		private void actualizarApariencia() {
-			if (celulaViva) {
+			if (this.celulaViva) {
 				setBackground(new Color(250, 250, 0, 100));
 				
 			} else {
-				setBackground(new Color(128, 128, 128, 50));
+				setBackground(new Color(255, 255, 255));
 			}
+			repaint();
+			revalidate();
 		}
 	}
 }
