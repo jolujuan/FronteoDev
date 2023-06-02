@@ -113,12 +113,12 @@ public class JuegoVida extends JFrame{
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						int nCelules=random.nextInt(5,15);
-						setSize(370, 490);
+						setSize(460, 460);
 						// Centramos pantalla
-						centrarInterficiePantalla();
+						
 						crearTablero(8, nCelules);// NUMERO DE FILAS 8x8 | NUMERO DE CELULAS
 						pintarTablero(8, nCelules);
-						
+						centrarInterficiePantalla();
 
 					}
 				});
@@ -127,11 +127,12 @@ public class JuegoVida extends JFrame{
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						int nCelules=random.nextInt(60,90);
-						setSize(570, 690);
+						setSize(570, 570);
 						// Centramos pantalla
-						centrarInterficiePantalla();
+						
 						crearTablero(16, nCelules);
 						pintarTablero(16, nCelules);
+						centrarInterficiePantalla();
 
 					}
 				});
@@ -139,12 +140,12 @@ public class JuegoVida extends JFrame{
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						int nCelules=random.nextInt(90,200);
-						setSize(770, 890);
+						int nCelules=random.nextInt(200,360);
+						setSize(770, 770);
 						// Centramos pantalla
 						centrarInterficiePantalla();
-						crearTablero(25, nCelules);
-						pintarTablero(25, nCelules);
+						crearTablero(60, nCelules);
+						pintarTablero(60, nCelules);
 					}
 				});
 				repaint();
@@ -167,7 +168,6 @@ public class JuegoVida extends JFrame{
 		
 		JPanel partida = new JPanel();
 		partida.setLayout(new GridLayout(f, f));
-
 		// con esto sacamos el tamaño para q las casillas sean iguales
 		int size = Math.min(getWidth() / f, getHeight() / f);
 
@@ -176,62 +176,12 @@ public class JuegoVida extends JFrame{
 
 				Casilla casilla = new Casilla();
 				casilla.setPreferredSize(new Dimension(size, size));
+				casilla.setBackground(new Color(0, 0, 0,180));
 
 				final int filaFinal = fila;
 				final int columnaFinal = columna;
 
-//				casilla.addMouseListener(new MouseAdapter() {
-//					@Override
-//					public void mousePressed(MouseEvent e) {
-//						// Mientras no encuentres mina seguir
-//						if (!juegoTerminado) {
-//							if (e.getButton() == MouseEvent.BUTTON1) {
-//
-//								if (!casilla.getTieneBandera()) {
-//									manejarClick(casilla, filaFinal, columnaFinal);
-//								}
-//							} else if (SwingUtilities.isRightMouseButton(e)) {
-//								// Disminuir contador cada vez que presionas
-//
-//								// Dependiendo el tablero le pasaremos las banderas
-//								switch (nombreTablero) {
-//								case "pequeño": {
-//
-//									if (!casilla.getTieneBandera()) {
-//										mostrarBandera(casilla, 10);
-//
-//									} else {
-//										quitarBandera(casilla, 10);
-//									}
-//									break;
-//								}
-//								case "mediano": {
-//
-//									if (!casilla.getTieneBandera()) {
-//										mostrarBandera(casilla, 40);
-//
-//									} else {
-//										quitarBandera(casilla, 40);
-//									}
-//									break;
-//								}
-//								case "grande": {
-//
-//									if (!casilla.getTieneBandera()) {
-//										mostrarBandera(casilla, 80);
-//
-//									} else {
-//										quitarBandera(casilla, 80);
-//									}
-//									break;
-//								}
-//								default:
-//									throw new IllegalArgumentException("Unexpected value: " + nombreTablero);
-//								}
-//							}
-//						}
-//					}
-//				});
+
 				tableroCasillas[fila][columna] = casilla;
 				partida.add(casilla);
 			}
@@ -299,7 +249,7 @@ public class JuegoVida extends JFrame{
 		        		
 		        	}
 		        };
-		        timer.scheduleAtFixedRate(tarea, 0, 2000);
+		        timer.scheduleAtFixedRate(tarea, 0, 1000);
 			}
 		});
 		start.addActionListener(new ActionListener() {
@@ -314,7 +264,7 @@ public class JuegoVida extends JFrame{
 		        		contentPane.repaint();
 		        	}
 		        };
-		        timer.scheduleAtFixedRate(tarea, 0, 1000);
+		        timer.scheduleAtFixedRate(tarea, 0, 500);
 			}
 		});
 		rapido.addActionListener(new ActionListener() {
@@ -329,7 +279,7 @@ public class JuegoVida extends JFrame{
 		        		contentPane.repaint();
 		        	}
 		        };
-		        timer.scheduleAtFixedRate(tarea, 0, 250);
+		        timer.scheduleAtFixedRate(tarea, 0, 100);
 			}
 		});
 		addWindowListener(new WindowAdapter() {
@@ -368,39 +318,61 @@ public class JuegoVida extends JFrame{
 	}
 	
 	private void jugada() {
-		Casilla[][] copiaTableroCasillas=tableroCasillas.clone();
+		Casilla[][] copiaTableroCasillas=copiaTablero();
 		for(int i=0;i<copiaTableroCasillas.length;i++) {
 			for(int j=0;j<copiaTableroCasillas[i].length;j++) {
 				Casilla casilla = copiaTableroCasillas[i][j];
 				boolean celViva=casilla.getCelulaViva();
-				int celsVives=contarCelulasVivas(i, j);
+				int celsVives=contarCelulasVivas(i, j,copiaTableroCasillas);
+				System.out.println("Celula "+i+" "+j);
+				System.out.println(celsVives);
 				if(celViva && (celsVives<2 || celsVives>3)) {
-					casilla.setCelulaViva(false);
-				}else  if (!celViva && celsVives==3){
-					casilla.setCelulaViva(true);
+					Casilla casillaOrigin = tableroCasillas[i][j];
+					System.out.println("mor");
+					casillaOrigin.setCelulaViva(false);
+				}else if (!celViva && celsVives==3){
+					Casilla casillaOrigin = tableroCasillas[i][j];
+					System.out.println("mor");
+					casillaOrigin.setCelulaViva(true);
 				}
 			}
 		}
-		tableroCasillas=copiaTableroCasillas.clone();
 	}
-	private int contarCelulasVivas(int fila, int columna) {
+	private int contarCelulasVivas(int fila, int columna, Casilla[][] copiaTablero) {
 		int celVives=0;
+		System.out.println("Contem cels vives");
 		for (int i = - 1; i <= 1; i++) {
 			for (int j =  - 1; j <=1; j++) {
 				if (i != 0 || j != 0) {
 					int nextFila=fila+i;
 					int nextColumna=columna+j;
-					if(nextFila >= 0 && nextFila < tableroCasillas.length && nextColumna >= 0 && nextColumna < tableroCasillas[0].length) {
-						Casilla casilla = tableroCasillas[nextFila][nextColumna];
+					if(nextFila >= 0 && nextFila < copiaTablero.length && nextColumna >= 0 && nextColumna < tableroCasillas[0].length) {
+						Casilla casilla = copiaTablero[nextFila][nextColumna];
+						System.out.println("Casella "+nextFila+""+nextColumna);
 						if (casilla.getCelulaViva()) {
 							celVives++;
+							System.out.println("ComptaViva");
 						}
 					}
 					
 				}
 			}
 		}
+		System.out.println("");
+		
 		return celVives;
+	}
+	private Casilla[][] copiaTablero(){
+		Casilla[][] copiaTablero= new Casilla[tableroCasillas.length][tableroCasillas[0].length];
+		for(int i=0;i<copiaTablero.length;i++) {
+			for(int j=0;j<copiaTablero[i].length;j++) {
+				Casilla celulaRef=tableroCasillas[i][j];
+				Casilla novaCasella=new Casilla();
+				novaCasella.setCelulaViva(celulaRef.getCelulaViva());
+				copiaTablero[i][j]=novaCasella;
+			}
+		}
+		return copiaTablero;
 	}
 	public class Casilla extends JButton {
 
@@ -430,10 +402,10 @@ public class JuegoVida extends JFrame{
 
 		private void actualizarApariencia() {
 			if (this.celulaViva) {
-				setBackground(new Color(250, 250, 0, 100));
+				setBackground(new Color(0, 255, 0, 230));
 				
 			} else {
-				setBackground(new Color(255, 255, 255));
+				setBackground(new Color(0, 0, 0,180));
 			}
 			repaint();
 			revalidate();
