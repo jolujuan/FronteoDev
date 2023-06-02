@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -68,9 +69,9 @@ public class Menu extends JPanel {
 		boton_ver_perfil.setFont(new Font("Dialog", Font.PLAIN, 13));
 		add(boton_ver_perfil, c);
 
-		addImageLabel("src/imagenes/pixel_art.jpg", 0, 1);
-		addImageLabel("src/imagenes/busca_minas.jpg", 1, 1);
-		addImageLabel("src/imagenes/juego_de_la_vida.jpg", 2, 1);
+		addImageLabel("/imagenes/pixel_art.jpg", 0, 1);
+		addImageLabel("/imagenes/busca_minas.jpg", 1, 1);
+		addImageLabel("/imagenes/juego_de_la_vida.jpg", 2, 1);
 
 		// Botones Jugar
 		GridBagConstraints c1 = new GridBagConstraints();
@@ -297,16 +298,21 @@ public class Menu extends JPanel {
 	}
 
 	private void addImageLabel(String imagePath, int x, int y) {
-		ImageIcon imagen = new ImageIcon(
-				new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH));
-		JLabel etiqueta = new JLabel(imagen);
-		GridBagConstraints c = new GridBagConstraints();
-		c.insets = new Insets(10, 10, 10, 10);
+	    URL imgURL = getClass().getResource(imagePath);
+	    if (imgURL != null) {
+	        ImageIcon imageIcon = new ImageIcon(new ImageIcon(imgURL).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH));
+	        JLabel etiqueta = new JLabel(imageIcon);
+	        GridBagConstraints c = new GridBagConstraints();
+	        c.insets = new Insets(10, 10, 10, 10);
 
-		c.gridx = x;
-		c.gridy = y;
-		add(etiqueta, c);
+	        c.gridx = x;
+	        c.gridy = y;
+	        add(etiqueta, c);
+	    } else {
+	        System.err.println("No se pudo encontrar el archivo: " + imagePath);
+	    }
 	}
+
 
 	public static void eliminarArchivos() {
 		File archivoCargaDatosPixelArt = new File("partidaCargadaPixelArt.txt");

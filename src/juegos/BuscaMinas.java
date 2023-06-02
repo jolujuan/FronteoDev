@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,7 +41,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -196,7 +196,7 @@ public class BuscaMinas extends JFrame {
 												cargar = false; // Restablecer como cerrado
 												frame.dispose();
 												buscaMinasFrame.setVisible(true);
-											}else {
+											} else {
 												cargar = false; // Restablecer como cerrado
 												frame.dispose();
 												buscaMinasFrame.setVisible(true);
@@ -396,12 +396,12 @@ public class BuscaMinas extends JFrame {
 					casilla.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mousePressed(MouseEvent e) {
+							iniciaComptador();
 							// Mientras no encuentres mina seguir
 							if (!juegoTerminado) {
 								if (SwingUtilities.isLeftMouseButton(e)) {
 
 									// Para arrancar solo una vez
-									iniciaComptador();
 
 									if (!casilla.getTieneBandera()) {
 										manejarClick(casilla, filaFinal, columnaFinal);
@@ -557,8 +557,9 @@ public class BuscaMinas extends JFrame {
 					revelarContenido();
 
 					// Cambiar el emoticono
-					Image cara = new ImageIcon("src/imagenes/caraTriste.png").getImage().getScaledInstance(38, 38,
-							Image.SCALE_SMOOTH);
+					URL imgURL = getClass().getResource("/imagenes/caraTriste.png");
+
+					Image cara = new ImageIcon(imgURL).getImage().getScaledInstance(38, 38, Image.SCALE_SMOOTH);
 					reinicio.setIcon(new ImageIcon(cara));
 				} else {
 					mostrarMina(casilla, "mina");
@@ -613,12 +614,15 @@ public class BuscaMinas extends JFrame {
 		// redimensionaremos
 		Image imagenRedimensionada = null;
 		if (nom.equals("mina")) {
-			imagenRedimensionada = new ImageIcon("src/imagenes/mina.png").getImage().getScaledInstance(25, 25,
-					Image.SCALE_SMOOTH);
+
+			URL imgURL = getClass().getResource("/imagenes/mina.png");
+
+			imagenRedimensionada = new ImageIcon(imgURL).getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
 
 		} else {
-			imagenRedimensionada = new ImageIcon("src/imagenes/mina_roja.png").getImage().getScaledInstance(25, 25,
-					Image.SCALE_SMOOTH);
+			URL imgURL = getClass().getResource("/imagenes/mina_roja.png");
+
+			imagenRedimensionada = new ImageIcon(imgURL).getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
 
 		}
 		// Agregar la mina
@@ -652,8 +656,9 @@ public class BuscaMinas extends JFrame {
 			// Quitamos cualquier etiqueta anterior de la casilla.
 			casilla.removeAll();
 
-			Image imagenRedimensionada = new ImageIcon("src/imagenes/bandera.png").getImage().getScaledInstance(25, 25,
-					Image.SCALE_SMOOTH);
+			URL imgURL = getClass().getResource("/imagenes/bandera.png");
+
+			Image imagenRedimensionada = new ImageIcon(imgURL).getImage().getScaledInstance(38, 38, Image.SCALE_SMOOTH);
 
 			casilla.setBackground(new Color(128, 128, 128, 0));
 			casilla.setIcon(new ImageIcon(imagenRedimensionada));
@@ -912,7 +917,9 @@ public class BuscaMinas extends JFrame {
 		gbcReiniciar.gridy = 0;
 		PanelContador.add(Reiniciar, gbcReiniciar);
 
-		Image cara = new ImageIcon("src/imagenes/cara.png").getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
+		URL imgURL = getClass().getResource("/imagenes/cara.png");
+
+		Image cara = new ImageIcon(imgURL).getImage().getScaledInstance(38, 38, Image.SCALE_SMOOTH);
 		reinicio.setIcon(new ImageIcon(cara));
 
 		Reiniciar.add(reinicio);
