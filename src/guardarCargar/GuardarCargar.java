@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -34,12 +33,12 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
 import conexionBaseDatos.Conexion;
-import juegos.PixelArt;
 
 public class GuardarCargar extends JFrame {
 
@@ -51,6 +50,9 @@ public class GuardarCargar extends JFrame {
 	JPanel contenidoPequeño = new JPanel();
 	JPanel contenidoMediano = new JPanel();
 	JPanel contenidoGrande = new JPanel();
+	
+	JScrollPane scrollPequeño = new JScrollPane(contenidoPequeño);
+
 
 	// Ventana principal a la que le pasamos ventana pixelArt o buscaminas
 	// Otra ventana interna para obtener y cerrar componenetes
@@ -130,7 +132,7 @@ public class GuardarCargar extends JFrame {
 		gbc_contenidoPequeño.fill = GridBagConstraints.VERTICAL;
 		gbc_contenidoPequeño.gridx = 0;
 		gbc_contenidoPequeño.gridy = 1;
-		panelPequeño.add(contenidoPequeño, gbc_contenidoPequeño);
+		panelPequeño.add(scrollPequeño, gbc_contenidoPequeño);
 		contenidoPequeño.setLayout(new BoxLayout(contenidoPequeño, BoxLayout.Y_AXIS));
 
 		botonTableroPequeño.setAlignmentY(Component.BOTTOM_ALIGNMENT);

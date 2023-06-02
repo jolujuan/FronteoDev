@@ -176,6 +176,7 @@ public class Menu extends JPanel {
 					} else if (option == JOptionPane.CANCEL_OPTION) {
 						System.out.println("Acción cancelada." + option);
 					} else if (option == JOptionPane.CLOSED_OPTION) {
+						
 						System.out.println("Sin opción seleccionada." + option);
 					}
 				} else {

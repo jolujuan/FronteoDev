@@ -10,6 +10,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -55,9 +56,18 @@ public class Panel_inicio extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
+				
 				int option = JOptionPane.showConfirmDialog(null, "¿Deseas cerrar el programa?", "Confirmación",
 						JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.YES_OPTION) {
+					
+					Window[] ventanasAbiertas = Window.getWindows();
+					for (Window ventana : ventanasAbiertas) {
+						if (ventana != null && ventana.isDisplayable()) {
+							ventana.dispose();
+						}
+					}
+					
 					JOptionPane.showMessageDialog(null, mensaje, "Bye Bye", JOptionPane.INFORMATION_MESSAGE);
 					dispose(); // Cerrar manualmente la ventana
 				}
@@ -107,7 +117,7 @@ public class Panel_inicio extends JFrame {
 		gbc.gridy = 1;
 		gbc.weighty = 1.0;
 		contenedor.add(panel_principal, gbc);
-
+		
 		boton_registro.addActionListener(new ActionListener() {
 
 			@Override

@@ -606,7 +606,7 @@ public class PixelArt extends JFrame {
 			preparandoInsert.executeUpdate();
 			preparandoInsert.close();
 			System.out.println("Partida pixelArt guardada en BD");
-
+			PixelArt.setGuardado(true);
 		} catch (Exception e) {
 			System.out.println("Error al guardar bd: " + e);
 		}

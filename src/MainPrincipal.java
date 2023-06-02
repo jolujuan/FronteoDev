@@ -25,7 +25,7 @@ public class MainPrincipal {
 				e1.printStackTrace();
 			}
 		}
-
+   
 		Panel_inicio p = new Panel_inicio();
 
 	}
