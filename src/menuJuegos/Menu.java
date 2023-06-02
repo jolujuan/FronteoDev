@@ -41,13 +41,7 @@ public class Menu extends JPanel {
 	private boolean buscaAbierto = false;
 
 	public Menu(String correo) {
-
-		System.out.println(this);
-		
 		JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-			
-		System.out.println(frame);
-		
 //		frame.addWindowListener(new WindowAdapter() {
 //			public void windowClosing(WindowEvent e) {
 //				// Realizar acciones cuando se cierra la ventana
@@ -156,11 +150,6 @@ public class Menu extends JPanel {
 						// Lógica para no guardar la partida
 						System.out.println("Partida no guardada." + option);
 						eliminarArchivos();
-
-						///////////
-						// FUNCION DE GUARDAR PARTIDA
-						//////////
-
 						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
 						//// algun joc teu tanque (GRACIES CHAT)
 						Window[] ventanasAbiertas = Window.getWindows();

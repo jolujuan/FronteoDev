@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.Random;
 import java.util.Timer;
@@ -40,7 +41,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -196,7 +196,7 @@ public class BuscaMinas extends JFrame {
 												cargar = false; // Restablecer como cerrado
 												frame.dispose();
 												buscaMinasFrame.setVisible(true);
-											}else {
+											} else {
 												cargar = false; // Restablecer como cerrado
 												frame.dispose();
 												buscaMinasFrame.setVisible(true);
@@ -847,6 +847,19 @@ public class BuscaMinas extends JFrame {
 		gbcGNewRank.gridy = 0;
 		PanelBotones.add(Ranking, gbcGNewRank);
 
+		Ranking.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("El ranking");
+
+				mostrarRanking();
+				// ESTE METODO SOLO SE EJECUTA PARA METER DATOS
+				//insertarDatosPruebasRanking();
+
+			}
+		});
+
 		JButton Guardar = new JButton("Guardar");
 		Guardar.setMinimumSize(new Dimension(100, 35));
 		Guardar.setMaximumSize(new Dimension(100, 35));
@@ -1251,6 +1264,76 @@ public class BuscaMinas extends JFrame {
 		}
 
 		return datos;
+	}
+
+	public int generarTiempoBuscaminas() {
+		return (int) (Math.random() * (300 - 50 + 1)) + 50;
+	}
+
+	public int generarNivelDificultad() {
+		return (int) (Math.random() * 3);
+	}
+
+	/// ESTE METODO ES PARA MOSTRAR QUE EL RANKING TIENE DATOS
+	public void insertarDatosPruebasRanking() {
+		Connection c = Conexion.obtenerConexion();
+		String sentenciaInsertDatosRanking = "INSERT INTO ranking (idUsuario, dificultad, tiempo) VALUES (?, ?, ?);";
+		String[] dificultad = { "FACIL", "MEDIA", "DIFICIL" };
+		int segundos = generarTiempoBuscaminas();
+		try {
+			PreparedStatement insert = c.prepareStatement(sentenciaInsertDatosRanking);
+			insert.setInt(1, 21); /// AQUI SE COLOCA MANUALMENTE, DEBEN COINCIDIR CON ID DE USUARIOS EXISTENTES
+			insert.setString(2, dificultad[generarNivelDificultad()]);
+//			insert.setString(2, "DIFICIL");
+			insert.setInt(3, segundos);
+			insert.executeUpdate();
+
+			System.out.println("Datos almacenados");
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void mostrarRanking() {
+		String sentenciaSelectFacil = "SELECT * FROM ranking WHERE dificultad = 'FACIL' ORDER BY tiempo";
+		String sentenciaSelectMedia = "SELECT * FROM ranking WHERE dificultad = 'MEDIA' ORDER BY tiempo";
+		String sentenciaSelectDificil = "SELECT * FROM ranking WHERE dificultad = 'DIFICIL' ORDER BY tiempo";
+
+		Connection c = Conexion.obtenerConexion();
+
+		try {
+			Statement consulta = c.createStatement();
+			ResultSet datosRanking = consulta.executeQuery(sentenciaSelectFacil);
+
+			System.out.println("FACIL");
+			while (datosRanking.next()) {
+				System.out.println(datosRanking.getInt("idRanking") + " " + datosRanking.getInt("idUsuario") + " "
+						+ datosRanking.getInt("tiempo"));
+			}
+
+			datosRanking = consulta.executeQuery(sentenciaSelectMedia);
+			System.out.println("MEDIA");
+			while (datosRanking.next()) {
+				System.out.println(datosRanking.getInt("idRanking") + " " + datosRanking.getInt("idUsuario") + " "
+						+ datosRanking.getInt("tiempo"));
+			}
+			
+			datosRanking = consulta.executeQuery(sentenciaSelectDificil);
+			System.out.println("DIFICIL");
+			while (datosRanking.next()) {
+				System.out.println(datosRanking.getInt("idRanking") + " " + datosRanking.getInt("idUsuario") + " "
+						+ datosRanking.getInt("tiempo"));
+			}
+			
+			
+			consulta.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 }
