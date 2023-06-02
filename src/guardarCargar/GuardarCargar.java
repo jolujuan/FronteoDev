@@ -126,6 +126,7 @@ public class GuardarCargar extends JFrame {
 		JLabel labelPequeño = new JLabel("FÁCIL");
 		labelPequeño.setFont(new Font("Dialog", Font.BOLD, 18));
 		tituloPequeño.add(labelPequeño);
+		contenidoPequeño.setMinimumSize(new Dimension(100, 100));
 
 		contenidoPequeño.setFont(new Font("Dialog", Font.PLAIN, 12));
 		GridBagConstraints gbc_contenidoPequeño = new GridBagConstraints();
