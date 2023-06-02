@@ -45,7 +45,7 @@ public class Menu extends JPanel {
 		c.insets = new Insets(10, 10, 30, 10);
 
 		c.gridx = 1;
-		c.gridy = 0;
+		c.gridy = 0; 
 		c.gridwidth = 1;
 		boton_ver_perfil.setPreferredSize(new Dimension(110, 35));
 		boton_ver_perfil.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
