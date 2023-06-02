@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -17,6 +18,7 @@ import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -35,7 +37,7 @@ public class Menu extends JPanel {
 	private JButton botonLogout = new JButton("Logout");
 	private int botonJugar = 0;
 	private boolean pixelArtAbierto = false;
-	private boolean buscaAbierto=false;
+	private boolean buscaAbierto = false;
 
 	public Menu(String correo) {
 		setLayout(new GridBagLayout());
@@ -132,13 +134,77 @@ public class Menu extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				File archivoCargaDatosPixelArt = new File("partidaCargada.txt");
-				archivoCargaDatosPixelArt.delete();
-				SwingUtilities.getWindowAncestor(Menu.this).dispose();
 
-				Panel_inicio ventanaInicio = new Panel_inicio();
-				ventanaInicio.setVisible(true);
+				boolean datosGuardados = PixelArt.isGuardado();
+				
+				if (datosGuardados == false) {
+					int option = JOptionPane.showConfirmDialog(null, "¿Desea guardar partida antes de cerrar sesion?");
+					if (option == JOptionPane.YES_OPTION) {
+						// Lógica para guardar la partida
+						System.out.println("Partida guardada." + option);
+						File archivoCargaDatosPixelArt = new File("partidaCargada.txt");
+						archivoCargaDatosPixelArt.delete();
+						///////////
+						// FUNCION DE GUARDAR PARTIDA
+						PixelArt.guardarEstadoTablero("PixelArt.txt");
+						PixelArt.guardarDatosBD(correo);
+						//////////
+
+						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
+						//// algun joc teu tanque (GRACIES CHAT)
+						Window[] ventanasAbiertas = Window.getWindows();
+						for (Window ventana : ventanasAbiertas) {
+							if (ventana != null && ventana.isDisplayable()) {
+								ventana.dispose();
+							}
+						}
+
+						SwingUtilities.getWindowAncestor(Menu.this).dispose();
+						Panel_inicio ventanaInicio = new Panel_inicio();
+
+						ventanaInicio.setVisible(true);
+					} else if (option == JOptionPane.NO_OPTION) {
+						// Lógica para no guardar la partida
+						System.out.println("Partida no guardada." + option);
+						File archivoCargaDatosPixelArt = new File("partidaCargada.txt");
+						archivoCargaDatosPixelArt.delete();
+						///////////
+						// FUNCION DE GUARDAR PARTIDA
+						//////////
+
+						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
+						//// algun joc teu tanque (GRACIES CHAT)
+						Window[] ventanasAbiertas = Window.getWindows();
+						for (Window ventana : ventanasAbiertas) {
+							if (ventana != null && ventana.isDisplayable()) {
+								ventana.dispose();
+							}
+						}
+
+						SwingUtilities.getWindowAncestor(Menu.this).dispose();
+						Panel_inicio ventanaInicio = new Panel_inicio();
+						ventanaInicio.setVisible(true);
+					} else if (option == JOptionPane.CANCEL_OPTION) {
+						System.out.println("Acción cancelada." + option);
+					} else if (option == JOptionPane.CLOSED_OPTION) {
+						System.out.println("Sin opción seleccionada." + option);
+					}
+				} else {
+					File archivoCargaDatosPixelArt = new File("partidaCargada.txt");
+					archivoCargaDatosPixelArt.delete();
+					Window[] ventanasAbiertas = Window.getWindows();
+					for (Window ventana : ventanasAbiertas) {
+						if (ventana != null && ventana.isDisplayable()) {
+							ventana.dispose();
+						}
+					}
+
+					SwingUtilities.getWindowAncestor(Menu.this).dispose();
+					Panel_inicio ventanaInicio = new Panel_inicio();
+					ventanaInicio.setVisible(true);
+				}
 			}
+
 		});
 
 		botonJugarBuscaminas.addActionListener(new ActionListener() {
@@ -146,7 +212,7 @@ public class Menu extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (!buscaAbierto) { // Verificar si PixelArt está abierto
-					buscaAbierto=true;
+					buscaAbierto = true;
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
@@ -167,13 +233,13 @@ public class Menu extends JPanel {
 				}
 			}
 		});
-		
+
 		botonJugarJuegoDeLaVida.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (!buscaAbierto) { // Verificar si PixelArt está abierto
-					buscaAbierto=true;
+					buscaAbierto = true;
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {

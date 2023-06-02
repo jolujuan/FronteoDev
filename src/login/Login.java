@@ -34,6 +34,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import conexionBaseDatos.Conexion;
+import juegos.PixelArt;
 import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
 
@@ -179,6 +180,9 @@ public class Login extends JPanel {
 					errorPwd.setText("Error. Introduce una contraseña.");
 				} else if (consultaSql()) {
 					System.out.println("Login exitoso");
+					
+					/////// 
+					PixelArt.setGuardado(true);
 					Menu menu = new Menu(fieldUsr.getText());
 					Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
 					p.getContentPane().removeAll();
@@ -227,8 +231,8 @@ public class Login extends JPanel {
 						if (!encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
 							JOptionPane.showMessageDialog(panel, "Contrasenya incorrecta per a l'usuari " + nom);
 							usrValidat = false;
-						}else {
-							usrValidat=true;
+						} else {
+							usrValidat = true;
 						}
 					}
 				}

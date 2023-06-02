@@ -16,6 +16,9 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -53,8 +56,20 @@ import guardarCargar.GuardarCargar;
 public class PixelArt extends JFrame {
 	private Color colorSeleccionado = Color.BLACK;
 	private JPanel contentPane;
-	private JPanel tablero = new JPanel();
+	private static JPanel tablero = new JPanel();
 	public static String tamanio = "";
+
+	// VARIABLE PARA SABER SI SE A GUARDADO EL ARCHIVO
+	public static boolean guardado = false;
+
+	
+	public static boolean isGuardado() {
+		return guardado;
+	}
+
+	public static void setGuardado(boolean guardado) {
+		PixelArt.guardado = guardado;
+	}
 
 	// variable para controlar cómo se cierra la ventana
 	private boolean botonPresionado = false;
@@ -93,7 +108,6 @@ public class PixelArt extends JFrame {
 			@Override
 			public void windowClosed(WindowEvent e) {
 				setVisible(false);
-
 			}
 		});
 
@@ -330,7 +344,8 @@ public class PixelArt extends JFrame {
 	}
 
 	private void crearTablero(int f, String correo) {
-
+		PixelArt.setGuardado(false);
+		System.out.println("Tablero");
 		tablero.setLayout(new GridLayout(f, f));
 		int anchoVentana = getWidth();
 		int altoVentana = getHeight();
@@ -391,6 +406,20 @@ public class PixelArt extends JFrame {
 				// DISTINGUIR MEJOR EL COLOR
 				// Color colorGris = new Color(217, 217, 217);
 				// casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : colorGris);
+				
+				
+				
+				
+				//// ESTO NOSE PORQUE NO VA
+//				tablero.addComponentListener(new ComponentAdapter() {
+//				
+//					@Override
+//					public void componentHidden(ComponentEvent e) {
+//						int opcion = JOptionPane.showConfirmDialog(tablero, "¿Desea guardar partida antes de salir de PixelArt?", "Guardar Datos", JOptionPane.YES_NO_CANCEL_OPTION);
+//						
+//					}
+//				});
+				
 			}
 		}
 		PaletaColores paleta = new PaletaColores(); // Pasa la instancia de Casilla
@@ -402,7 +431,7 @@ public class PixelArt extends JFrame {
 		revalidate();
 	}
 
-	private void guardarEstadoTablero(String filePath) {
+	public static void guardarEstadoTablero(String filePath) {
 		File file = new File(filePath);
 		try (FileWriter escribe = new FileWriter(file)) {
 			// Verificar si el archivo no existe y crearlo
@@ -437,7 +466,7 @@ public class PixelArt extends JFrame {
 		String lineaString = null;
 
 		if (!file.exists()) {
-			//La comprobación la haremos en el guardar 
+			// La comprobación la haremos en el guardar
 			// JOptionPane.showMessageDialog(null, "Todavia no tienes niguna partida
 			// guardada.");
 		} else {
@@ -508,7 +537,7 @@ public class PixelArt extends JFrame {
 
 	}
 
-	public void guardarDatosBD(String correo) {
+	public static void guardarDatosBD(String correo) {
 //		correo="edu@gmail.com";
 		String insertarDatosPartida = "INSERT INTO pixelart (idUsuario, tablero, ficheroPartida, fecha) VALUES (?,?,?,?)";
 		Connection conexion = Conexion.obtenerConexion();
@@ -531,13 +560,15 @@ public class PixelArt extends JFrame {
 			preparandoInsert.executeUpdate();
 			preparandoInsert.close();
 			System.out.println("Partida pixelArt guardada en BD");
-
+			
+			PixelArt.setGuardado(true);
+			
 		} catch (Exception e) {
 			System.out.println("Error: " + e);
 		}
 	}
 
-	public String[] datosUsuarioPerfil(String correo) {
+	public static String[] datosUsuarioPerfil(String correo) {
 		String[] datos = new String[6];
 		String sentencia = "SELECT * FROM usuarios WHERE email = ?";
 		Connection c = Conexion.obtenerConexion();
