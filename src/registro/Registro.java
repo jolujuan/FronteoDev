@@ -37,6 +37,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import conexionBaseDatos.Conexion;
+import juegos.PixelArt;
 import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
 import usuarios.User;
@@ -203,7 +204,7 @@ public class Registro extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//JFileChooser fileChooser = new JFileChooser();
+				// JFileChooser fileChooser = new JFileChooser();
 				int result = fileChooser.showOpenDialog(null);
 				if (result == JFileChooser.APPROVE_OPTION) {
 					selectedFile = fileChooser.getSelectedFile();
@@ -219,7 +220,7 @@ public class Registro extends JPanel {
 							// arrayBits = convertirImagen(selectedFile);
 							arrayBits = converitirImagenByte(selectedFile);
 							campoImagen.setText(selectedFile.getName());
-							
+
 						} else {
 							errorImagen.setText("Tamaño máximo 64KB.");
 							campoImagen.setText("");
@@ -378,7 +379,7 @@ public class Registro extends JPanel {
 
 				} else {
 					imagen = campoImagen.getText();
-					System.out.println("regex "+imagen.matches("^.+\\.(jpg|png)$"));
+					System.out.println("regex " + imagen.matches("^.+\\.(jpg|png)$"));
 					if (imagen.matches("^.+\\.(jpg|png)$")) {
 						imagen = campoImagen.getText();
 						errorImagen.setText("");
@@ -386,10 +387,10 @@ public class Registro extends JPanel {
 						System.out.println("Cumple el regex");
 					} else {
 						imagen = "";
-						
+
 						errorImagen.setText("Archivo imagen incorrecto");
 						errorImagen.setForeground(Color.red);
-						
+
 					}
 				}
 
@@ -491,6 +492,8 @@ public class Registro extends JPanel {
 //					}
 					try {
 						registrarUsuario(nombre, apellido, poblacion, arrayBits, email, password);
+						PixelArt.setGuardado(true);
+
 						mensajeGeneral.setText("Datos Guardados");
 						mensajeGeneral.setForeground(Color.green);
 					} catch (Exception e2) {
@@ -528,14 +531,13 @@ public class Registro extends JPanel {
 				+ "idUsuario INT, " + "tablero VARCHAR(50), " + "ficheroPartida MEDIUMBLOB, " + "fecha DATE, "
 				+ "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
 		String sentenciaCrearTablaBuscaMinas = "CREATE TABLE IF NOT EXISTS buscaminas (idBuscaminas INT AUTO_INCREMENT PRIMARY KEY, "
-				+ "idUsuario INT, " + "tablero VARCHAR(50), " + "nivel VARCHAR(50), " + "ficheroPartida MEDIUMBLOB, "
-				+ "tiempo INT, " + "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
+				+ "idUsuario INT, " + "tablero VARCHAR(50), " + "ficheroPartida MEDIUMBLOB, "
+				+ "fecha DATE, " + "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
+
 		String sentenciaCrearTablaRankingBuscaminas = "CREATE TABLE IF NOT EXISTS ranking (idRanking INT AUTO_INCREMENT PRIMARY KEY,"
-				+ "idUsuario INT, "
-				+ "dificultad VARCHAR(50), "
+				+ "idUsuario INT, " + "dificultad VARCHAR(50), "
 				+ "tiempo INT, FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
-		
-		
+
 		try {
 			Statement consulta = c.createStatement();
 			consulta.execute(sentenciaCrearTablaUsuario);
@@ -556,6 +558,11 @@ public class Registro extends JPanel {
 			consulta.execute(sentenciaCrearTablaBuscaMinas);
 			consulta.close();
 			System.out.println("Tabla buscaminas creada");
+			
+			consulta = c.createStatement();
+			consulta.execute(sentenciaCrearTablaRankingBuscaminas);
+			consulta.close();
+			System.out.println("Tabla ranking creada");
 
 		} catch (SQLException e1) {
 			System.out.println("Error: " + e1);
@@ -602,7 +609,7 @@ public class Registro extends JPanel {
 			preparandoInsert.executeUpdate();
 
 			System.out.println("Usuario de prueba registrado");
- 
+
 			preparandoInsert.close();
 
 			Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Registro.this);

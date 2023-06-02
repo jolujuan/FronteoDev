@@ -53,8 +53,19 @@ import guardarCargar.GuardarCargar;
 public class PixelArt extends JFrame {
 	private Color colorSeleccionado = Color.BLACK;
 	private JPanel contentPane;
-	private JPanel tablero = new JPanel();
+	private static JPanel tablero = new JPanel();
 	public static String tamanio = "";
+
+	// VARIABLE PARA SABER SI SE A GUARDADO EL ARCHIVO
+	public static boolean guardado = false;
+
+	public static boolean isGuardado() {
+		return guardado;
+	}
+
+	public static void setGuardado(boolean guardado) {
+		PixelArt.guardado = guardado;
+	}
 
 	// variable para controlar cómo se cierra la ventana
 	private boolean botonPresionado = false;
@@ -62,26 +73,31 @@ public class PixelArt extends JFrame {
 	private PixelArt pixelArtFrame;
 
 	// Para trabajar directamente eliminaremos desmarcaremos el main
-	/*
-	 * public static void main(String[] args) { EventQueue.invokeLater(new
-	 * Runnable() { public void run() { try { PixelArt frame = new
-	 * PixelArt(tamanio); frame.setSize(500, 500); frame.setVisible(true);
-	 * UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"
-	 * );
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); } } }); }
-	 */
 
-	/**
-	 * Create the frame.
-	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					String correo = "joselu@gmail.com";
+
+					PixelArt frame = new PixelArt(correo);
+					frame.setSize(500, 500);
+					frame.setVisible(true);
+					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
 	public PixelArt(String correo) {
 		pixelArtFrame = this;
 
-		String[] datosUsuario = datosUsuarioPerfil(correo);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("PixelArt");
-//		setBounds(100, 100, 450, 300);
+
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -178,7 +194,6 @@ public class PixelArt extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 
 				botonPresionado = true; // se ha presionado el botón
-
 				if (!cargar) { // Verificar si cargar está abierto
 					cargar = true;
 					EventQueue.invokeLater(new Runnable() {
@@ -196,7 +211,7 @@ public class PixelArt extends JFrame {
 									public void windowClosed(WindowEvent e) {
 										// Una vez cerrado la ventana de cargar, iniciar el juego que hayas
 										// seleccionado
-										String archivoDescarga = "partidaCargada.txt";
+										String archivoDescarga = "partidaCargadaPixelArt.txt";
 										cargarPartidaDesdeArchivo(archivoDescarga, correo);
 
 										cargar = false; // Restablecer como cerrado
@@ -386,11 +401,16 @@ public class PixelArt extends JFrame {
 					}
 				});
 				tablero.add(casilla);
-				// MAS TARDE PONER EL GRISEN BLANCO , AHORA
-				// DEJARLO ASI PARA
-				// DISTINGUIR MEJOR EL COLOR
-				// Color colorGris = new Color(217, 217, 217);
-				// casilla.setBackground((fila + columna) % 2 == 0 ? Color.WHITE : colorGris);
+
+				//// ESTO NOSE PORQUE NO VA
+//				tablero.addComponentListener(new ComponentAdapter() {
+//				
+//					@Override
+//					public void componentHidden(ComponentEvent e) {
+//						int opcion = JOptionPane.showConfirmDialog(tablero, "¿Desea guardar partida antes de salir de PixelArt?", "Guardar Datos", JOptionPane.YES_NO_CANCEL_OPTION);
+//						
+//					}
+//				});
 			}
 		}
 		PaletaColores paleta = new PaletaColores(); // Pasa la instancia de Casilla
@@ -402,7 +422,7 @@ public class PixelArt extends JFrame {
 		revalidate();
 	}
 
-	private void guardarEstadoTablero(String filePath) {
+	public static void guardarEstadoTablero(String filePath) {
 		File file = new File(filePath);
 		try (FileWriter escribe = new FileWriter(file)) {
 			// Verificar si el archivo no existe y crearlo
@@ -430,14 +450,14 @@ public class PixelArt extends JFrame {
 		}
 	}
 
-	public void cargarPartidaDesdeArchivo(String nombreArchivo, String correo) {
+	private void cargarPartidaDesdeArchivo(String nombreArchivo, String correo) {
 		File file = new File(nombreArchivo);
 		Color color = null;
 		int contadorLinieas = 0;
 		String lineaString = null;
 
 		if (!file.exists()) {
-			//La comprobación la haremos en el guardar 
+			// La comprobación la haremos en el guardar
 			// JOptionPane.showMessageDialog(null, "Todavia no tienes niguna partida
 			// guardada.");
 		} else {
@@ -499,7 +519,6 @@ public class PixelArt extends JFrame {
 					}
 					leerCasilla.close();
 					contarcasillas.close();
-					file.delete();
 				}
 			} catch (Exception e) {
 				System.out.println("Error cargar partida: " + e);
@@ -508,14 +527,13 @@ public class PixelArt extends JFrame {
 
 	}
 
-	public void guardarDatosBD(String correo) {
-//		correo="edu@gmail.com";
+	public static void guardarDatosBD(String correo, String filePath) {
+
 		String insertarDatosPartida = "INSERT INTO pixelart (idUsuario, tablero, ficheroPartida, fecha) VALUES (?,?,?,?)";
 		Connection conexion = Conexion.obtenerConexion();
 		String[] idUsuario = datosUsuarioPerfil(correo);
 
-		String ruta_archivo = "PixelArt.txt";
-		File archivo = new File(ruta_archivo);
+		File archivo = new File(filePath);
 
 		LocalDate fechaActual = LocalDate.now();
 
@@ -533,11 +551,11 @@ public class PixelArt extends JFrame {
 			System.out.println("Partida pixelArt guardada en BD");
 
 		} catch (Exception e) {
-			System.out.println("Error: " + e);
+			System.out.println("Error al guardar bd: " + e);
 		}
 	}
 
-	public String[] datosUsuarioPerfil(String correo) {
+	public static String[] datosUsuarioPerfil(String correo) {
 		String[] datos = new String[6];
 		String sentencia = "SELECT * FROM usuarios WHERE email = ?";
 		Connection c = Conexion.obtenerConexion();
@@ -649,7 +667,7 @@ public class PixelArt extends JFrame {
 				String filePath = "PixelArt.txt"; // Aquí debes asignar la ruta del archivo seleccionado
 
 				guardarEstadoTablero(filePath);
-				guardarDatosBD(correo);
+				guardarDatosBD(correo, filePath);
 
 			}
 		});

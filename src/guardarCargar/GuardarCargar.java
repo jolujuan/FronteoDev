@@ -37,7 +37,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
 import conexionBaseDatos.Conexion;
-import juegos.PixelArt;
+import juegos.BuscaMinas;
 
 public class GuardarCargar extends JFrame {
 
@@ -50,9 +50,11 @@ public class GuardarCargar extends JFrame {
 	JPanel contenidoMediano = new JPanel();
 	JPanel contenidoGrande = new JPanel();
 
-	Path nuevoArchivo = null;
-	private PixelArt pixelArtFrame;
+	// Ventana principal a la que le pasamos ventana pixelArt o buscaminas
+	// Otra ventana interna para obtener y cerrar componenetes
+	private JFrame ventanaJuego;
 	private JFrame frame;
+	private Path nuevoArchivo = null;
 
 	/*
 	 * public static void main(String[] args) { EventQueue.invokeLater(new
@@ -61,22 +63,14 @@ public class GuardarCargar extends JFrame {
 	 * catch (Exception e) { e.printStackTrace(); } } }); }
 	 */
 
-	private void centrarInterficiePantalla() {
-		// Calcular la posición de la ventana
-		Dimension tamañoPantalla = Toolkit.getDefaultToolkit().getScreenSize();
-		int width = this.getSize().width;
-		int height = this.getSize().height;
-		int x = (tamañoPantalla.width - width) / 2; // Centrado horizontalmente
-		int y = (tamañoPantalla.height - height) / 2;
-		// En la parte superior de la pantalla
-
-		// Establecer la posición de la ventana
-		this.setLocation(x, y);
+	private void obtenerNombreVentana() {
+		String nombreVentana = ventanaJuego.getTitle();
+		System.out.println("Nombre de la ventana: " + nombreVentana);
 	}
 
-	public GuardarCargar(PixelArt pixelArt, String correo) {
-		this.pixelArtFrame = pixelArt;
-		frame = this;
+	public GuardarCargar(JFrame ventana, String correo) {
+		this.ventanaJuego = ventana;
+		this.frame = this;
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 500, 500);
@@ -198,23 +192,40 @@ public class GuardarCargar extends JFrame {
 	}
 
 	public void leerDatosBD(String correo) {
-		String selectPartida = "SELECT pixelart.* FROM usuarios, pixelart WHERE usuarios.id = pixelart.idUsuario AND email = ?";
+
+		String selectPartida;
+		String archivoDescarga;
+
+		String tablero;
+		Date fecha;
+
+		if (ventanaJuego.getTitle().equals("PixelArt")) {
+			selectPartida = "SELECT pixelart.* FROM usuarios, pixelart WHERE usuarios.id = pixelart.idUsuario AND email = ?";
+			archivoDescarga = "partidaCargadaPixelArt.txt";
+		} else {
+			selectPartida = "SELECT buscaminas.* FROM usuarios, buscaminas WHERE usuarios.id = buscaminas.idUsuario AND email = ?";
+			archivoDescarga = "partidaCargadaBuscaMinas.datos";
+		}
 		Connection conexion = Conexion.obtenerConexion();
-		String archivoDescarga = "partidaCargada.txt";
 
 		try {
 			PreparedStatement preparandoConsulta = conexion.prepareStatement(selectPartida);
-
 			preparandoConsulta.setString(1, correo);
-
 			ResultSet resultado = preparandoConsulta.executeQuery();
 
-			String tablero = "";
-			Date fecha;
-
 			if (!resultado.next()) {
-				JOptionPane.showMessageDialog(null, "Todavía no tienes ninguna partida guardada.", "Información",
-						JOptionPane.INFORMATION_MESSAGE);
+				Object[] options = { "Aceptar" };
+
+				int option = JOptionPane.showOptionDialog(null, "No hay partida a cargar", "Información",
+						JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+				if (option==JOptionPane.OK_OPTION||option==JOptionPane.CLOSED_OPTION) {
+					System.out.println("hola");
+
+		
+				}
+					
+			
 			} else {
 				// Resto del código cuando hay resultados
 				do {
@@ -347,5 +358,18 @@ public class GuardarCargar extends JFrame {
 			// TODO Auto-generated catch block
 			System.out.println("Error: cargarpartidaDesdeBD()" + e);
 		}
+	}
+
+	private void centrarInterficiePantalla() {
+		// Calcular la posición de la ventana
+		Dimension tamañoPantalla = Toolkit.getDefaultToolkit().getScreenSize();
+		int width = this.getSize().width;
+		int height = this.getSize().height;
+		int x = (tamañoPantalla.width - width) / 2; // Centrado horizontalmente
+		int y = (tamañoPantalla.height - height) / 2;
+		// En la parte superior de la pantalla
+
+		// Establecer la posición de la ventana
+		this.setLocation(x, y);
 	}
 }
