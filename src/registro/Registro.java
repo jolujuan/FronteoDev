@@ -71,7 +71,7 @@ public class Registro extends JPanel {
 	private JTextField campoCorreo = new JTextField(20);
 	private JLabel errorCorreo = new JLabel();
 	private JPanel panel_correo = new JPanel();
-
+  
 	private JLabel etiqueta_Poblacion = new JLabel("Poblacion:", SwingConstants.CENTER);
 	private JTextField campoPoblacion = new JTextField(20);
 	private JLabel errorPoblacion = new JLabel();
@@ -537,6 +537,8 @@ public class Registro extends JPanel {
 		String sentenciaCrearTablaRankingBuscaminas = "CREATE TABLE IF NOT EXISTS ranking (idRanking INT AUTO_INCREMENT PRIMARY KEY,"
 				+ "idUsuario INT, " + "dificultad VARCHAR(50), "
 				+ "tiempo INT, FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
+		
+		
 
 		try {
 			Statement consulta = c.createStatement();

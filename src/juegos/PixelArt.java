@@ -216,9 +216,6 @@ public class PixelArt extends JFrame {
 												frame.dispose();
 												pixelArtFrame.setVisible(true);
 											} else {
-												JOptionPane.showMessageDialog(cargarPartida,
-														"No se ha seleccionado ninguna partida", "Información",
-														JOptionPane.INFORMATION_MESSAGE);
 												cargar = false; // Restablecer como cerrado
 												frame.dispose();
 												pixelArtFrame.setVisible(true);
@@ -605,6 +602,7 @@ public class PixelArt extends JFrame {
 
 			preparandoInsert.executeUpdate();
 			preparandoInsert.close();
+			JOptionPane.showMessageDialog(null, "Se ha guardado correctamente");
 			System.out.println("Partida pixelArt guardada en BD");
 			PixelArt.setGuardado(true);
 		} catch (Exception e) {

@@ -47,7 +47,7 @@ public class Login extends JPanel {
 	private JPasswordField fieldPwd;
 	private JLabel text;
 	private JPanel panel;
-
+  
 	public Login() {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

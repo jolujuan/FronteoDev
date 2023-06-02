@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import login.Login;
+import menuJuegos.Menu;
 import registro.Registro;
 
 public class Panel_inicio extends JFrame {
@@ -69,6 +70,7 @@ public class Panel_inicio extends JFrame {
 					}
 					
 					JOptionPane.showMessageDialog(null, mensaje, "Bye Bye", JOptionPane.INFORMATION_MESSAGE);
+					Menu.eliminarArchivos(); //Eliminar si han sido creados y se presiona la "X"
 					dispose(); // Cerrar manualmente la ventana
 				}
 			}

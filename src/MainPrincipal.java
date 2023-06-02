@@ -13,7 +13,7 @@ public class MainPrincipal {
 		String lookAndFeel = "com.formdev.flatlaf.FlatLightLaf";
 //        String lookAndFeel = "com.formdev.flatlaf.FlatDarkLaf";
 
-		try {    
+		try {
 
 			UIManager.setLookAndFeel(lookAndFeel);
 		} catch (Exception e) {
@@ -25,7 +25,7 @@ public class MainPrincipal {
 				e1.printStackTrace();
 			}
 		}
-   
+
 		Panel_inicio p = new Panel_inicio();
 
 	}
