@@ -190,43 +190,61 @@ public class JuegoVida extends JFrame{
 		JPanel botons = new JPanel();
 		tablero.add(botons, BorderLayout.SOUTH);
 		GridBagLayout gbl_botons = new GridBagLayout();
-		gbl_botons.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
+		gbl_botons.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_botons.rowHeights = new int[]{0, 0};
-		gbl_botons.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_botons.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		gbl_botons.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		botons.setLayout(gbl_botons);
+		
+		JButton volver = new JButton("Volver");
+		GridBagConstraints gbc_Volver = new GridBagConstraints();
+		gbc_Volver.insets = new Insets(0, 0, 0, 5);
+		gbc_Volver.gridx = 1;
+		gbc_Volver.gridy = 0;
+		botons.add(volver, gbc_Volver);
 		
 		JButton pausa = new JButton("||");
 		GridBagConstraints gbc_lento = new GridBagConstraints();
 		gbc_lento.insets = new Insets(0, 0, 0, 5);
-		gbc_lento.gridx = 1;
+		gbc_lento.gridx = 2;
 		gbc_lento.gridy = 0;
 		botons.add(pausa, gbc_lento);
 		
 		JButton lento = new JButton(">");
 		GridBagConstraints gbc_pausa = new GridBagConstraints();
 		gbc_pausa.insets = new Insets(0, 0, 0, 5);
-		gbc_pausa.gridx = 2;
+		gbc_pausa.gridx = 3;
 		gbc_pausa.gridy = 0;
 		botons.add(lento, gbc_pausa);
 		
 		JButton start = new JButton(">>");
 		GridBagConstraints gbc_start = new GridBagConstraints();
 		gbc_start.insets = new Insets(0, 0, 0, 5);
-		gbc_start.gridx = 3;
+		gbc_start.gridx = 4;
 		gbc_start.gridy = 0;
 		botons.add(start, gbc_start);
 		
 		JButton rapido = new JButton(">>>");
 		GridBagConstraints gbc_rapido = new GridBagConstraints();
 		gbc_rapido.insets = new Insets(0, 0, 0, 5);
-		gbc_rapido.gridx = 4;
+		gbc_rapido.gridx = 5;
 		gbc_rapido.gridy = 0;
 		botons.add(rapido, gbc_rapido);
 		contentPane.removeAll();
 		contentPane.add(tablero, BorderLayout.CENTER);
 		
 		//FUNCIONS DELS BOTONS
+		volver.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tableroCasillas = null;
+				contentPane.removeAll();
+				tablero.removeAll();
+				timer.cancel();
+				selectDificultat();
+			}
+		});
 		pausa.addActionListener(new ActionListener() {
 			
 			@Override
