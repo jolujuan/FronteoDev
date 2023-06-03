@@ -342,15 +342,11 @@ public class JuegoVida extends JFrame{
 				Casilla casilla = copiaTableroCasillas[i][j];
 				boolean celViva=casilla.getCelulaViva();
 				int celsVives=contarCelulasVivas(i, j,copiaTableroCasillas);
-				System.out.println("Celula "+i+" "+j);
-				System.out.println(celsVives);
 				if(celViva && (celsVives<2 || celsVives>3)) {
 					Casilla casillaOrigin = tableroCasillas[i][j];
-					System.out.println("mor");
 					casillaOrigin.setCelulaViva(false);
 				}else if (!celViva && celsVives==3){
 					Casilla casillaOrigin = tableroCasillas[i][j];
-					System.out.println("mor");
 					casillaOrigin.setCelulaViva(true);
 				}
 			}
@@ -358,7 +354,6 @@ public class JuegoVida extends JFrame{
 	}
 	private int contarCelulasVivas(int fila, int columna, Casilla[][] copiaTablero) {
 		int celVives=0;
-		System.out.println("Contem cels vives");
 		for (int i = - 1; i <= 1; i++) {
 			for (int j =  - 1; j <=1; j++) {
 				if (i != 0 || j != 0) {
@@ -366,18 +361,14 @@ public class JuegoVida extends JFrame{
 					int nextColumna=columna+j;
 					if(nextFila >= 0 && nextFila < copiaTablero.length && nextColumna >= 0 && nextColumna < tableroCasillas[0].length) {
 						Casilla casilla = copiaTablero[nextFila][nextColumna];
-						System.out.println("Casella "+nextFila+""+nextColumna);
 						if (casilla.getCelulaViva()) {
 							celVives++;
-							System.out.println("ComptaViva");
 						}
 					}
 					
 				}
 			}
 		}
-		System.out.println("");
-		
 		return celVives;
 	}
 	private Casilla[][] copiaTablero(){
