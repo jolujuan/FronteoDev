@@ -16,6 +16,9 @@ ECLIPSE IDE | The Eclipse Foundation
 _Herramientas Git:_
 
 ```
+Eclipse EGit - Plugin
+GitHub Desktop
+GitKraken Desktop
 Git Bash for Windows
 ```
 
@@ -45,6 +48,9 @@ git pull origin master
 _Herramientas utilizadas para crear el proyecto_
 
 * [Eclipse - IDE](https://www.eclipse.org/ide/) - El IDE usado
+* [Eclipse - Plugin](https://www.eclipse.org/egit/) - Plugin Eclipse
+* [GitHub - Programa](https://desktop.github.com/) - GitHub Desktop
+* [GitKrakem - Programa](https://www.gitkraken.com/) - Git Kraken
 * [Git - Bash](https://git-scm.com/downloads) - Manejador de Git
 
 ## Autores ✒️

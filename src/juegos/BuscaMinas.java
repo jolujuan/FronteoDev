@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -13,8 +14,8 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -25,33 +26,49 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import conexionBaseDatos.Conexion;
+import guardarCargar.GuardarCargar;
+
 public class BuscaMinas extends JFrame {
+	// Algunas se declaran como estaticas para poder ejecutar metodos cuando no se
+	// han guardado partidas
+
 	// Variables para crear
 	Random random = new Random();
-	private Casilla[][] tableroCasillas;
+	private static Casilla[][] tableroCasillas;
 	private JPanel contentPane;
 	private JPanel tablero = new JPanel();
 	private JButton reinicio = new JButton();
 
 	// Variables comprobaciones juego
 	private boolean juegoTerminado = false;
-	private int contadorBanderas = 0;
-	private String nombreTablero;
+	private static int contadorBanderas = 0;
+	private static String nombreTablero;
 	private boolean esReveladaGlobal = false;
 
 	// Mostrar mensajes de banderas
@@ -59,33 +76,53 @@ public class BuscaMinas extends JFrame {
 	private JLabel labelCasillasaRevelar = new JLabel("");
 
 	// Para mostrar si hay victoria
-	private int ContadorCasillasinrevelar = 0;
+	private static int ContadorCasillasinrevelar = 0;
 	private int CasillasRevelarReset = 0;
 
 	// Variables de tiempo
-	private int segons;
+	private static int segons;
 	JLabel labelTemps = new JLabel();
 	transient Timer timer;
 
-	/**
-	 * Launch the application.
-	 */
-	/*
-	 * public static void main(String[] args) {
-	 * 
-	 * EventQueue.invokeLater(new Runnable() { public void run() { try {
-	 * 
-	 * BuscaMinasGuardar frame = new BuscaMinasGuardar(); frame.setSize(500, 500);
-	 * frame.setVisible(true);
-	 * UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); } } }); }
-	 */
+	// variable para controlar cómo se cierra la ventana
+	public boolean cargar = false;
+	private BuscaMinas buscaMinasFrame;
 
-	/**
-	 * Create the frame.
-	 */
-	public BuscaMinas() {
+	// Cerrar o abrir correctamente el ranking
+	private boolean rankingAbierto = false;
+	JDialog rankingDialog = new JDialog();
+
+	// VARIABLE PARA SABER SI A GUARDADO EL ARCHIVO
+	public static boolean guardado = false;
+
+	public static boolean isGuardado() {
+		return guardado;
+	}
+
+	public static void setGuardado(boolean guardado) {
+		PixelArt.guardado = guardado;
+	}
+
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					BuscaMinas frame = new BuscaMinas("joselu@gmail.com");
+//					frame.setSize(500, 500);
+//					frame.setVisible(true);
+//					UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
+//
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
+
+	public BuscaMinas(String correo) {
+		// Pasar la ventana a una variable global
+		buscaMinasFrame = this;
+
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("BuscaMinas");
 		contentPane = new JPanel();
@@ -93,19 +130,21 @@ public class BuscaMinas extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout());
 
-		IniciodeJuego();// Inicio del juego,
+		IniciodeJuego(correo);// Inicio del juego,
 		addWindowListener(new WindowAdapter() {
 
 			@Override
 			public void windowClosed(WindowEvent e) {
 				setVisible(false);
-
+				// Cerrar el ranking si no ha sido cerrado
+				rankingDialog.dispose();
+				rankingAbierto = false;
 			}
 		});
 	}
 
-	public void IniciodeJuego() {
-		//Iniciamos contador de tiempo
+	public void IniciodeJuego(String correo) {
+
 		JPanel inicio = new JPanel();
 		inicio.setFont(new Font("Verdana", Font.BOLD, 13));
 		// Siempre tendra el mismo tamaño
@@ -119,7 +158,7 @@ public class BuscaMinas extends JFrame {
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.insets = new Insets(10, 0, 10, 0);
 
-		JButton tamañoPequeño = new JButton("Facil");
+		JButton tamañoPequeño = new JButton("Fácil");
 		tamañoPequeño.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		tamañoPequeño.setPreferredSize(new Dimension(130, 40));
 		tamañoPequeño.setFont(new Font("Unispace", Font.BOLD, 12));// FUENTE
@@ -137,7 +176,7 @@ public class BuscaMinas extends JFrame {
 		gbc.gridy = 1;
 		botonesJPanel.add(tamañoMediano, gbc);
 
-		JButton tamañoGrande = new JButton("Dificil");
+		JButton tamañoGrande = new JButton("Difícil");
 		tamañoGrande.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		tamañoGrande.setPreferredSize(new Dimension(130, 40));// TAMAÑO
 		tamañoGrande.setFont(new Font("Unispace", Font.BOLD, 12));// FUENTE
@@ -159,110 +198,52 @@ public class BuscaMinas extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// desserialització
-				try {
-					// obrim fitxer per a lectura
-					FileInputStream file = new FileInputStream("buscaminas.datos");
-					ObjectInputStream reader = new ObjectInputStream(file);
-					try {
-						String line = (String) reader.readObject();
 
-						// Recuperar la linea que contiene la almohadilla
-						// Empezar con uno para no guardar el simbolo
-						if (line.contains("#")) {
-							String[] parts = line.substring(1).split(":");
-							contadorBanderas = Integer.parseInt(parts[0]);
-							segons = Integer.parseInt(parts[1]);
-							ContadorCasillasinrevelar = Integer.parseInt(parts[2]);
-						}
-						// llegim l'objecte que hi ha al fitxer (1 sol array List)
-						tableroCasillas = (Casilla[][]) reader.readObject();
-						System.out.println(tableroCasillas.length);
-					} catch (Exception ex) {
-						System.err.println("Final del fitxer");
+				// Verificar si hay datos
+				if (comprobarExistenciaDatos(correo)) {
+					if (!cargar) { // Verificar si cargar está abierto
+						cargar = true;
+						EventQueue.invokeLater(new Runnable() {
+							public void run() {
+								try {
+									// Ejecutar la nueva ventana, pasando el correo para hacer consultas
+									GuardarCargar frame = new GuardarCargar(BuscaMinas.this, correo);
+									frame.setSize(500, 500);
+									centrarInterficiePantalla();
+									frame.setVisible(true);
+
+									frame.addWindowListener(new WindowAdapter() {
+										@Override
+										public void windowClosed(WindowEvent e) {
+											if (!GuardarCargar.getGuardado()) {
+												// Una vez seleccionado el juego a cargar y cerrada la misma ventana sin
+												// presionar la "X", iniciar el juego que hayas seleccionado
+
+												// Creamos el nuevo juego con el archivo que habremos descargado en
+												// metodo de la ventana GuardarCargar
+												String archivoDescarga = "partidaCargadaBuscaMinas.datos";
+												cargarPartidaDesdeArchivo(archivoDescarga, correo);
+												cargar = false; // Restablecer como cerrado
+												frame.dispose();
+												buscaMinasFrame.setVisible(true);
+											} else {
+												// Si ha seleccionado la x saldremos de la ventana
+												cargar = false; // Restablecer como cerrado
+												frame.dispose();
+												buscaMinasFrame.setVisible(true);
+											}
+										}
+
+									});
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						});
 					}
-
-					reader.close();
-					file.close();
-
-				} catch (Exception ex) {
-					System.err.println("Error en llegir usuaris.dades " + ex);
 				}
-
-				// Dependiendo el tamaño creamos el tipo de tablero
-				if (tableroCasillas.length == 8) {
-
-					contentPane.removeAll();
-					tablero.removeAll();
-
-					setSize(370, 575);
-					// Centramos pantalla
-					centrarInterficiePantalla();
-					crearTablero(8, 10);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
-					repaint();
-					revalidate();
-					// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
-					nombreTablero = "pequeño";
-
-					// ContadorCasillasinrevelar = 54;
-					labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
-					CasillasRevelarReset = ContadorCasillasinrevelar;
-
-					// Inicialmente mostrarara las banderas que tiene
-					labelMinasRestantes.setText(Integer.toString(contadorBanderas));
-
-					// Mostrar los segundos donde se quedo la partida
-					labelTemps.setText(Integer.toString(segons));
-//					System.out.println(tableroCasillas.length);
-
-				} else if (tableroCasillas.length == 16) {
-					contentPane.removeAll();
-					tablero.removeAll();
-
-					setSize(570, 775);
-					// Centramos pantalla
-					centrarInterficiePantalla();
-					crearTablero(16, 40);
-					repaint();
-					revalidate();
-					nombreTablero = "mediano";
-
-					labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
-					CasillasRevelarReset = ContadorCasillasinrevelar;
-
-					// Inicialmente mostrarara las banderas que tiene
-					labelMinasRestantes.setText(Integer.toString(contadorBanderas));
-
-					// Mostrar los segundos donde se quedo la partida
-					labelTemps.setText(Integer.toString(segons));
-
-				} else if (tableroCasillas.length == 25) {
-					contentPane.removeAll();
-					tablero.removeAll();
-
-					setSize(770, 975);
-					// Centramos pantalla
-					centrarInterficiePantalla();
-
-					crearTablero(25, 80);
-					repaint();
-					revalidate();
-					// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
-					nombreTablero = "grande";
-
-					// ContadorCasillasinrevelar = 54;
-					labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
-					CasillasRevelarReset = ContadorCasillasinrevelar;
-
-					// Inicialmente mostrarara las banderas que tiene
-					labelMinasRestantes.setText(Integer.toString(contadorBanderas));
-
-					// Mostrar los segundos donde se quedo la partida
-					labelTemps.setText(Integer.toString(segons));
-
-				}
-
 			}
+
 		});
 
 		gbc.gridy = 3;
@@ -272,7 +253,7 @@ public class BuscaMinas extends JFrame {
 		JLabel seleccionaTableroJLabel = new JLabel("Selecciona la dificultat de la partida \n");
 		inicio.add(seleccionaTableroJLabel);
 		seleccionaTableroJLabel.setBorder(new EmptyBorder(30, 0, 0, 0));
-		seleccionaTableroJLabel.setFont(new Font("Dialog", Font.BOLD, 14));
+		seleccionaTableroJLabel.setFont(new Font("Dialog", Font.BOLD, 18));
 		contentPane.add(botonesJPanel, BorderLayout.CENTER);
 
 		// Llamada al método para crear el tablero
@@ -283,7 +264,7 @@ public class BuscaMinas extends JFrame {
 				setSize(370, 575);
 				// Centramos pantalla
 				centrarInterficiePantalla();
-				crearTablero(8, 10);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
+				crearTablero(8, 10, correo);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
 				generarMinas(8, 10);
 
 				// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
@@ -307,7 +288,7 @@ public class BuscaMinas extends JFrame {
 				setSize(570, 775);
 				// Centramos pantalla
 				centrarInterficiePantalla();
-				crearTablero(16, 40);
+				crearTablero(16, 40, correo);
 				generarMinas(16, 40);
 				nombreTablero = "mediano";
 
@@ -327,7 +308,7 @@ public class BuscaMinas extends JFrame {
 				setSize(770, 975);
 				// Centramos pantalla
 				centrarInterficiePantalla();
-				crearTablero(25, 80);
+				crearTablero(25, 80, correo);
 				generarMinas(25, 80);
 
 				nombreTablero = "grande";
@@ -344,7 +325,9 @@ public class BuscaMinas extends JFrame {
 		revalidate();
 	}
 
-	public class Casilla extends JButton {
+	// Implementar la interfaz serialiazable para cuando el tablero de casillas sea
+	// serializable, no borre los controles de la mentana (minimizar, maximinar y X)
+	public class Casilla extends JButton implements Serializable {
 
 		private boolean tieneMina = false;
 		private boolean primeraMinaRevelada = false;
@@ -417,7 +400,8 @@ public class BuscaMinas extends JFrame {
 		}
 	}
 
-	private void crearTablero(int f, int numeroMinas) {
+	private void crearTablero(int f, int numeroMinas, String correo) {
+		BuscaMinas.setGuardado(false);
 
 		// Verificar que el número de minas sea válido
 		int totalCasillas = f * f;
@@ -453,6 +437,7 @@ public class BuscaMinas extends JFrame {
 									// Para arrancar solo una vez
 									iniciaComptador();
 
+									// Si la casilla no tiene bandera dejar presionar
 									if (!casilla.getTieneBandera()) {
 										manejarClick(casilla, filaFinal, columnaFinal);
 									}
@@ -461,9 +446,9 @@ public class BuscaMinas extends JFrame {
 									// Dependiendo el tablero le pasaremos las banderas
 									switch (nombreTablero) {
 									case "pequeño": {
-
+										// Mientras la casilla no contenga banderas asignar
 										if (!casilla.getTieneBandera()) {
-											mostrarBandera(casilla, 10);
+											asignarBandera(casilla, 10);
 
 										} else {
 											quitarBandera(casilla, 10);
@@ -473,7 +458,7 @@ public class BuscaMinas extends JFrame {
 									case "mediano": {
 
 										if (!casilla.getTieneBandera()) {
-											mostrarBandera(casilla, 40);
+											asignarBandera(casilla, 40);
 
 										} else {
 											quitarBandera(casilla, 40);
@@ -483,7 +468,7 @@ public class BuscaMinas extends JFrame {
 									case "grande": {
 
 										if (!casilla.getTieneBandera()) {
-											mostrarBandera(casilla, 80);
+											asignarBandera(casilla, 80);
 
 										} else {
 											quitarBandera(casilla, 80);
@@ -505,7 +490,7 @@ public class BuscaMinas extends JFrame {
 			contentPane.removeAll();
 			contentPane.add(tablero, BorderLayout.CENTER);
 
-			BotonesDescartaryGuardar();
+			BotonesDescartaryGuardar(correo);
 
 		} else {
 			// Marcar para reiniciar partida cargada
@@ -520,6 +505,7 @@ public class BuscaMinas extends JFrame {
 
 					Casilla casilla = tableroCasillas[fila][columna];
 					casilla.addMouseListener(new MouseAdapter() {
+
 						@Override
 						public void mousePressed(MouseEvent e) {
 							// Mientras no encuentres mina seguir
@@ -539,7 +525,7 @@ public class BuscaMinas extends JFrame {
 									case "pequeño": {
 
 										if (!casilla.getTieneBandera()) {
-											mostrarBandera(casilla, 10);
+											asignarBandera(casilla, 10);
 
 										} else {
 											quitarBandera(casilla, 10);
@@ -549,7 +535,7 @@ public class BuscaMinas extends JFrame {
 									case "mediano": {
 
 										if (!casilla.getTieneBandera()) {
-											mostrarBandera(casilla, 40);
+											asignarBandera(casilla, 40);
 
 										} else {
 											quitarBandera(casilla, 40);
@@ -559,7 +545,7 @@ public class BuscaMinas extends JFrame {
 									case "grande": {
 
 										if (!casilla.getTieneBandera()) {
-											mostrarBandera(casilla, 80);
+											asignarBandera(casilla, 80);
 
 										} else {
 											quitarBandera(casilla, 80);
@@ -572,6 +558,7 @@ public class BuscaMinas extends JFrame {
 								}
 							}
 						}
+
 					});
 
 					tableroCasillas[fila][columna] = casilla;
@@ -581,7 +568,7 @@ public class BuscaMinas extends JFrame {
 			contentPane.removeAll();
 			contentPane.add(tablero, BorderLayout.CENTER);
 
-			BotonesDescartaryGuardar();
+			BotonesDescartaryGuardar(correo);
 
 		}
 	}
@@ -599,9 +586,10 @@ public class BuscaMinas extends JFrame {
 					// Parar el contador
 					paraComptador();
 
-					mostrarMina(casilla, "minaRoja");
+					asignarMina(casilla, "minaRoja");
 					casilla.setPrimeraMinaRevelada(true);
-					JOptionPane.showMessageDialog(null, "Has encontrado una mina");
+					JOptionPane.showMessageDialog(null, "Has encontrado una mina", "Información",
+							JOptionPane.ERROR_MESSAGE);
 					juegoTerminado = true;
 					desactivarTablero();
 					revelarContenido();
@@ -611,14 +599,15 @@ public class BuscaMinas extends JFrame {
 							Image.SCALE_SMOOTH);
 					reinicio.setIcon(new ImageIcon(cara));
 				} else {
-					mostrarMina(casilla, "mina");
+					asignarMina(casilla, "mina");
 				}
 			}
 		} else {
-
+			// Si el contador de las casillas finaliza significara que habras ganado
 			if (ContadorCasillasinrevelar <= 1) {
 				paraComptador();
-				JOptionPane.showMessageDialog(null, "Has Ganado, Felicidades");
+				JOptionPane.showMessageDialog(null, "Has Ganado, Felicidades", "¡Ganador!",
+						JOptionPane.INFORMATION_MESSAGE);
 				juegoTerminado = true;
 				desactivarTablero();
 			}
@@ -630,14 +619,14 @@ public class BuscaMinas extends JFrame {
 
 			labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
 
-			mostrarNumero(casilla);
+			asignarNumero(casilla);
 			if (casilla.getMinasAdyacentes() == 0) {
 				revelarCasilla(fila, columna);
 			}
 		}
 	}
 
-	private void mostrarNumero(Casilla casilla) {
+	private void asignarNumero(Casilla casilla) {
 
 		casilla.setEsRevelada(true); // Marcar la casilla como revelada
 
@@ -655,7 +644,7 @@ public class BuscaMinas extends JFrame {
 		}
 	}
 
-	private void mostrarMina(Casilla casilla, String nom) {
+	private void asignarMina(Casilla casilla, String nom) {
 
 		casilla.setEsRevelada(true); // Marcar la casilla como revelada
 
@@ -677,7 +666,7 @@ public class BuscaMinas extends JFrame {
 	}
 
 	private void quitarBandera(Casilla casilla, int numeroBanderas) {
-
+		// Quitar las banderas cuando vuelvas a presionar
 		if (contadorBanderas < numeroBanderas) {
 
 			casilla.setTieneBandera(false);
@@ -687,7 +676,7 @@ public class BuscaMinas extends JFrame {
 		}
 	}
 
-	private void mostrarBandera(Casilla casilla, int numeroBanderas) {
+	private void asignarBandera(Casilla casilla, int numeroBanderas) {
 
 		// Si contiene numero o casilla blanca, no agregar bandera
 		if (casilla.esRevelada == true) {
@@ -743,9 +732,9 @@ public class BuscaMinas extends JFrame {
 					if (casilla.getTieneMina()) {
 						// Aqui mantenemos el color de la primera mina
 						if (casilla.getPrimeraMinaRevelada()) {
-							mostrarMina(casilla, "minaRoja");
+							asignarMina(casilla, "minaRoja");
 						} else {
-							mostrarMina(casilla, "mina");
+							asignarMina(casilla, "mina");
 							casilla.setPrimeraMinaRevelada(true);
 						}
 					}
@@ -790,7 +779,8 @@ public class BuscaMinas extends JFrame {
 		casilla.esRevelada = true;
 
 		if (ContadorCasillasinrevelar <= 1) {
-			JOptionPane.showMessageDialog(null, "Has Ganado, Felicidades");
+			JOptionPane.showMessageDialog(null, "Has Ganado, Felicidades", "¡Ganador!",
+					JOptionPane.INFORMATION_MESSAGE);
 			juegoTerminado = true;
 			desactivarTablero();
 		}
@@ -815,7 +805,7 @@ public class BuscaMinas extends JFrame {
 
 	public void generarMinas(int f, int numeroMinas) {
 		int minasAsignadas = 0; // Contador de minas asignadas
-
+		// Generamos minas de manera aleatoria mientras puedan asignarse
 		while (minasAsignadas < numeroMinas) {
 			int filaAleatoria = obtenerFilaAleatoria(f);
 			int columnaAleatoria = obtenerColumnaAleatoria(f);
@@ -851,7 +841,7 @@ public class BuscaMinas extends JFrame {
 		return random.nextInt(f);
 	}
 
-	private void BotonesDescartaryGuardar() {
+	private void BotonesDescartaryGuardar(String correo) {
 		JPanel PanelBotones = new JPanel(new GridBagLayout());
 		PanelBotones.setBorder(new EmptyBorder(10, 0, 10, 0));
 		PanelBotones.setLayout(new GridBagLayout());
@@ -881,7 +871,10 @@ public class BuscaMinas extends JFrame {
 				// Reininializar el color
 				juegoTerminado = false;
 				contadorBanderas = 0;
-				IniciodeJuego();
+				IniciodeJuego(correo);
+				// Cerrar el ranking si no ha sido cerrado
+				rankingDialog.dispose();
+				rankingAbierto = false;
 
 			}
 		});
@@ -896,6 +889,46 @@ public class BuscaMinas extends JFrame {
 		gbcGNewRank.gridx = 2;
 		gbcGNewRank.gridy = 0;
 		PanelBotones.add(Ranking, gbcGNewRank);
+
+		Ranking.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				if (!rankingAbierto) {
+					rankingAbierto = true;
+					mostrarRanking();
+					// Creamos la instancia del JDialog
+					rankingDialog.setLocationRelativeTo(BuscaMinas.this);
+					rankingDialog.setVisible(true);
+
+					// Dejar voler abrir el ranking si el usuario ha presionado en la "X"
+					rankingDialog.addWindowListener(new WindowAdapter() {
+						@Override
+						public void windowClosing(WindowEvent e) {
+							rankingDialog.dispose();
+							rankingAbierto = false;
+						}
+					});
+					// Cerrar el ranking cuando el usuario deja de verlo o selecciona otra parte de
+					// la pantalla
+					rankingDialog.addFocusListener(new FocusAdapter() {
+						@Override
+						public void focusLost(FocusEvent e) {
+							rankingDialog.dispose();
+							rankingAbierto = false;
+						}
+					});
+					// Cerrar cuando el raton se sale
+					rankingDialog.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseExited(MouseEvent e) {
+							rankingDialog.dispose();
+							rankingAbierto = false;
+						}
+					});
+				}
+			}
+		});
 
 		JButton Guardar = new JButton("Guardar");
 		Guardar.setMinimumSize(new Dimension(100, 35));
@@ -912,37 +945,15 @@ public class BuscaMinas extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				if (juegoTerminado) {
-					JOptionPane.showMessageDialog(null, "NO PUEDES GUARDAR UNA PARTIDA TERMINADA");
+				// No guardar una partida terminada
+				if (!juegoTerminado) {
+					// TODO Auto-generated method stub
+					String filePath = "buscaminas.datos";
+					guardarEstadoTablero(filePath);
+					guardarDatosBD(correo, filePath);
 				} else {
-					// serialització
-					ObjectOutputStream oos = null;
-					FileOutputStream fout = null;
-					try {
-						// obrim el fitxer per escriure, sense afegir
-						// només tindrem un ArrayList d'objectes
-						fout = new FileOutputStream(new File("buscaminas.datos"), false);
-						oos = new ObjectOutputStream(fout);
-
-						// Guardar en una linea aparte el contadodor de banderas, los segundos y las
-						// casillas a revelar
-						oos.writeObject("#" + contadorBanderas + ":" + segons + ":" + ContadorCasillasinrevelar);
-						oos.writeObject(tableroCasillas);
-						oos.flush();
-						oos.close();
-						JOptionPane.showMessageDialog(null, "Se ha guardado correctamente");
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					} finally {
-						if (oos != null) {
-							try {
-								oos.close();
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
-						}
-					}
+					JOptionPane.showMessageDialog(null, "NO PUEDES GUARDAR UNA PARTIDA TERMINADA", "Error",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -1019,7 +1030,7 @@ public class BuscaMinas extends JFrame {
 					// Dependiendo el tamaño del tablero, volver a inicializar todo
 					switch (nombreTablero) {
 					case "pequeño": {
-						crearTablero(8, 10);
+						crearTablero(8, 10, correo);
 						generarMinas(8, 10);
 						contadorBanderas = 10;
 						labelMinasRestantes.setText(Integer.toString(10));
@@ -1031,7 +1042,7 @@ public class BuscaMinas extends JFrame {
 						break;
 					}
 					case "mediano": {
-						crearTablero(16, 40);
+						crearTablero(16, 40, correo);
 						generarMinas(16, 40);
 						contadorBanderas = 40;
 						labelMinasRestantes.setText(Integer.toString(40));
@@ -1043,7 +1054,7 @@ public class BuscaMinas extends JFrame {
 						break;
 					}
 					case "grande": {
-						crearTablero(25, 80);
+						crearTablero(25, 80, correo);
 						generarMinas(25, 80);
 						contadorBanderas = 80;
 						labelMinasRestantes.setText(Integer.toString(80));
@@ -1113,4 +1124,396 @@ public class BuscaMinas extends JFrame {
 		this.setLocation(x, y);
 	}
 
+	public static void guardarEstadoTablero(String filePath) {
+
+		// serialització
+		ObjectOutputStream oos = null;
+		FileOutputStream fout = null;
+		try {
+			// obrim el fitxer per escriure, sense afegir
+			// només tindrem un ArrayList d'objectes
+			fout = new FileOutputStream(new File(filePath), false);
+			oos = new ObjectOutputStream(fout);
+
+			// Guardar en una linea aparte el contadodor de banderas, los segundos y las
+			// casillas a revelar
+			oos.writeObject("#" + contadorBanderas + ":" + segons + ":" + ContadorCasillasinrevelar);
+
+//			oos.writeObject(tableroCasillas);
+			oos.flush();
+			oos.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			if (oos != null) {
+				try {
+					oos.close();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+
+	// Metodo para no mostrar la ventana de cargar si no hay resultados
+	private boolean comprobarExistenciaDatos(String correo) {
+
+		boolean sinDatos = false;
+		String selectPartida = "SELECT buscaminas.* FROM usuarios, buscaminas WHERE usuarios.id = buscaminas.idUsuario AND email = ?";
+		Connection conexion = Conexion.obtenerConexion();
+
+		try {
+			PreparedStatement preparandoConsulta = conexion.prepareStatement(selectPartida);
+			preparandoConsulta.setString(1, correo);
+			ResultSet resultado = preparandoConsulta.executeQuery();
+
+			if (!resultado.next()) {
+				Object[] options = { "Aceptar" };
+
+				int option = JOptionPane.showOptionDialog(null, "No hay partida a cargar", "Información",
+						JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+				if (option == JOptionPane.OK_OPTION || option == JOptionPane.CLOSED_OPTION) {
+					sinDatos = false;
+				}
+			} else {
+				// Hay datos, por tanto entrar en la ventana cargar
+				sinDatos = true;
+			}
+		} catch (Exception e) {
+			System.out.println("Error comprobando existencias " + e);
+		}
+		return sinDatos;
+	}
+
+	private void cargarPartidaDesdeArchivo(String nombreArchivo, String correo) {
+		// TODO Esbozo de método generado automáticamente
+		File file = new File(nombreArchivo);
+
+		try {
+			// obrim fitxer per a lectura
+			ObjectInputStream reader = new ObjectInputStream(new FileInputStream(file));
+			try {
+				String line = (String) reader.readObject();
+
+				// Recuperar la linea que contiene la almohadilla
+				// Empezar con uno para no guardar el simbolo
+				if (line.contains("#")) {
+					String[] parts = line.substring(1).split(":");
+					contadorBanderas = Integer.parseInt(parts[0]);
+					segons = Integer.parseInt(parts[1]);
+					ContadorCasillasinrevelar = Integer.parseInt(parts[2]);
+				}
+				// llegim l'objecte que hi ha al fitxer (1 sol array List)
+				tableroCasillas = (Casilla[][]) reader.readObject();
+			} catch (Exception ex) {
+				System.err.println("Final del fitxer");
+			}
+			reader.close();
+
+		} catch (Exception ex) {
+			System.err.println("Error en llegir usuaris.dades " + ex);
+		}
+
+		// Dependiendo el tamaño creamos el tipo de tablero
+		if (tableroCasillas.length == 8) {
+
+			contentPane.removeAll();
+			tablero.removeAll();
+
+			setSize(370, 575);
+			// Centramos pantalla
+			centrarInterficiePantalla();
+			crearTablero(8, 10, correo);// NUMERO DE FILAS 8x8 | NUMERO DE MINAS
+			repaint();
+			revalidate();
+			// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
+			nombreTablero = "pequeño";
+
+			// ContadorCasillasinrevelar = 54;
+			labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
+			CasillasRevelarReset = ContadorCasillasinrevelar;
+
+			// Inicialmente mostrarara las banderas que tiene
+			labelMinasRestantes.setText(Integer.toString(contadorBanderas));
+
+			// Mostrar los segundos donde se quedo la partida
+			labelTemps.setText(Integer.toString(segons));
+
+		} else if (tableroCasillas.length == 16) {
+			contentPane.removeAll();
+			tablero.removeAll();
+
+			setSize(570, 775);
+			// Centramos pantalla
+			centrarInterficiePantalla();
+			crearTablero(16, 40, correo);
+			repaint();
+			revalidate();
+			nombreTablero = "mediano";
+
+			labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
+			CasillasRevelarReset = ContadorCasillasinrevelar;
+
+			// Inicialmente mostrarara las banderas que tiene
+			labelMinasRestantes.setText(Integer.toString(contadorBanderas));
+
+			// Mostrar los segundos donde se quedo la partida
+			labelTemps.setText(Integer.toString(segons));
+
+		} else if (tableroCasillas.length == 25) {
+			contentPane.removeAll();
+			tablero.removeAll();
+
+			setSize(770, 975);
+			// Centramos pantalla
+			centrarInterficiePantalla();
+
+			crearTablero(25, 80, correo);
+			repaint();
+			revalidate();
+			// Lo utilizaremos luego para configurar banderas, nueva Partida o imagen
+			nombreTablero = "grande";
+
+			// ContadorCasillasinrevelar = 54;
+			labelCasillasaRevelar.setText(Integer.toString(ContadorCasillasinrevelar));
+			CasillasRevelarReset = ContadorCasillasinrevelar;
+
+			// Inicialmente mostrarara las banderas que tiene
+			labelMinasRestantes.setText(Integer.toString(contadorBanderas));
+
+			// Mostrar los segundos donde se quedo la partida
+			labelTemps.setText(Integer.toString(segons));
+
+		}
+	}
+
+	// Guardamos en la base el idUsuario, el nombre del tablero, el fichero y la
+	// fecha
+	public static void guardarDatosBD(String correo, String path) {
+
+		String insertarDatosPartida = "INSERT INTO buscaminas (idUsuario, tablero, ficheroPartida, fecha) VALUES (?,?,?,?)";
+		Connection conexion = Conexion.obtenerConexion();
+		String[] idUsuario = datosUsuarioPerfil(correo);
+
+		File archivo = new File(path);
+
+		LocalDate fechaActual = LocalDate.now();
+
+		try {
+			FileInputStream archivoInputStream = new FileInputStream(archivo);
+
+			PreparedStatement preparandoInsert = conexion.prepareStatement(insertarDatosPartida);
+			preparandoInsert.setInt(1, Integer.parseInt(idUsuario[0]));
+			preparandoInsert.setString(2, nombreTablero);
+			preparandoInsert.setBlob(3, archivoInputStream);
+			preparandoInsert.setDate(4, java.sql.Date.valueOf(fechaActual));
+
+			preparandoInsert.executeUpdate();
+			preparandoInsert.close();
+			JOptionPane.showMessageDialog(null, "Se ha guardado correctamente", "Correcto",
+					JOptionPane.INFORMATION_MESSAGE);
+
+			// No guardar partida al salir, porque manualmente el usuario la habra guardado
+			BuscaMinas.setGuardado(false);
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+		}
+	}
+
+	// Obtenemos el id Usuario que pertenece al correo introducido en el login
+	public static String[] datosUsuarioPerfil(String correo) {
+		String[] datos = new String[6];
+		String sentencia = "SELECT * FROM usuarios WHERE email = ?";
+		Connection c = Conexion.obtenerConexion();
+
+		try {
+			PreparedStatement consulta = c.prepareStatement(sentencia);
+			consulta.setString(1, correo);
+			ResultSet resultado = consulta.executeQuery();
+
+			while (resultado.next()) {
+				datos[0] = "" + resultado.getInt("id");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error: " + e);
+		}
+
+		return datos;
+	}
+
+	public int generarTiempoBuscaminas() {
+		return (int) (Math.random() * (300 - 50 + 1)) + 50;
+	}
+
+	public int generarNivelDificultad() {
+		return (int) (Math.random() * 3);
+	}
+
+	/// ESTE METODO ES PARA MOSTRAR QUE EL RANKING TIENE DATOS
+	public void insertarDatosPruebasRanking() {
+		Connection c = Conexion.obtenerConexion();
+		String sentenciaInsertDatosRanking = "INSERT INTO ranking (idUsuario, dificultad, tiempo) VALUES (?, ?, ?);";
+		String[] dificultad = { "FACIL", "MEDIA", "DIFICIL" };
+		int segundos = generarTiempoBuscaminas();
+		try {
+			PreparedStatement insert = c.prepareStatement(sentenciaInsertDatosRanking);
+			insert.setInt(1, 21); /// AQUI SE COLOCA MANUALMENTE, DEBEN COINCIDIR CON ID DE USUARIOS EXISTENTES
+			insert.setString(2, dificultad[generarNivelDificultad()]);
+			insert.setInt(3, segundos);
+			insert.executeUpdate();
+
+			System.out.println("Datos almacenados");
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void mostrarRanking() {
+		String sentenciaSelectFacil = "SELECT * FROM ranking WHERE dificultad = 'FACIL' ORDER BY tiempo LIMIT 5";
+		String sentenciaSelectMedia = "SELECT * FROM ranking WHERE dificultad = 'MEDIA' ORDER BY tiempo LIMIT 5";
+		String sentenciaSelectDificil = "SELECT * FROM ranking WHERE dificultad = 'DIFICIL' ORDER BY tiempo LIMIT 5";
+
+		int conta = 1;
+
+		try (Connection c = Conexion.obtenerConexion(); Statement consulta = c.createStatement()) {
+
+			rankingDialog.setTitle("Ranking");
+			rankingDialog.getContentPane().setLayout(new BoxLayout(rankingDialog.getContentPane(), BoxLayout.Y_AXIS));
+			rankingDialog.getContentPane().removeAll();
+
+			switch (nombreTablero) {
+			case "pequeño":
+
+				// Hacer la consulta dependiendo el tamaño del tablero
+				try (ResultSet datosRankingFacil = consulta.executeQuery(sentenciaSelectFacil)) {
+					while (datosRankingFacil.next()) {
+						// Del tamaño del tablero guardamos el idUsuario y el tiempo para utilzarlos
+						// luego
+						int idUsuario = datosRankingFacil.getInt("idUsuario");
+						int tiempo = datosRankingFacil.getInt("tiempo");
+
+						try {
+							// Obtenemos una nueva conexion para hacer la consulta basandonos en el nombre
+							// del idUsario
+							Connection cFacil = Conexion.obtenerConexion();
+							Statement consultaFacil = cFacil.createStatement();
+							String sentenciaSelectUsuario = "SELECT nombre FROM usuarios WHERE id = " + idUsuario;
+
+							ResultSet datosUsuario = consultaFacil.executeQuery(sentenciaSelectUsuario);
+							if (datosUsuario.next()) {
+								// Obtenemos el nombre del usuario y pasamos el tiempo obtenido
+								String nombreUsuario = datosUsuario.getString("nombre");
+
+								JLabel label = new JLabel(
+										"Posición: " + conta + ". Usuario: " + nombreUsuario + ". Tiempo: " + tiempo);
+								label.setFont(new Font("Arial", Font.BOLD, 16));
+
+								rankingDialog.getContentPane().add(label);
+								conta++;
+							}
+						} catch (Exception e) {
+							System.out.println("error ranking facil " + e);
+						}
+					}
+				} catch (Exception e) {
+					System.out.println("Error mostrando rankin modo facil " + e);
+					e.printStackTrace();
+
+				}
+				break;
+
+			case "mediano":
+				try (ResultSet datosRankingFacil = consulta.executeQuery(sentenciaSelectMedia)) {
+					while (datosRankingFacil.next()) {
+						int idUsuario = datosRankingFacil.getInt("idUsuario");
+						int tiempo = datosRankingFacil.getInt("tiempo");
+						String sentenciaSelectUsuario = "SELECT nombre FROM usuarios WHERE id = " + idUsuario;
+						try {
+							Connection cFacil = Conexion.obtenerConexion();
+							Statement consultaFacil = cFacil.createStatement();
+
+							ResultSet datosUsuario = consultaFacil.executeQuery(sentenciaSelectUsuario);
+							if (datosUsuario.next()) {
+								String nombreUsuario = datosUsuario.getString("nombre");
+
+								JLabel label = new JLabel(
+										"Posición: " + conta + ". Usuario: " + nombreUsuario + ". Tiempo: " + tiempo);
+
+								label.setFont(new Font("Arial", Font.BOLD, 16));
+
+								rankingDialog.getContentPane().add(label);
+								conta++;
+							}
+						} catch (Exception e) {
+							System.out.println("error ranking facil " + e);
+						}
+					}
+				} catch (Exception e) {
+					System.out.println("Error mostrando rankin modo facil " + e);
+					e.printStackTrace();
+
+				}
+				break;
+
+			case "grande":
+				try (ResultSet datosRankingFacil = consulta.executeQuery(sentenciaSelectDificil)) {
+					while (datosRankingFacil.next()) {
+						int idUsuario = datosRankingFacil.getInt("idUsuario");
+						int tiempo = datosRankingFacil.getInt("tiempo");
+
+						String sentenciaSelectUsuario = "SELECT nombre FROM usuarios WHERE id = " + idUsuario;
+						try {
+							Connection cFacil = Conexion.obtenerConexion();
+							Statement consultaFacil = cFacil.createStatement();
+
+							ResultSet datosUsuario = consultaFacil.executeQuery(sentenciaSelectUsuario);
+							if (datosUsuario.next()) {
+								String nombreUsuario = datosUsuario.getString("nombre");
+
+								JLabel label = new JLabel(
+										"Posición: " + conta + ". Usuario: " + nombreUsuario + ". Tiempo: " + tiempo);
+
+								label.setFont(new Font("Arial", Font.BOLD, 16));
+
+								rankingDialog.getContentPane().add(label);
+								conta++;
+							}
+						} catch (Exception e) {
+							System.out.println("error ranking facil " + e);
+						}
+					}
+				} catch (Exception e) {
+					System.out.println("Error mostrando rankin modo facil " + e);
+					e.printStackTrace();
+
+				}
+				break;
+
+			default:
+				throw new IllegalArgumentException("Unexpected value: " + nombreTablero);
+			}
+
+			rankingDialog.pack();
+			rankingDialog.setMinimumSize(new Dimension(BuscaMinas.this.getWidth(), 130));
+
+			rankingDialog.setSize(BuscaMinas.this.getWidth(), rankingDialog.getHeight());
+
+			// Esto es para aplicarlo directamente al jdialog sin la necesidad de añadirlo a
+			// un panel
+			rankingDialog.getRootPane().setBorder(new EmptyBorder(10, 10, 10, 10));
+
+			Color colorSombreado = new Color(0, 0, 0, 100);
+			rankingDialog.getRootPane()
+					.setBorder(new CompoundBorder(new LineBorder(colorSombreado, 5), new EmptyBorder(10, 10, 10, 10)));
+
+			consulta.close();
+
+		} catch (SQLException e) {
+			System.out.println("Error mostrando ranking: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
 }

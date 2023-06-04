@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -16,7 +17,9 @@ import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -34,10 +37,18 @@ public class Menu extends JPanel {
 	private JButton botonJugarJuegoDeLaVida = new JButton("Jugar JuegoDeLaVida");
 	private JButton botonLogout = new JButton("Logout");
 	private boolean pixelArtAbierto = false;
-	private boolean buscMinasAbierto = false;
-	private boolean juegoVidaAbierto = false;
+	private boolean buscaAbierto = false;
 
 	public Menu(String correo) {
+		JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+//		frame.addWindowListener(new WindowAdapter() {
+//			public void windowClosing(WindowEvent e) {
+//				// Realizar acciones cuando se cierra la ventana
+//				// por ejemplo, mostrar un mensaje o ejecutar un método específico
+//				System.out.println("La ventana se está cerrando");
+//			}
+//		});
+
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(10, 10, 30, 10);
@@ -68,7 +79,7 @@ public class Menu extends JPanel {
 		add(botonJugarPixelArt, c1);
 
 		GridBagConstraints c2 = new GridBagConstraints();
-		c2.insets = new Insets(10, 10, 30, 10);
+		c2.insets = new Insets(10, 10, 30, 10); 
 		c2.gridwidth = 1;
 		c2.gridy = 2;
 		c2.gridx = 1;
@@ -99,6 +110,83 @@ public class Menu extends JPanel {
 		botonLogout.setFont(new Font("Dialog", Font.PLAIN, 13));
 		add(botonLogout, c4);
 
+		botonLogout.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				boolean datosNoGuardadosPixel = PixelArt.isGuardado();
+				boolean datosNoGuardadosBusca = BuscaMinas.isGuardado();
+
+				if (datosNoGuardadosPixel == false) {
+					int option = JOptionPane.showConfirmDialog(null, "¿Desea guardar partida antes de cerrar sesión?");
+					if (option == JOptionPane.YES_OPTION) {
+						// Lógica para guardar la partida
+
+						// Eliminar tanto los archivos locales como temporales
+						eliminarArchivos();
+
+						///////////
+						// FUNCION DE GUARDAR PARTIDA
+						PixelArt.guardarEstadoTablero("PixelArt.txt");
+						PixelArt.guardarDatosBD(correo, "PixelArt.txt");
+
+						BuscaMinas.guardarEstadoTablero("buscaminas.datos");
+						BuscaMinas.guardarDatosBD(correo, "buscaminas.datos");
+						//////////
+
+						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
+						//// algun joc teu tanque (GRACIES CHAT)
+						Window[] ventanasAbiertas = Window.getWindows();
+						for (Window ventana : ventanasAbiertas) {
+							if (ventana != null && ventana.isDisplayable()) {
+								ventana.dispose();
+							}
+						}
+
+						SwingUtilities.getWindowAncestor(Menu.this).dispose();
+						Panel_inicio ventanaInicio = new Panel_inicio();
+
+						ventanaInicio.setVisible(true);
+					} else if (option == JOptionPane.NO_OPTION) {
+						// Lógica para no guardar la partida
+						eliminarArchivos();
+						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
+						//// algun joc teu tanque (GRACIES CHAT)
+						Window[] ventanasAbiertas = Window.getWindows();
+						for (Window ventana : ventanasAbiertas) {
+							if (ventana != null && ventana.isDisplayable()) {
+								ventana.dispose();
+							}
+						}
+
+						SwingUtilities.getWindowAncestor(Menu.this).dispose();
+						Panel_inicio ventanaInicio = new Panel_inicio();
+						ventanaInicio.setVisible(true);
+					} else if (option == JOptionPane.CANCEL_OPTION) {
+					} else if (option == JOptionPane.CLOSED_OPTION) {
+						
+					}
+				} else {
+					eliminarArchivos();
+
+					Window[] ventanasAbiertas = Window.getWindows();
+					for (Window ventana : ventanasAbiertas) {
+						if (ventana != null && ventana.isDisplayable()) {
+							ventana.dispose();
+						}
+					}
+
+					SwingUtilities.getWindowAncestor(Menu.this).dispose();
+					Panel_inicio ventanaInicio = new Panel_inicio();
+					ventanaInicio.setVisible(true);
+				}
+			}
+
+			
+
+		});
+
 		botonJugarPixelArt.addActionListener(new ActionListener() {
 
 			@Override
@@ -128,29 +216,16 @@ public class Menu extends JPanel {
 			}
 		});
 
-		botonLogout.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				File archivoCargaDatosPixelArt = new File("partidaCargada.txt");
-				archivoCargaDatosPixelArt.delete();
-				SwingUtilities.getWindowAncestor(Menu.this).dispose();
-
-				Panel_inicio ventanaInicio = new Panel_inicio();
-				ventanaInicio.setVisible(true);
-			}
-		});
-
 		botonJugarBuscaminas.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!buscMinasAbierto) {
-					buscMinasAbierto=true;
+				if (!buscaAbierto) { // Verificar si PixelArt está abierto
+					buscaAbierto = true;
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
-								BuscaMinas frame = new BuscaMinas();
+								BuscaMinas frame = new BuscaMinas(correo);
 								frame.setSize(500, 500);
 								frame.setVisible(true);
 								frame.addWindowListener(new WindowAdapter() {
@@ -167,13 +242,13 @@ public class Menu extends JPanel {
 				}
 			}
 		});
-		
+
 		botonJugarJuegoDeLaVida.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!juegoVidaAbierto) {
-					juegoVidaAbierto=true;
+				if (!buscaAbierto) { // Verificar si PixelArt está abierto
+					buscaAbierto = true;
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
@@ -204,7 +279,6 @@ public class Menu extends JPanel {
 				p.getContentPane().add(perfil);
 				p.revalidate();
 				p.repaint();
-
 			}
 		});
 	}
@@ -219,6 +293,29 @@ public class Menu extends JPanel {
 		c.gridx = x;
 		c.gridy = y;
 		add(etiqueta, c);
+	}
+
+	//Eliminar todos los archivos si han sido creados en algún momento
+	public static void eliminarArchivos() {
+		File archivoCargaDatosPixelArt = new File("partidaCargadaPixelArt.txt");
+		File archivoCargadoDatosBuscaminas = new File("partidaCargadaBuscaMinas.datos");
+		File archivoLocalPixelArt = new File("PixelArt.txt");
+		File archivoLocalBuscaminas = new File("buscaminas.datos");
+
+		//Comprobar si existe porque lo llamaremos desde otro metodo
+		if (archivoCargaDatosPixelArt.exists()) {					
+			archivoCargaDatosPixelArt.delete();
+		}
+		if (archivoCargadoDatosBuscaminas.exists()) {					
+			archivoCargadoDatosBuscaminas.delete();
+		}
+		if (archivoLocalPixelArt.exists()) {
+			archivoLocalPixelArt.delete();
+		}
+		
+		if (archivoLocalBuscaminas.exists()) {
+			archivoLocalBuscaminas.delete();					
+		}
 	}
 
 }

@@ -88,23 +88,12 @@ public class JuegoVida extends JFrame{
 
 				gbc.gridy = 2;
 				botonesJPanel.add(tamañoGrande, gbc);
-
-				JButton cargarPartida = new JButton("Cargar Partida");
-				cargarPartida.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				cargarPartida.setPreferredSize(new Dimension(130, 40));// TAMAÑO
-				cargarPartida.setFont(new Font("Unispace", Font.BOLD, 12));// FUENTE
-				gbc = new GridBagConstraints(); // PARA CENTRAR BOTONES
-				gbc.anchor = GridBagConstraints.CENTER;
-				gbc.insets = new Insets(10, 0, 10, 0);
-
-				gbc.gridy = 3;
-				botonesJPanel.add(cargarPartida, gbc);
 				// Lo que se visualizará directamente
 				contentPane.add(inicio, BorderLayout.NORTH);
 				JLabel seleccionaTableroJLabel = new JLabel("Selecciona la dificultat de la partida \n");
 				inicio.add(seleccionaTableroJLabel);
 				seleccionaTableroJLabel.setBorder(new EmptyBorder(30, 0, 0, 0));
-				seleccionaTableroJLabel.setFont(new Font("Dialog", Font.BOLD, 14));
+				seleccionaTableroJLabel.setFont(new Font("Dialog", Font.BOLD, 18));
 				contentPane.add(botonesJPanel, BorderLayout.CENTER);
 				
 				// Llamada al método para crear el tablero

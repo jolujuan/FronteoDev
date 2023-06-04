@@ -34,6 +34,8 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import conexionBaseDatos.Conexion;
+import juegos.BuscaMinas;
+import juegos.PixelArt;
 import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
 
@@ -46,7 +48,7 @@ public class Login extends JPanel {
 	private JPasswordField fieldPwd;
 	private JLabel text;
 	private JPanel panel;
-
+  
 	public Login() {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -54,7 +56,7 @@ public class Login extends JPanel {
 		JPanel panel_1 = new JPanel();
 		add(panel_1);
 
-		text = new JLabel("Login");
+		text = new JLabel("Login"); 
 		panel_1.add(text);
 		text.setFont(new Font("Dialog", Font.BOLD, 30));
 		text.setHorizontalAlignment(SwingConstants.CENTER);
@@ -161,6 +163,8 @@ public class Login extends JPanel {
 				p.repaint();
 			}
 		});
+		setVisible(true);
+
 
 		JButton botoLogin = new JButton("Entra");
 		botoLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -178,7 +182,10 @@ public class Login extends JPanel {
 				} else if (fieldPwd.getPassword().length == 0) {
 					errorPwd.setText("Error. Introduce una contraseña.");
 				} else if (consultaSql()) {
-					System.out.println("Login exitoso");
+					
+					/////// Inicializar como true para guardar si ha cerrado sin guardar
+					PixelArt.setGuardado(true);
+					BuscaMinas.setGuardado(true);
 					Menu menu = new Menu(fieldUsr.getText());
 					Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
 					p.getContentPane().removeAll();
@@ -190,17 +197,6 @@ public class Login extends JPanel {
 
 			}
 		});
-
-		botoTorna.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
-				p.getContentPane().removeAll();
-				p.getContentPane().add(p.getContenedor());
-				p.revalidate();
-				p.repaint();
-			}
-		});
-		setVisible(true);
 	}
 
 	public boolean consultaSql() {
@@ -227,8 +223,8 @@ public class Login extends JPanel {
 						if (!encriptarPassword(fieldPwd.getPassword(), salto).equals(pwd)) {
 							JOptionPane.showMessageDialog(panel, "Contrasenya incorrecta per a l'usuari " + nom);
 							usrValidat = false;
-						}else {
-							usrValidat=true;
+						} else {
+							usrValidat = true;
 						}
 					}
 				}

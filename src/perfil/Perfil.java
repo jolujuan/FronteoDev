@@ -183,7 +183,7 @@ public class Perfil extends JPanel {
 
 		return datos;
 	}
-
+ 
 	public void eleminarUsuario(int id) {
 		String sentenciaTablaPixelArt = "DELETE FROM pixelart WHERE idUsuario = ?";
 		String sentenciaTablaBuscaminas = "DELETE FROM buscaminas WHERE idUsuario = ?";
@@ -228,7 +228,6 @@ public class Perfil extends JPanel {
 	public void adaptarImagen(byte[] arrayBits) {
 
 		ImageIcon icono = new ImageIcon(arrayBits);
-		System.out.println("Metodo");
 		Image imagenPerfil = icono.getImage();
 		int anchoImagen = icono.getIconWidth();
 		int altoImagen = icono.getIconHeight();
