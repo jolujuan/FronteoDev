@@ -39,6 +39,7 @@ public class Menu extends JPanel {
 	private int botonJugar = 0;
 	private boolean pixelArtAbierto = false;
 	private boolean buscaAbierto = false;
+	private boolean juegoVidaAbierto = false;
 
 	public Menu(String correo) {
 		JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -248,8 +249,8 @@ public class Menu extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!buscaAbierto) { // Verificar si PixelArt está abierto
-					buscaAbierto = true;
+				if (!juegoVidaAbierto) { // Verificar si PixelArt está abierto
+					juegoVidaAbierto = true;
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
