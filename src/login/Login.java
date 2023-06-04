@@ -34,6 +34,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import conexionBaseDatos.Conexion;
+import juegos.BuscaMinas;
 import juegos.PixelArt;
 import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
@@ -181,10 +182,10 @@ public class Login extends JPanel {
 				} else if (fieldPwd.getPassword().length == 0) {
 					errorPwd.setText("Error. Introduce una contraseña.");
 				} else if (consultaSql()) {
-					System.out.println("Login exitoso");
 					
-					/////// 
+					/////// Inicializar como true para guardar si ha cerrado sin guardar
 					PixelArt.setGuardado(true);
+					BuscaMinas.setGuardado(true);
 					Menu menu = new Menu(fieldUsr.getText());
 					Panel_inicio p = (Panel_inicio) SwingUtilities.getWindowAncestor(Login.this);
 					p.getContentPane().removeAll();

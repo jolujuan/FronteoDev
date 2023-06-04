@@ -16,6 +16,9 @@ ECLIPSE IDE | The Eclipse Foundation
 _Herramientas Git:_
 
 ```
+Eclipse EGit - Plugin
+GitHub Desktop
+GitKraken Desktop
 Git Bash for Windows
 ```
 

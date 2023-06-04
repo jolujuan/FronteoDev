@@ -130,9 +130,9 @@ public class PixelArt extends JFrame {
 		// Texto de inicio: SELECCION DE TAMAÑO DE TABLERO
 		JPanel inicio = new JPanel();
 		inicio.setFont(new Font("Verdana", Font.BOLD, 13));
-		JLabel seleccionaTableroJLabel = new JLabel("Selecciona el tamaño del tablero");
+		JLabel seleccionaTableroJLabel = new JLabel("Selecciona la dificultad de la partida");
 		seleccionaTableroJLabel.setBorder(new EmptyBorder(30, 0, 0, 0));
-		seleccionaTableroJLabel.setFont(new Font("Dialog", Font.BOLD, 14));
+		seleccionaTableroJLabel.setFont(new Font("Dialog", Font.BOLD, 18));
 		inicio.add(seleccionaTableroJLabel);
 		// Siempre tendra el mismo tamaño
 		setSize(500, 500);
@@ -198,7 +198,7 @@ public class PixelArt extends JFrame {
 						EventQueue.invokeLater(new Runnable() {
 							public void run() {
 								try {
-
+									// Ejecutar la nueva ventana, pasando el correo para hacer consultas
 									GuardarCargar frame = new GuardarCargar(PixelArt.this, correo);
 									frame.setSize(500, 500);
 									centrarInterficiePantalla();
@@ -208,14 +208,18 @@ public class PixelArt extends JFrame {
 										@Override
 										public void windowClosed(WindowEvent e) {
 											if (!GuardarCargar.getGuardado()) {
-												// Una vez seleccionado el juego a cargar sin presionar la "X" en la
-												// ventana, iniciar el juego que hayas seleccionado
+												// Una vez seleccionado el juego a cargar y cerrada la misma ventana sin
+												// presionar la "X", iniciar el juego que hayas seleccionado
+
+												// Creamos el nuevo juego con el archivo que habremos descargado en
+												// metodo de la ventana GuardarCargar
 												String archivoDescarga = "partidaCargadaPixelArt.txt";
 												cargarPartidaDesdeArchivo(archivoDescarga, correo);
 												cargar = false; // Restablecer como cerrado
 												frame.dispose();
 												pixelArtFrame.setVisible(true);
 											} else {
+												// Si ha seleccionado la x saldremos de la ventana
 												cargar = false; // Restablecer como cerrado
 												frame.dispose();
 												pixelArtFrame.setVisible(true);
@@ -252,6 +256,7 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// Eliminamos si anteriormente se ha creado
 				contentPane.removeAll();
 				tablero.removeAll();
 
@@ -266,6 +271,7 @@ public class PixelArt extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// Eliminamos si anteriormente se ha creado
 				contentPane.removeAll();
 				tablero.removeAll();
 
@@ -359,6 +365,7 @@ public class PixelArt extends JFrame {
 	}
 
 	private void crearTablero(int f, String correo) {
+		// No guardar partida al salir, porque manualmente el usuario la habra guardado
 		PixelArt.setGuardado(false);
 
 		tablero.setLayout(new GridLayout(f, f));
@@ -603,13 +610,15 @@ public class PixelArt extends JFrame {
 			preparandoInsert.executeUpdate();
 			preparandoInsert.close();
 			JOptionPane.showMessageDialog(null, "Se ha guardado correctamente");
-			System.out.println("Partida pixelArt guardada en BD");
+
+			// No guardar partida al salir, porque manualmente el usuario la habra guardado
 			PixelArt.setGuardado(true);
 		} catch (Exception e) {
 			System.out.println("Error al guardar bd: " + e);
 		}
 	}
 
+	// Obtenemos el id Usuario que pertenece al correo introducido en el login
 	public static String[] datosUsuarioPerfil(String correo) {
 		String[] datos = new String[6];
 		String sentencia = "SELECT * FROM usuarios WHERE email = ?";

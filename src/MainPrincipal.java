@@ -7,11 +7,10 @@ public class MainPrincipal {
 
 	public static void main(String[] args) {
 
-		// Fase de pruebas, con esto podremos cambiar la aparincia de la interfaz por
-		// una que está incluida en nuestras bibliotecas
+		// Cambiar la aparincia de la interfaz por una que está incluida en nuestras
+		// bibliotecas
 
 		String lookAndFeel = "com.formdev.flatlaf.FlatLightLaf";
-//        String lookAndFeel = "com.formdev.flatlaf.FlatDarkLaf";
 
 		try {
 
@@ -19,6 +18,7 @@ public class MainPrincipal {
 		} catch (Exception e) {
 			System.out.println("Error: " + e);
 			try {
+				//Aplicar el tema por defecto si no puede cargarse bien
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 					| UnsupportedLookAndFeelException e1) {
@@ -26,7 +26,8 @@ public class MainPrincipal {
 			}
 		}
 
-		Panel_inicio p = new Panel_inicio();
+		//INICIAR EL PROGRAMA CON UN SOLO MAIN
+		new Panel_inicio();
 
 	}
 }
