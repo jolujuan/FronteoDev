@@ -38,6 +38,7 @@ public class Menu extends JPanel {
 	private JButton botonLogout = new JButton("Logout");
 	private boolean pixelArtAbierto = false;
 	private boolean buscaAbierto = false;
+	private boolean juegoVidaAbierto = false;
 
 	public Menu(String correo) {
 		JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -231,7 +232,7 @@ public class Menu extends JPanel {
 								frame.addWindowListener(new WindowAdapter() {
 									@Override
 									public void windowClosed(WindowEvent e) {
-										buscMinasAbierto = false; // Restablecer como cerrado
+										buscaAbierto = false; // Restablecer como cerrado
 									}
 								});
 							} catch (Exception e) {

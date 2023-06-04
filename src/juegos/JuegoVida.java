@@ -2,6 +2,7 @@ package juegos;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -9,11 +10,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -24,6 +27,7 @@ import java.util.TimerTask;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
@@ -60,7 +64,7 @@ public class JuegoVida extends JFrame{
 				gbc.anchor = GridBagConstraints.CENTER;
 				gbc.insets = new Insets(10, 0, 10, 0);
 
-				JButton tamañoPequeño = new JButton("Facil");
+				JButton tamañoPequeño = new JButton("Pequeño");
 				tamañoPequeño.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				tamañoPequeño.setPreferredSize(new Dimension(130, 40));
 				tamañoPequeño.setFont(new Font("Unispace", Font.BOLD, 12));// FUENTE
@@ -68,7 +72,7 @@ public class JuegoVida extends JFrame{
 				gbc.gridy = 0;
 				botonesJPanel.add(tamañoPequeño, gbc);
 
-				JButton tamañoMediano = new JButton("Normal");
+				JButton tamañoMediano = new JButton("Mediano");
 				tamañoMediano.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				tamañoMediano.setPreferredSize(new Dimension(130, 40));// TAMAÑO BOTON
 				tamañoMediano.setFont(new Font("Unispace", Font.BOLD, 12));// FUENTE
@@ -78,7 +82,7 @@ public class JuegoVida extends JFrame{
 				gbc.gridy = 1;
 				botonesJPanel.add(tamañoMediano, gbc);
 
-				JButton tamañoGrande = new JButton("Dificil");
+				JButton tamañoGrande = new JButton("Grande");
 				tamañoGrande.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				tamañoGrande.setPreferredSize(new Dimension(130, 40));// TAMAÑO
 				tamañoGrande.setFont(new Font("Unispace", Font.BOLD, 12));// FUENTE
@@ -101,12 +105,12 @@ public class JuegoVida extends JFrame{
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						int nCelules=random.nextInt(5,15);
+						int nCelules=random.nextInt(60,90);
 						setSize(460, 460);
 						// Centramos pantalla
 						
-						crearTablero(8, nCelules);// NUMERO DE FILAS 8x8 | NUMERO DE CELULAS
-						pintarTablero(8, nCelules);
+						crearTablero(16, nCelules);// NUMERO DE FILAS 8x8 | NUMERO DE CELULAS
+						pintarTablero(16, nCelules);
 						centrarInterficiePantalla();
 
 					}
@@ -115,12 +119,12 @@ public class JuegoVida extends JFrame{
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						int nCelules=random.nextInt(60,90);
+						int nCelules=random.nextInt(100,140);
 						setSize(570, 570);
 						// Centramos pantalla
 						
-						crearTablero(16, nCelules);
-						pintarTablero(16, nCelules);
+						crearTablero(24, nCelules);
+						pintarTablero(24, nCelules);
 						centrarInterficiePantalla();
 
 					}
@@ -166,6 +170,48 @@ public class JuegoVida extends JFrame{
 				Casilla casilla = new Casilla();
 				casilla.setPreferredSize(new Dimension(size, size));
 				casilla.setBackground(new Color(0, 0, 0,180));
+				
+				casilla.addMouseListener(new MouseAdapter() {
+					// Pintar las casillas seleccionadas
+					// mousePressed para nada más apretar que cambie
+					@Override
+					public void mousePressed(MouseEvent e) {
+						if (SwingUtilities.isLeftMouseButton(e)) {
+							casilla.setCelulaViva(true);
+						}
+						if (SwingUtilities.isRightMouseButton(e)) {
+							casilla.setCelulaViva(false);
+						}
+					}
+				});
+				casilla.addMouseMotionListener(new MouseMotionAdapter() {
+					@Override
+					public void mouseDragged(MouseEvent e) {
+						if (SwingUtilities.isLeftMouseButton(e)) {
+							// Convetir las coordenadas donde se ha presionado el raton (e.getComponent) con
+							// (e.getPoint) obtenemos las coordenadas donde ocurrio el evento, para cuando
+							// se arrastre que empieze desde ese punto.
+							Point coordenadasPanelPresionado = SwingUtilities.convertPoint(e.getComponent(),
+									e.getPoint(), tablero);
+							// Obtener el componente del panel tablero que se encuentra en la posicion
+							// presionada
+							Component componente = tablero.getComponentAt(coordenadasPanelPresionado);
+							// Comprobar si el componente obtenido es una instancia de la clase Casilla
+							if (componente instanceof Casilla) {
+								((Casilla) componente).setCelulaViva(true);
+							}
+						} else {
+							// Borrar las casillas arrastradas
+							// Hacer lo mismo pero a la inversa para borrar desde el click derecho
+							Point coordenadasPanelPresionado = SwingUtilities.convertPoint(e.getComponent(),
+									e.getPoint(), tablero);
+							Component componente = tablero.getComponentAt(coordenadasPanelPresionado);
+							if (componente instanceof Casilla) {
+								((Casilla) componente).setCelulaViva(false);
+							}
+						}
+					}
+				});
 
 				final int filaFinal = fila;
 				final int columnaFinal = columna;
@@ -228,8 +274,8 @@ public class JuegoVida extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				tableroCasillas = null;
-				contentPane.removeAll();
 				tablero.removeAll();
+				contentPane.removeAll();
 				timer.cancel();
 				selectDificultat();
 			}
@@ -250,9 +296,19 @@ public class JuegoVida extends JFrame{
 				timer=new Timer();
 				TimerTask tarea = new TimerTask() {
 		        	public void run() {
-		        		jugada();
-		        		contentPane.revalidate();
-		        		contentPane.repaint();
+		        		if(!jugada()) {
+		        			contentPane.revalidate();
+			        		contentPane.repaint();
+		        		}else {
+		        			timer.cancel();
+		        			tableroCasillas = null;
+		    				tablero.removeAll();
+		    				contentPane.removeAll();
+		    				timer.cancel();
+		    				JOptionPane.showMessageDialog(null, "Juego Terminado");
+		    				selectDificultat();
+		    				
+		        		}
 		        		
 		        	}
 		        };
@@ -266,9 +322,19 @@ public class JuegoVida extends JFrame{
 				timer=new Timer();
 				TimerTask tarea = new TimerTask() {
 		        	public void run() {
-		        		jugada();
-		        		contentPane.revalidate();
-		        		contentPane.repaint();
+		        		if(!jugada()) {
+		        			contentPane.revalidate();
+			        		contentPane.repaint();
+		        		}else {
+		        			timer.cancel();
+		        			tableroCasillas = null;
+		    				tablero.removeAll();
+		    				contentPane.removeAll();
+		    				timer.cancel();
+		    				JOptionPane.showMessageDialog(null, "Juego Terminado");
+		    				selectDificultat();
+		    				
+		        		}
 		        	}
 		        };
 		        timer.scheduleAtFixedRate(tarea, 0, 500);
@@ -281,9 +347,20 @@ public class JuegoVida extends JFrame{
 				timer=new Timer();
 				TimerTask tarea = new TimerTask() {
 		        	public void run() {
-		        		jugada();
-		        		contentPane.revalidate();
-		        		contentPane.repaint();
+		        		if(!jugada()) {
+		        			contentPane.revalidate();
+			        		contentPane.repaint();
+		        		}else {
+		        			timer.cancel();
+		        			tableroCasillas = null;
+		    				tablero.removeAll();
+		    				contentPane.removeAll();
+		    				timer.cancel();
+		    				JOptionPane.showMessageDialog(null, "Juego Terminado");
+		    				selectDificultat();
+		    				
+		        		}
+		        		
 		        	}
 		        };
 		        timer.scheduleAtFixedRate(tarea, 0, 100);
@@ -324,8 +401,9 @@ public class JuegoVida extends JFrame{
 		this.setLocation(x, y);
 	}
 	
-	private void jugada() {
+	private boolean jugada() {
 		Casilla[][] copiaTableroCasillas=copiaTablero();
+		boolean acabado=true;
 		for(int i=0;i<copiaTableroCasillas.length;i++) {
 			for(int j=0;j<copiaTableroCasillas[i].length;j++) {
 				Casilla casilla = copiaTableroCasillas[i][j];
@@ -340,6 +418,14 @@ public class JuegoVida extends JFrame{
 				}
 			}
 		}
+		for(int i=0;i<tableroCasillas.length;i++) {
+			for(int j=0;j<tableroCasillas[i].length;j++) {
+				if(tableroCasillas[i][j].getCelulaViva()) {
+					acabado=false;
+				}
+			}
+		}
+		return acabado;
 	}
 	private int contarCelulasVivas(int fila, int columna, Casilla[][] copiaTablero) {
 		int celVives=0;
