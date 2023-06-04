@@ -1,6 +1,6 @@
 # PROYECTO CREACIÓN JUEGOS
 
-_Hemos desarrolla un software que tiene como función principal...(EDU TE TOCA)_
+_Este proyecto es una colección de tres juegos: Pixel Art, Buscaminas y Juego de la Vida. Cada usuario tiene la posibilidad de crear una cuenta personalizada en la plataforma, lo que le permite acceder a cualquiera de los tres juegos. Además, los usuarios pueden visualizar su perfil y eliminar su cuenta si así lo desean, asegurando la privacidad de sus datos personales. Dentro de los juegos, se ofrece la opción de guardar las partidas, así como elegir el tamaño del tablero de juego. En el caso del juego Buscaminas, los usuarios también pueden consultar el ranking para comparar sus puntuaciones con otros jugadores. Con esta interfaz sencilla y clara, los usuarios podrán disfrutar de estos tres juegos y gestionar su experiencia de juego de manera personalizada._
 
 ## Comenzando 🚀
 
@@ -48,6 +48,9 @@ git pull origin master
 _Herramientas utilizadas para crear el proyecto_
 
 * [Eclipse - IDE](https://www.eclipse.org/ide/) - El IDE usado
+* [Eclipse - Plugin](https://www.eclipse.org/egit/) - Plugin Eclipse
+* [GitHub - Programa](https://desktop.github.com/) - GitHub Desktop
+* [GitKrakem - Programa](https://www.gitkraken.com/) - Git Kraken
 * [Git - Bash](https://git-scm.com/downloads) - Manejador de Git
 
 ## Autores ✒️
