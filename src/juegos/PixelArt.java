@@ -344,7 +344,7 @@ public class PixelArt extends JFrame {
 								colorSeleccionado = nuevoColor;
 							}
 
-					}
+					}	
 				});
 				this.add(buttonColor);
 			}

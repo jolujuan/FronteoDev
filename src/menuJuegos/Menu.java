@@ -120,7 +120,7 @@ public class Menu extends JPanel {
 				boolean datosNoGuardadosPixel = PixelArt.isGuardado();
 				boolean datosNoGuardadosBusca = BuscaMinas.isGuardado();
 
-				if (datosNoGuardadosPixel == false) {
+				if (datosNoGuardadosPixel == false||datosNoGuardadosBusca==false) {
 					int option = JOptionPane.showConfirmDialog(null, "¿Desea guardar partida antes de cerrar sesión?");
 					if (option == JOptionPane.YES_OPTION) {
 						// Lógica para guardar la partida
