@@ -80,7 +80,7 @@ public class Menu extends JPanel {
 		add(botonJugarPixelArt, c1);
 
 		GridBagConstraints c2 = new GridBagConstraints();
-		c2.insets = new Insets(10, 10, 30, 10);
+		c2.insets = new Insets(10, 10, 30, 10); 
 		c2.gridwidth = 1;
 		c2.gridy = 2;
 		c2.gridx = 1;
@@ -116,13 +116,13 @@ public class Menu extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				boolean datosGuardados = PixelArt.isGuardado();
+				boolean datosNoGuardadosPixel = PixelArt.isGuardado();
+				boolean datosNoGuardadosBusca = BuscaMinas.isGuardado();
 
-				if (datosGuardados == false) {
+				if (datosNoGuardadosPixel == false) {
 					int option = JOptionPane.showConfirmDialog(null, "¿Desea guardar partida antes de cerrar sesión?");
 					if (option == JOptionPane.YES_OPTION) {
 						// Lógica para guardar la partida
-						System.out.println("Partida guardada." + option);
 
 						// Eliminar tanto los archivos locales como temporales
 						eliminarArchivos();
@@ -131,6 +131,9 @@ public class Menu extends JPanel {
 						// FUNCION DE GUARDAR PARTIDA
 						PixelArt.guardarEstadoTablero("PixelArt.txt");
 						PixelArt.guardarDatosBD(correo, "PixelArt.txt");
+
+						BuscaMinas.guardarEstadoTablero("buscaminas.datos");
+						BuscaMinas.guardarDatosBD(correo, "buscaminas.datos");
 						//////////
 
 						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
@@ -148,7 +151,6 @@ public class Menu extends JPanel {
 						ventanaInicio.setVisible(true);
 					} else if (option == JOptionPane.NO_OPTION) {
 						// Lógica para no guardar la partida
-						System.out.println("Partida no guardada." + option);
 						eliminarArchivos();
 						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
 						//// algun joc teu tanque (GRACIES CHAT)
@@ -163,10 +165,8 @@ public class Menu extends JPanel {
 						Panel_inicio ventanaInicio = new Panel_inicio();
 						ventanaInicio.setVisible(true);
 					} else if (option == JOptionPane.CANCEL_OPTION) {
-						System.out.println("Acción cancelada." + option);
 					} else if (option == JOptionPane.CLOSED_OPTION) {
 						
-						System.out.println("Sin opción seleccionada." + option);
 					}
 				} else {
 					eliminarArchivos();
@@ -297,6 +297,7 @@ public class Menu extends JPanel {
 		add(etiqueta, c);
 	}
 
+	//Eliminar todos los archivos si han sido creados en algún momento
 	public static void eliminarArchivos() {
 		File archivoCargaDatosPixelArt = new File("partidaCargadaPixelArt.txt");
 		File archivoCargadoDatosBuscaminas = new File("partidaCargadaBuscaMinas.datos");
@@ -313,6 +314,7 @@ public class Menu extends JPanel {
 		if (archivoLocalPixelArt.exists()) {
 			archivoLocalPixelArt.delete();
 		}
+		
 		if (archivoLocalBuscaminas.exists()) {
 			archivoLocalBuscaminas.delete();					
 		}

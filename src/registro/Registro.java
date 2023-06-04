@@ -37,6 +37,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import conexionBaseDatos.Conexion;
+import juegos.BuscaMinas;
 import juegos.PixelArt;
 import menuJuegos.Menu;
 import panel_inicio.Panel_inicio;
@@ -208,7 +209,6 @@ public class Registro extends JPanel {
 				int result = fileChooser.showOpenDialog(null);
 				if (result == JFileChooser.APPROVE_OPTION) {
 					selectedFile = fileChooser.getSelectedFile();
-					System.out.println(selectedFile.exists());
 
 					if (!selectedFile.exists()) {
 						errorImagen.setText("Archivo no existente");
@@ -230,9 +230,7 @@ public class Registro extends JPanel {
 					}
 					// Comprobar que la imagen seleccionada sea del tamaño correcto
 
-				} else {
-					System.out.println("Ningún archivo seleccionado");
-				}
+				} 
 			}
 		});
 
@@ -379,12 +377,10 @@ public class Registro extends JPanel {
 
 				} else {
 					imagen = campoImagen.getText();
-					System.out.println("regex " + imagen.matches("^.+\\.(jpg|png)$"));
 					if (imagen.matches("^.+\\.(jpg|png)$")) {
 						imagen = campoImagen.getText();
 						errorImagen.setText("");
 						camposCompletados++;// 5
-						System.out.println("Cumple el regex");
 					} else {
 						imagen = "";
 
@@ -439,60 +435,11 @@ public class Registro extends JPanel {
 				// SI AUN NO HAY TABLAS CREADAS PONER -> if(camposCompletados == 6) y comentar
 				// las lineas de comprobacion del correo
 				if (camposCompletados == 7) {
-					// crearTablas();
-//					Connection c = Conexion.obtenerConexion();
-//
-//					String sentenciaCrearTablaUsuario = "CREATE TABLE IF NOT EXISTS usuarios (id INT AUTO_INCREMENT PRIMARY KEY, "
-//							+ "nombre VARCHAR(50), " + "apellidos VARCHAR(50), " + "imagen BLOB, "
-//							+ "poblacion VARCHAR(50), " + "email VARCHAR(50))";
-//					String sentenciaCrearTablaPassword = "CREATE TABLE IF NOT EXISTS passwords (id INT AUTO_INCREMENT PRIMARY KEY, "
-//							+ "idUsuario INT, " + "password VARCHAR(200), " + "salto VARCHAR(200),"
-//							+ "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
-//					String sentenciaCrearTablaPixelArt = "CREATE TABLE IF NOT EXISTS pixelart (idPixelart INT AUTO_INCREMENT PRIMARY KEY, "
-//							+ "idUsuario INT, " + "tablero VARCHAR(50), " + "ficheroPartida MEDIUMBLOB, "
-//							+ "fecha DATE, " + "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
-//					String sentenciaCrearTablaBuscaMinas = "CREATE TABLE IF NOT EXISTS buscaminas (idBuscaminas INT AUTO_INCREMENT PRIMARY KEY, "
-//							+ "idUsuario INT, " + "tablero VARCHAR(50), " + "nivel VARCHAR(50), "
-//							+ "ficheroPartida MEDIUMBLOB, " + "tiempo INT, "
-//							+ "FOREIGN KEY (idUsuario) REFERENCES usuarios(id))";
-//
-//					try {
-//						Statement consulta = c.createStatement();
-//						consulta.execute(sentenciaCrearTablaUsuario);
-//						consulta.close();
-//						System.out.println("Tabla usarios creada");
-//
-//						consulta = c.createStatement();
-//						consulta.execute(sentenciaCrearTablaPassword);
-//						consulta.close();
-//						System.out.println("Tabla password creada");
-//
-//						consulta = c.createStatement();
-//						consulta.execute(sentenciaCrearTablaPixelArt);
-//						consulta.close();
-//						System.out.println("Tabla pixelArt creada");
-//
-//						consulta = c.createStatement();
-//						consulta.execute(sentenciaCrearTablaBuscaMinas);
-//						consulta.close();
-//						System.out.println("Tabla buscaminas creada");
-//
-//					} catch (SQLException e1) {
-//						System.out.println("Error: A" + e1);
-//						if (password.equals(passwordRepetida)) {
-//							camposCompletados++;
-//							errorPassword.setText("");
-//							errorPasswordRepetida.setText("");
-//						} else {
-//							errorPassword.setText("La contraseña debe ser la misma");
-//							errorPassword.setForeground(Color.red);
-//							errorPasswordRepetida.setText("La contraseña debe ser la misma");
-//							errorPasswordRepetida.setForeground(Color.red);
-//						}
-//					}
 					try {
 						registrarUsuario(nombre, apellido, poblacion, arrayBits, email, password);
+						/////// Inicializar como true para guardar si ha cerrado sin guardar
 						PixelArt.setGuardado(true);
+						BuscaMinas.setGuardado(true);
 
 						mensajeGeneral.setText("Datos Guardados");
 						mensajeGeneral.setForeground(Color.green);
@@ -544,27 +491,22 @@ public class Registro extends JPanel {
 			Statement consulta = c.createStatement();
 			consulta.execute(sentenciaCrearTablaUsuario);
 			consulta.close();
-			System.out.println("Tabla usarios creada");
 
 			consulta = c.createStatement();
 			consulta.execute(sentenciaCrearTablaPassword);
 			consulta.close();
-			System.out.println("Tabla password creada");
 
 			consulta = c.createStatement();
 			consulta.execute(sentenciaCrearTablaPixelArt);
 			consulta.close();
-			System.out.println("Tabla pixelArt creada");
 
 			consulta = c.createStatement();
 			consulta.execute(sentenciaCrearTablaBuscaMinas);
 			consulta.close();
-			System.out.println("Tabla buscaminas creada");
 			
 			consulta = c.createStatement();
 			consulta.execute(sentenciaCrearTablaRankingBuscaminas);
 			consulta.close();
-			System.out.println("Tabla ranking creada");
 
 		} catch (SQLException e1) {
 			System.out.println("Error: " + e1);
@@ -609,8 +551,6 @@ public class Registro extends JPanel {
 			preparandoInsert.setString(3, datosPassword[1]);
 
 			preparandoInsert.executeUpdate();
-
-			System.out.println("Usuario de prueba registrado");
 
 			preparandoInsert.close();
 

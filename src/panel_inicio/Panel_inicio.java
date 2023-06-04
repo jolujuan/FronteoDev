@@ -43,16 +43,16 @@ public class Panel_inicio extends JFrame {
 
 		// Ignorarar el cierre, para hacerlo más divertido
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
-		String mensaje = "                          ---------------------------------------------------\r\n"
-				+ "                          ¡LOS CREADORES DETRÁS DEL ESCENARIO!\r\n"
-				+ "                          ---------------------------------------------------\r\n" + "\n"
-				+ "¡Prepárense para conocer a los cerebros brillantes detrás de este asombroso espectáculo!\n" + "\n"
-				+ "1.\n" + "\n" + "2.\n" + "\n" + "3.\n" + "\n" + "4.\n" + "\n"
-				+ "¡Estos talentosos magos han creado un espectáculo que desafiará tu imaginación!\n" + "\n"
-				+ "---------------------------------------------------\n" + "\n"
-				+ "¡Un agradecimiento especial a todo el equipo que ha trabajado incansablemente para hacer de este show un éxito rotundo!\n"
-				+ "\n" + "---------------------------------------------------";
+		String mensaje = "<html>"
+				+ "<center>------------------------------------------------------<br>"
+				+ "<b>¡LOS CREADORES DETRÁS DEL ESCENARIO!</b><br>"
+				+ "------------------------------------------------------</center><br>" + "<br>"
+				+ "¡Prepárense para conocer a los cerebros brillantes detrás de este asombroso espectáculo!<br>" + "<br>"
+				+ "<b>1. Edu Valls</b><br>" + "<br>" + "<b>2. Jose Luis</b><br>" + "<br>" + "<b>3. Ismael Bouassami</b><br>" + "<br>" + "<b>4. Javier</b><br>" + "<br>"
+				+ "¡Estos talentosos magos han creado un espectáculo que desafiará tu imaginación!<br>" + "<br>"
+				+ "---------------------------------------------------<br>" + "<br>"
+				+ "¡Un agradecimiento especial a todo el equipo que ha trabajado incansablemente para hacer de este show un éxito rotundo!<br>"
+				+ "<br>" + "---------------------------------------------------</html>";
 
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -77,13 +77,12 @@ public class Panel_inicio extends JFrame {
 		});
 
 		this.setTitle("Programa Juegos");
-		// this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		contenedor.setLayout(new BorderLayout());
 
 		panel_superior.setLayout(new FlowLayout());
 
-		etiqueta_superior.setText("¡BIENVENIDO!");
+		etiqueta_superior.setText("¡BIENVENIDO/A!");
 		etiqueta_superior.setFont(new Font("Dialog", Font.BOLD, 25));
 		etiqueta_superior.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel_superior.add(etiqueta_superior);

@@ -85,11 +85,12 @@ public class GuardarCargar extends JFrame {
 //		});
 //	}
 
-	// Pasar la variable para no mostrarla en las clases
+	// Pasar la ventana dependiendo el juego
 	public GuardarCargar(JFrame ventana, String correo) {
 		this.ventanaJuego = ventana;
 		this.frame = this;
 
+		//Si ha cerrado no continuara con la ejecucion de esta ventana
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -133,7 +134,7 @@ public class GuardarCargar extends JFrame {
 		panelPequeño.add(tituloPequeño, gbc_tituloPequeño);
 
 		JLabel labelPequenio = new JLabel("FÁCIL");
-		labelPequenio.setFont(new Font("Serif", Font.BOLD, 24)); 
+		labelPequenio.setFont(new Font("Serif", Font.BOLD, 24));
 		tituloPequeño.add(labelPequenio);
 		contenidoPequeño.setFont(new Font("Dialog", Font.PLAIN, 12));
 
@@ -163,7 +164,7 @@ public class GuardarCargar extends JFrame {
 		gbl_panelMediano.columnWidths = new int[] { 146, 0 };
 		gbl_panelMediano.rowHeights = new int[] { 35, 389 };
 		gbl_panelMediano.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-		gbl_panelMediano.rowWeights = new double[] { 0.0, 1.0  };
+		gbl_panelMediano.rowWeights = new double[] { 0.0, 1.0 };
 		panelMediano.setLayout(gbl_panelMediano);
 
 		JPanel tituloMediano = new JPanel();
@@ -176,7 +177,7 @@ public class GuardarCargar extends JFrame {
 		panelMediano.add(tituloMediano, gbc_tituloMediano);
 
 		JLabel labelMediano = new JLabel("NORMAL");
-		labelMediano.setFont(new Font("Serif", Font.BOLD, 24)); 
+		labelMediano.setFont(new Font("Serif", Font.BOLD, 24));
 		tituloMediano.add(labelMediano);
 
 		JScrollPane scrollPaneMediano = new JScrollPane(contenidoMediano);
@@ -216,7 +217,7 @@ public class GuardarCargar extends JFrame {
 		panelGrande.add(tituloGrande, gbc_tituloGrande);
 
 		JLabel labelGrande = new JLabel("DIFÍCIL");
-		labelGrande.setFont(new Font("Serif", Font.BOLD, 24)); 
+		labelGrande.setFont(new Font("Serif", Font.BOLD, 24));
 		tituloGrande.add(labelGrande);
 
 		JScrollPane scrollPaneGrande = new JScrollPane(contenidoGrande);
@@ -232,8 +233,6 @@ public class GuardarCargar extends JFrame {
 		panelGrande.add(scrollPaneGrande, gbc_contenidoGrande);
 		contenidoGrande.setLayout(new BoxLayout(contenidoGrande, BoxLayout.Y_AXIS));
 
-		
-
 		leerDatosBD(correo);
 	}
 
@@ -245,6 +244,8 @@ public class GuardarCargar extends JFrame {
 		String tablero;
 		Date fecha;
 
+		// Dependiendo si pasamos la ventana PixelArt o BuscaMinas, hacemos un join en la
+		// consulta y obtenemos los valores más abajo
 		if (ventanaJuego.getTitle().equals("PixelArt")) {
 			selectPartida = "SELECT pixelart.* FROM usuarios, pixelart WHERE usuarios.id = pixelart.idUsuario AND email = ?";
 			archivoDescarga = "partidaCargadaPixelArt.txt";
@@ -292,6 +293,8 @@ public class GuardarCargar extends JFrame {
 
 							InputStream obtenerInputStream;
 							try {
+								// Convertimos el archivo obtenido en formato binario de la base a uno nuevo que
+								// podamos guardarlo para usarlo en la clase correspondiente del juego
 								obtenerInputStream = archivoBlobBoton.getBinaryStream();
 								nuevoArchivo = Path.of(archivoDescarga);
 
