@@ -1138,7 +1138,7 @@ public class BuscaMinas extends JFrame {
 			// casillas a revelar
 			oos.writeObject("#" + contadorBanderas + ":" + segons + ":" + ContadorCasillasinrevelar);
 
-//			oos.writeObject(tableroCasillas);
+			oos.writeObject(tableroCasillas);
 			oos.flush();
 			oos.close();
 		} catch (Exception ex) {
