@@ -81,7 +81,7 @@ public class Menu extends JPanel {
 		add(botonJugarPixelArt, c1);
 
 		GridBagConstraints c2 = new GridBagConstraints();
-		c2.insets = new Insets(10, 10, 30, 10); 
+		c2.insets = new Insets(10, 10, 30, 10);
 		c2.gridwidth = 1;
 		c2.gridy = 2;
 		c2.gridx = 1;
@@ -120,7 +120,7 @@ public class Menu extends JPanel {
 				boolean datosNoGuardadosPixel = PixelArt.isGuardado();
 				boolean datosNoGuardadosBusca = BuscaMinas.isGuardado();
 
-				if (datosNoGuardadosPixel == false||datosNoGuardadosBusca==false) {
+				if (datosNoGuardadosPixel == false || datosNoGuardadosBusca == false) {
 					int option = JOptionPane.showConfirmDialog(null, "¿Desea guardar partida antes de cerrar sesión?");
 					if (option == JOptionPane.YES_OPTION) {
 						// Lógica para guardar la partida
@@ -130,11 +130,16 @@ public class Menu extends JPanel {
 
 						///////////
 						// FUNCION DE GUARDAR PARTIDA
-						PixelArt.guardarEstadoTablero("PixelArt.txt");
-						PixelArt.guardarDatosBD(correo, "PixelArt.txt");
+						if (!datosNoGuardadosPixel) {
+							PixelArt.guardarEstadoTablero("PixelArt.txt");
+							PixelArt.guardarDatosBD(correo, "PixelArt.txt");
+						}
 
-						BuscaMinas.guardarEstadoTablero("buscaminas.datos");
-						BuscaMinas.guardarDatosBD(correo, "buscaminas.datos");
+						if (!datosNoGuardadosBusca) {
+							BuscaMinas.guardarEstadoTablero("buscaminas.datos");
+							BuscaMinas.guardarDatosBD(correo, "buscaminas.datos");
+						}
+
 						//////////
 
 						//// Esto es pa quan tries la opcio de logout y tens una finestra oberta de
@@ -167,7 +172,7 @@ public class Menu extends JPanel {
 						ventanaInicio.setVisible(true);
 					} else if (option == JOptionPane.CANCEL_OPTION) {
 					} else if (option == JOptionPane.CLOSED_OPTION) {
-						
+
 					}
 				} else {
 					eliminarArchivos();
@@ -184,8 +189,6 @@ public class Menu extends JPanel {
 					ventanaInicio.setVisible(true);
 				}
 			}
-
-			
 
 		});
 
@@ -298,26 +301,26 @@ public class Menu extends JPanel {
 		add(etiqueta, c);
 	}
 
-	//Eliminar todos los archivos si han sido creados en algún momento
+	// Eliminar todos los archivos si han sido creados en algún momento
 	public static void eliminarArchivos() {
 		File archivoCargaDatosPixelArt = new File("partidaCargadaPixelArt.txt");
 		File archivoCargadoDatosBuscaminas = new File("partidaCargadaBuscaMinas.datos");
 		File archivoLocalPixelArt = new File("PixelArt.txt");
 		File archivoLocalBuscaminas = new File("buscaminas.datos");
 
-		//Comprobar si existe porque lo llamaremos desde otro metodo
-		if (archivoCargaDatosPixelArt.exists()) {					
+		// Comprobar si existe porque lo llamaremos desde otro metodo
+		if (archivoCargaDatosPixelArt.exists()) {
 			archivoCargaDatosPixelArt.delete();
 		}
-		if (archivoCargadoDatosBuscaminas.exists()) {					
+		if (archivoCargadoDatosBuscaminas.exists()) {
 			archivoCargadoDatosBuscaminas.delete();
 		}
 		if (archivoLocalPixelArt.exists()) {
 			archivoLocalPixelArt.delete();
 		}
-		
+
 		if (archivoLocalBuscaminas.exists()) {
-			archivoLocalBuscaminas.delete();					
+			archivoLocalBuscaminas.delete();
 		}
 	}
 
