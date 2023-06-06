@@ -335,7 +335,7 @@ public class PixelArt extends JFrame {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						// Si el colorSeleccionado es blanco, abrimos el diálogo de selección de color
-						
+						if (color.equals(Color.WHITE)) {
 							Color nuevoColor = JColorChooser.showDialog(null, "Select", colorSeleccionado);
 							if (nuevoColor != null) {
 								buttonColor.setBackground(nuevoColor);
@@ -343,8 +343,10 @@ public class PixelArt extends JFrame {
 								// cambiar color aqui
 								colorSeleccionado = nuevoColor;
 							}
-
-					}	
+						} else
+							// cambiar color aqui
+							colorSeleccionado = color;
+					}
 				});
 				this.add(buttonColor);
 			}
