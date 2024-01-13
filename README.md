@@ -1,6 +1,6 @@
 # PROYECTO CREACIÓN JUEGOS
 
-![gif](https://i.postimg.cc/8PV9FKpb/8c782m.gif) ![gif](https://i.postimg.cc/HLjhGFzT/8c78b0.gif) ![gif](https://i.postimg.cc/FzbPgvrV/8c78fq.gif)
+<img src="https://i.postimg.cc/8PV9FKpb/8c782m.gif" alt="gif" width="30%" /> <img src="https://i.postimg.cc/HLjhGFzT/8c78b0.gif" alt="gif" width="30%" /> <img src="https://i.postimg.cc/FzbPgvrV/8c78fq.gif" alt="gif" width="30%" />
 
 
 
