@@ -1,8 +1,7 @@
 # PROYECTO CREACIÓN JUEGOS
 
-![gif](https://i.postimg.cc/8PV9FKpb/8c782m.gif)
-![gif](https://i.postimg.cc/HLjhGFzT/8c78b0.gif)
-![gif](https://i.postimg.cc/FzbPgvrV/8c78fq.gif)
+![gif](https://i.postimg.cc/8PV9FKpb/8c782m.gif) ![gif](https://i.postimg.cc/HLjhGFzT/8c78b0.gif) ![gif](https://i.postimg.cc/FzbPgvrV/8c78fq.gif)
+
 
 
 _Este proyecto es una colección de tres juegos: Pixel Art, Buscaminas y Juego de la Vida. Cada usuario tiene la posibilidad de crear una cuenta personalizada en la plataforma, lo que le permite acceder a cualquiera de los tres juegos. Además, los usuarios pueden visualizar su perfil y eliminar su cuenta si así lo desean, asegurando la privacidad de sus datos personales. Dentro de los juegos, se ofrece la opción de guardar las partidas, así como elegir el tamaño del tablero de juego. En el caso del juego Buscaminas, los usuarios también pueden consultar el ranking para comparar sus puntuaciones con otros jugadores. Con esta interfaz sencilla y clara, los usuarios podrán disfrutar de estos tres juegos y gestionar su experiencia de juego de manera personalizada._
